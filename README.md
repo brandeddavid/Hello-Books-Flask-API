@@ -7,11 +7,11 @@ This repository contains Flask API endpoints and tests for the Hello-World Appli
 
 ## Available API Endpoints
 
-**To Be Updated
+**To Be Updated**
 
 ## Testing API Endpoints
 
-**To Be Updated
+**To Be Updated**
 
 ## Postman Screenshots
 
@@ -20,4 +20,5 @@ This repository contains Flask API endpoints and tests for the Hello-World Appli
 ## Project Owner 
 
 David Mwangi Mathenge
-[mailto](david.mathenge98@gmail.com)
+
+[david.mathenge98@gmail.com](mailto:david.mathenge98@gmail.com)

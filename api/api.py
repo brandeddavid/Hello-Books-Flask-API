@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from api.models import *
-from flask import jsonify
+from flask import jsonify, request
 
 b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
 b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
@@ -25,10 +25,18 @@ class BookOps(Resource):
 
         return jsonify(Book.getbook(id=book_id))
 
-    def put(self):
+    def put(self, book_id):
 
-        pass
+        data = request.get_json(self)
+
+        return jsonify(Book.updatebook(id=book_id, data=data))
 
     def delete(self, book_id):
 
         return jsonify(Book.deletebook(id=book_id))
+
+    def post(self, book_id):
+
+        data = request.get_json(self)
+
+        return jsonify(Book.apicreatebook(id=book_id, data=data))

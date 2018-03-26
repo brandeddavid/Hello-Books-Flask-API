@@ -130,7 +130,20 @@ class Book(object):
 
                     return "Book Created Successfully"
 
+    def apicreatebook(id, data):
 
+        for book in books:
+
+            if str(id) in book.keys():
+
+                return {'Error': 'Book Already Exists'}
+
+            else:
+
+                new_book = {id: data}
+                books.append(new_book)
+
+                return {'Success': 'Book Created Successfully'}
 
     def get_all_books():
 
@@ -150,22 +163,25 @@ class Book(object):
 
                 return {'Error': 'Book Does Not Exist'}
 
-    # def updatebook(self,id, newTitle, newAuthor):
-    #
-    #     for book in books:
-    #
-    #         if id in book.keys():
-    #
-    #             book[id]['title'] = newTitle
-    #             book[id]['author'] = newAuthor
-    #
-    #             return 'Book Update Successful'
-    #
-    def getbook(id):
+    def updatebook(id, data):
 
         for book in books:
 
             if id in book.keys():
+
+                book[id] = data
+
+                return {'Success': 'Book Update Successful'}
+
+            else:
+
+                return {'Error': 'Book Does Not Exist'}
+
+    def getbook(id):
+
+        for book in books:
+
+            if str(id) in book.keys():
 
                 return book
 

@@ -15,10 +15,18 @@ class GetAllBooks(Resource):
     """"
     """
     def post(self):
+        """
+
+        :return:
+        """
 
         pass
 
     def get(self):
+        """
+
+        :return:
+        """
 
         return jsonify(Book.get_all_books())
 
@@ -26,10 +34,20 @@ class GetAllBooks(Resource):
 class BookOps(Resource):
 
     def get(self, book_id):
+        """
+
+        :param book_id:
+        :return:
+        """
 
         return jsonify(Book.getbook(id=book_id))
 
     def put(self, book_id):
+        """
+
+        :param book_id:
+        :return:
+        """
 
         data = request.get_json(self)
 
@@ -40,6 +58,11 @@ class BookOps(Resource):
         return jsonify(Book.deletebook(id=book_id))
 
     def post(self, book_id):
+        """
+
+        :param book_id:
+        :return:
+        """
 
         data = request.get_json(self)
 
@@ -47,8 +70,19 @@ class BookOps(Resource):
 
 
 def token_required(f):
+    """
+
+    :param f:
+    :return:
+    """
     @wraps(f)
     def decorated(*args, **kwargs):
+        """
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
         token = None
 
         if 'x-access-token' in request.headers:
@@ -80,6 +114,10 @@ def token_required(f):
 class CreateUser(Resource):
 
     def post(self):
+        """
+
+        :return:
+        """
         data = request.get_json(self)
         hashed_password = generate_password_hash(data['password'], method='sha256')
         return jsonify(User(id=data['id'], username=data['username'], password=hashed_password).createUser())
@@ -89,12 +127,22 @@ class GetAllUsers(Resource):
 
     @token_required
     def get(self, current_user):
+        """
+
+        :param current_user:
+        :return:
+        """
 
         return jsonify({"Users": User.getAllUsers()})
+
 
 class LoginUser(Resource):
 
     def post(self):
+        """
+
+        :return:
+        """
 
         auth = request.authorization
 
@@ -109,7 +157,7 @@ class LoginUser(Resource):
             if auth.username in user['username']:
 
                 if check_password_hash(user['password'], auth.password):
-                    token = jwt.encode({'id': user['id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=2)}, 'super-secret-key')
+                    token = jwt.encode({'id': user['id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, 'super-secret-key')
 
                     return jsonify({'token': token.decode('UTF-8')})
 
@@ -122,13 +170,28 @@ class LoginUser(Resource):
 
 class BorrowBook(Resource):
 
-    def post(self, book_id):
+    @token_required
+    def post(self, current_user, book_id):
+        """
+
+        :param current_user:
+        :param book_id:
+        :return:
+        """
 
         return jsonify(User.borrowBook(book_id=book_id))
 
 
 class UpdatePassword(Resource):
-    def post(self, user_id):
+
+    @token_required
+    def post(self, current_user, user_id):
+        """
+
+        :param current_user:
+        :param user_id:
+        :return:
+        """
         data = request.get_json(self)
 
         users = User.getAllUsers()
@@ -141,7 +204,7 @@ class UpdatePassword(Resource):
 
                     user['password'] = generate_password_hash(data['newpassword'])
 
-                    newUser = User(id=user_id, username=user['username'], password=user['password']).createUser()
+                    newUser = User.updatePassword(id=user_id, username=user['username'], password=user['password'])
                     return jsonify({'Message': 'Password Reset Successful'})
 
                 else:

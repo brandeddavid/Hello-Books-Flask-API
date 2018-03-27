@@ -2,7 +2,9 @@ from flask_restful import Resource
 from api.models import *
 from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt, datetime
+import jwt
+import datetime
+from functools import wraps
 
 b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
 b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
@@ -44,6 +46,37 @@ class BookOps(Resource):
         return jsonify(Book.apicreatebook(id=book_id, data=data))
 
 
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'x-access-token' in request.headers:
+
+            token = request.headers['x-access-token']
+
+        if not token:
+
+            return jsonify({'Message': 'Token is Missing'})
+
+        try:
+
+            data = jwt.decode(token, 'super-secret-key')
+            users = User.getAllUsers()
+
+            for user in users:
+
+                if user['id'] == data['id']:
+
+                    current_user = user
+        except:
+            return jsonify({'Message': 'Token is Invalid'})
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
+
 class CreateUser(Resource):
 
     def post(self):
@@ -51,9 +84,11 @@ class CreateUser(Resource):
         hashed_password = generate_password_hash(data['password'], method='sha256')
         return jsonify(User(id=data['id'], username=data['username'], password=hashed_password).createUser())
 
+
 class GetAllUsers(Resource):
 
-    def get(self):
+    @token_required
+    def get(self, current_user):
 
         return jsonify({"Users": User.getAllUsers()})
 

@@ -5,16 +5,36 @@ from flask import jsonify
 
 
 
-# class Testcreateuser(unittest.TestCase):
-#
-#     def setUp(self):
-#         self.app = app.app.test_client()
-#         self.user = Users('David', 'Mwangi','dmwangi', 'password123')
-#
-#     def test_api_exists(self):
-#
-#         res = self.app.get('/api/v1/auth/register')
-#         self.assertEqual(res.status_code, 200)
+class TestUserAPI(unittest.TestCase):
+
+    def setUp(self):
+        app.testing = True
+        self.app = app.test_client()
+        self.user = User(1, 'dmwangi', 'password123').createUser()
+
+    def tearDown(self):
+        app.testing = False
+
+    def test_user_registration_api_exists(self):
+        res = self.app.get('/api/v1/auth/register')
+        self.assertEqual(res.status_code, 200)
+
+    def test_get_all_user_api_exits(self):
+        res = self.app.get('/api/v1/users')
+        self.assertEqual(res.status_code, 200)
+
+    def test_user_login_api_exists(self):
+        res = self.app.post('/api/v1/auth/login')
+        self.assertEqual(res.status_code, 200)
+
+    def test_borrow_book_api_endpoint(self):
+        res = self.app.post('/api/v1/users/books/<string:book_id>')
+        self.assertEqual(res.status_code, 200)
+
+    def test_update_password_exists(self):
+        res = self.app.post('/api/v1/auth/reset-password/<string:user_id>')
+        self.assertEqual(res.status_code, 200)
+
 
 
 class TestBookAPI(unittest.TestCase):
@@ -27,8 +47,7 @@ class TestBookAPI(unittest.TestCase):
         update = {'title': 'Tom and Mary', 'author': 'Tom Chris', 'isbn': '38561993'}
 
     def tearDown(self):
-
-        pass
+        app.testing = False
 
     # This section checks availability of various HTTP methods for different endpoints
 

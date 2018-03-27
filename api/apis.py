@@ -120,7 +120,7 @@ class CreateUser(Resource):
         """
         data = request.get_json(self)
         hashed_password = generate_password_hash(data['password'], method='sha256')
-        return jsonify(User(id=data['id'], username=data['username'], password=hashed_password).createUser())
+        return jsonify(User(id=data['id'], username=data['username'], password=hashed_password, admin=data['admin']).createUser())
 
 
 class GetAllUsers(Resource):
@@ -132,7 +132,6 @@ class GetAllUsers(Resource):
         :param current_user:
         :return:
         """
-
         return jsonify({"Users": User.getAllUsers()})
 
 
@@ -178,7 +177,6 @@ class BorrowBook(Resource):
         :param book_id:
         :return:
         """
-
         return jsonify(User.borrowBook(book_id=book_id))
 
 

@@ -17,10 +17,11 @@ This repository contains Flask API endpoints and tests for the Hello-World Appli
 
 ### Add a Book
 
+![Add a Book](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/bookcreated.PNG, "Add a Book")
 
 ### View All Books
 
-![View All Books](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/Get%20al%20books.PNG, "View All Images")
+![View All Books](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/getallbooks.PNG, "View All Images")
 
 ### View Image by ID
 

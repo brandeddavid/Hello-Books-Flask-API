@@ -3,6 +3,7 @@ from api import routes
 
 app = Flask(__name__)
 
+app.config['SECRET-KEY'] = 'super-secret-key'
 app.register_blueprint(routes.mod)
 
 

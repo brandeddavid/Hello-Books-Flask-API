@@ -3,83 +3,72 @@ from flask import jsonify
 books = []
 users = []
 
+
 class User(object):
 
-    def __init__(self):
+    def __init__(self, id, username, password):
 
-        self.users = {}
+        self.user = {}
+        self.user['id'] = id
+        self.user['username'] = username
+        self.user['password'] = password
 
-    def createUser(self, fname, sname, username, password):
+    def createUser(self):
 
-        user = {}
-        user['firstName'] = fname
-        user['secondName'] = sname
-        user['password'] = password
-
-        try:
-
-            self.users[username] = user
-            users.append(self.users)
-
-            return 'User Created Successfully'
-
-        except Exception as e:
-
-            return 'User Already Exists'
-
-    def loginUser(self, username, password):
+        if len(users) == 0:
+            users.append(self.user)
+            return {'Message': 'User Created Successfully'}
 
         for user in users:
 
-            if username in user.keys():
+            if user['id'] == self.user['id']:
 
-                if user[username]['password'] == password:
+                return {'Message': 'User id Exists'}
 
-                    return 'User Login Successful'
+            else:
+
+                if user['username'] == self.user['username']:
+
+                    return {'Message': 'Username Exists'}
 
                 else:
 
-                    return 'Passwords do not Match'
+                    users.append(self.user)
 
-            else:
+                    return {'Message': 'User Created Successfully'}
 
-                return 'User Not Registered'
+    def getAllUsers():
 
-    def updatePassword(self, username, oldpassword, newpassword):
+        return users
 
-        for user in users:
-
-            if username in user.keys():
-
-                if user[username]['password'] == oldpassword:
-
-                    user[username]['password'] = newpassword
-
-                    return 'Password Reset Successful'
-
-                else:
-
-                    return 'Password Mismatch'
-
-            else:
-
-                return 'User Not Registered'
-
-    def deleteUser(self, username):
+    def updatePassword(id, username, password):
 
         for user in users:
 
-            if username in user.keys():
+            if username in user.values():
 
-                del user[username]
+                user['password'] = password
 
-                return 'User Deleted Successfully'
+                return {'Message': 'User Password Updated Successfully'}
+
             else:
 
-                return 'User Not Registered'
+                return {'Message': 'User Password Update Failed'}
 
-    def borrowBook(self, username, password, bookid):
-        pass
+
+    def borrowBook(book_id):
+
+        for book in books:
+
+            if book_id in book.keys():
+
+                return {'Message': 'Successfully Borrowed Book'}
+
+            else:
+
+                return {'Message': 'Book Does Not Exist'}
+
+
 
 
 class Book(object):
@@ -112,35 +101,35 @@ class Book(object):
             book[self.id] = self.book
             books.append(book)
 
-            return "Book Created Successfully"
+            return {'Success': 'Book Created Successfully'}
 
         else:
 
             for book in books:
 
-                if self.book['isbn'] in book.values():
+                if self.id in book.keys():
 
-                    pass
+                    return {'Error': 'Book Already Exists'}
 
                 else:
 
                     book = {}
-                    book[self.id] = self.book
+                    book[str(self.id)] = self.book
                     books.append(book)
 
-                    return "Book Created Successfully"
+                    return {'Success': 'Book Created Successfully'}
 
     def apicreatebook(id, data):
 
         for book in books:
 
-            if str(id) in book.keys():
+            if id in book.keys():
 
                 return {'Error': 'Book Already Exists'}
 
             else:
 
-                new_book = {id: data}
+                new_book = {str(id): data}
                 books.append(new_book)
 
                 return {'Success': 'Book Created Successfully'}
@@ -181,7 +170,7 @@ class Book(object):
 
         for book in books:
 
-            if str(id) in book.keys():
+            if id in book.keys():
 
                 return book
 
@@ -192,17 +181,16 @@ class Book(object):
 
 def main():
 
-
-    b = Books()
-
-    b.createbook(2, 'The Lean Start Up', 'Eric Ries')
-
     b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
     b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
     b2 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
     print(books)
 
+    user = User(1, 'dmwangi', 'dmwangi123').createUser()
+    user = User(2, 'dmwang', 'dmwangi12').createUser()
+
+    print(users)
+
 if __name__ == '__main__':
 
     main()
-

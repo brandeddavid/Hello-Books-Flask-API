@@ -5,15 +5,3 @@ python:
 # install dependencies
 install:
   -pip install -r requirements.txt
-
-install:
-  - pip install codecov
-  - pip install flask
-
-# run scripts
-script:
-  - coverage erase
-  - coverage run models_tests.py && coverage html
-
-after_success:
-  - codecov

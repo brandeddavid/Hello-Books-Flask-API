@@ -8,6 +8,7 @@ install:
 
 install:
   - pip install codecov
+  - pip install flask
 
 # run scripts
 script:

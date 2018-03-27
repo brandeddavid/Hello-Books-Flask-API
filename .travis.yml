@@ -16,7 +16,3 @@ script:
 
 after_success:
   - codecov
-
-# check style
-script:
-    - pylint --output-format=text run.py

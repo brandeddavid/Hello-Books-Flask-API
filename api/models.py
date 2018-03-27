@@ -6,14 +6,26 @@ users = []
 
 class User(object):
 
-    def __init__(self, id, username, password):
+    def __init__(self, id, username, password, admin):
+        """
+
+        :param id:
+        :param username:
+        :param password:
+        :param admin:
+        """
 
         self.user = {}
         self.user['id'] = id
         self.user['username'] = username
         self.user['password'] = password
+        self.user['admin'] = admin
 
     def createUser(self):
+        """
+
+        :return:
+        """
 
         if len(users) == 0:
             users.append(self.user)
@@ -38,10 +50,20 @@ class User(object):
                     return {'Message': 'User Created Successfully'}
 
     def getAllUsers():
+        """
+
+        :return:
+        """
 
         return users
 
     def updatePassword(id, username, password):
+        """
+
+        :param username:
+        :param password:
+        :return:
+        """
 
         for user in users:
 
@@ -57,6 +79,10 @@ class User(object):
 
 
     def borrowBook(book_id):
+        """
+
+        :return:
+        """
 
         for book in books:
 
@@ -120,6 +146,11 @@ class Book(object):
                     return {'Success': 'Book Created Successfully'}
 
     def apicreatebook(id, data):
+        """
+
+        :param data:
+        :return:
+        """
 
         for book in books:
 
@@ -135,10 +166,18 @@ class Book(object):
                 return {'Success': 'Book Created Successfully'}
 
     def get_all_books():
+        """
+
+        :return:
+        """
 
         return books
 
     def deletebook(id):
+        """
+
+        :return:
+        """
 
         for book in books:
 
@@ -153,6 +192,11 @@ class Book(object):
                 return {'Error': 'Book Does Not Exist'}
 
     def updatebook(id, data):
+        """
+
+        :param data:
+        :return:
+        """
 
         for book in books:
 
@@ -167,6 +211,10 @@ class Book(object):
                 return {'Error': 'Book Does Not Exist'}
 
     def getbook(id):
+        """
+
+        :return:
+        """
 
         for book in books:
 

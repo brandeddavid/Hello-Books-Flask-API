@@ -5,8 +5,12 @@ __pycache__/
 
 # C extensions
 *.so
+
 # JetBrains Utils
 .idea/
+
+# Visual Code Utils
+.vscode/
 
 # Distribution / packaging
 .Python

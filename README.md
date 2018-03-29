@@ -1,5 +1,6 @@
 # Hello-Books-Flask-API
 [![Build Status](https://travis-ci.org/brandeddavid/Hello-Books-Flask-API.svg?branch=master)](https://travis-ci.org/brandeddavid/Hello-Books-Flask-API)
+[![Coverage Status](https://coveralls.io/repos/github/brandeddavid/Hello-Books-Flask-API/badge.svg?branch=master)](https://coveralls.io/github/brandeddavid/Hello-Books-Flask-API?branch=master)
 
 This repository contains Flask API endpoints and tests for the Hello-World Application.
 

@@ -6,4 +6,7 @@ python:
 install:
   - pip install -r requirements.txt
 
-  make build
+script:
+
+  - python apitests.py
+  - python modelstests.py

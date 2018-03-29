@@ -8,5 +8,5 @@ install:
 
 script:
 
-  - python apitests.py
-  - python modelstests.py
+  - python3 ./apitests.py
+  - python3 ./modelstests.py

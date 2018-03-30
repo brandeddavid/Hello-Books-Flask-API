@@ -1,7 +1,6 @@
 import unittest
 from api.models import Book, User
 
-
 class TestBooksModel(unittest.TestCase):
 
     def setUp(self):
@@ -56,7 +55,7 @@ class TestBooksModel(unittest.TestCase):
 
         :return:
         """
-        res = Book.updatebook('1', {'title':'GOT', 'author':'George', 'isbn':'827890'})
+        res = Book.updatebook('1', {'title': 'GOT', 'author': 'George', 'isbn': '827890'})
         self.assertEqual(res, {'Message': 'Book Does Not Exist'})
 
     def test_book_delete_successful(self):
@@ -66,7 +65,7 @@ class TestBooksModel(unittest.TestCase):
         """
         res = Book.deletebook('1')
         self.assertEqual(res, {'Message': 'Book Deleted Successfully'})
-        
+
     def test_book_delete_unsuccessful(self):
         """
 
@@ -130,8 +129,10 @@ class TestUserModel(unittest.TestCase):
         :return:
         """
         user = self.user
-        res = User.updatePassword(id=1, username='dmwangi', password='password1')
-        self.assertEqual(res, {'Message': 'User Password Updated Successfully'})
+        res = User.updatePassword(
+            id=1, username='dmwangi', password='password1')
+        self.assertEqual(
+            res, {'Message': 'User Password Updated Successfully'})
 
     def test_user_update_fail(self):
         """
@@ -159,6 +160,7 @@ class TestUserModel(unittest.TestCase):
         book = Book(title='Book Title', author='Book Author', isbn="64368").createbook()
         res = User.borrowBook("10")
         self.assertEqual(res, {'Message': 'Book Does Not Exist'})
+
 
 if __name__ == '__main__':
 

@@ -1,10 +1,8 @@
 import unittest
 import sys
-sys.path.append('../../')
 from api.models import *
 from run import app
 from flask import jsonify
-
 
 
 class TestUserAPI(unittest.TestCase):
@@ -66,7 +64,6 @@ class TestUserAPI(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
 
 
-
 class TestBookAPI(unittest.TestCase):
 
     def setUp(self):
@@ -77,8 +74,6 @@ class TestBookAPI(unittest.TestCase):
 
         app.testing = True
         self.app = app.test_client()
-        self.book = Book.apicreatebook(id='6', data={'title': 'Hello Children', 'author': 'Tom Chris', 'isbn': '38561993'})
-        update = {'title': 'Tom and Mary', 'author': 'Tom Chris', 'isbn': '38561993'}
 
     def tearDown(self):
         """

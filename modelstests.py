@@ -1,5 +1,5 @@
 import unittest
-from api.models import *
+from api.models import Book, User
 
 
 class TestBooksModel(unittest.TestCase):
@@ -9,8 +9,7 @@ class TestBooksModel(unittest.TestCase):
 
         :return:
         """
-        self.book = Book()
-        self.book.createbook('1', 'Game of Thrones', 'George R.R. Martin')
+        self.book = Book('Game of Thrones', 'George R.R. Martin', '3878749').createbook()
 
     def tearDown(self):
         """
@@ -25,72 +24,80 @@ class TestBooksModel(unittest.TestCase):
         :return:
         """
 
-        res = self.book.createbook('2', 'Game of Thrones', 'George R.R. Martin')
-        self.assertEqual(res, 'Book Created Successfully')
+        res = Book('Game of Thrones', 'George R.R. Martin', '363837').createbook()
+        self.assertEqual(res, {'Success': 'Book Created Successfully'})
 
     def test_book_already_exists(self):
         """
 
         :return:
         """
-        res = self.book.createbook('1', 'Game of Thrones', 'George R.R. Martin')
-        self.assertEqual(res, 'Book Already Exists')
-
-    def test_book_exists(self):
-        """
-
-        :return:
-        """
-        res = self.book.getbook('1')
-        self.assertEqual(res, 'Book Exists')
+        res = Book('Game of Thrones', 'George R.R. Martin', '3878749').createbook()
+        self.assertEqual(res, {'Message': 'Book Already Exists'})
 
     def test_book_does_not_exist(self):
         """
 
         :return:
         """
-        res = self.book.getbook('3')
-        self.assertEqual(res, 'Book Does not Exist')
-
-    def test_book_delete_successful(self):
-        """
-
-        :return:
-        """
-        res = self.book.deletebook('1')
-        self.assertEqual(res, 'Book Deleted Successfully')
+        res = Book.getbook('30')
+        self.assertIn({'Message': 'Book Does not Exist'}, res)
 
     def test_book_update_successful(self):
         """
 
         :return:
         """
-        res = self.book.updatebook('1', 'GOT', 'George')
-        self.assertEqual(res, 'Book Update Successful')
+        res = Book.updatebook('1', {'title':'GOT', 'author':'George', 'isbn':'827890'})
+        self.assertEqual(res, {'Message': 'Book Update Successful'})
+
+    def test_book_update_unsuccessful(self):
+        """
+
+        :return:
+        """
+        res = Book.updatebook('1', {'title':'GOT', 'author':'George', 'isbn':'827890'})
+        self.assertEqual(res, {'Message': 'Book Does Not Exist'})
+
+    def test_book_delete_successful(self):
+        """
+
+        :return:
+        """
+        res = Book.deletebook('1')
+        self.assertEqual(res, {'Message': 'Book Deleted Successfully'})
+        
+    def test_book_delete_unsuccessful(self):
+        """
+
+        :return:
+        """
+        res = Book.deletebook('100')
+        self.assertEqual(res, {'Message': 'Book Does Not Exist'})
 
 
 class TestUserModel(unittest.TestCase):
 
     def setUp(self):
         """
-
+        Function run before each test is run
         :return:
         """
-        self.user = User(1, 'dmwangi', 'password').createUser()
+        self.user = User(1, 'dmwangi', 'password', True).createUser()
 
     def tearDown(self):
         """
-
+        Function run after each test is run
         :return:
         """
         pass
 
     def test_user_creation_successful(self):
         """
-
+        Function tests user creation function
         :return:
         """
-        res = User(2, 'jdoe', 'jdoe123').createUser()
+        res = User(2, 'jdoe', 'jdoe123', False).createUser()
         self.assertEqual(res, {'Message': 'User Created Successfully'})
 
     def test_user_id_exists(self):
@@ -98,7 +105,7 @@ class TestUserModel(unittest.TestCase):
 
         :return:
         """
-        res = User(1, 'dmwangi', 'password').createUser()
+        res = User(1, 'dmwangi', 'password', True).createUser()
         self.assertEqual(res, {'Message': 'User id Exists'})
 
     def test_username_exists(self):
@@ -106,7 +113,7 @@ class TestUserModel(unittest.TestCase):
 
         :return:
         """
-        res = User(3, 'dmwangi', 'password').createUser()
+        res = User(3, 'dmwangi', 'password', True).createUser()
         self.assertEqual(res, {'Message': 'Username Exists'})
 
     def test_get_all_users(self):

@@ -1,4 +1,6 @@
 import unittest
+import sys
+sys.path.append('../../')
 from api.models import *
 from run import app
 from flask import jsonify

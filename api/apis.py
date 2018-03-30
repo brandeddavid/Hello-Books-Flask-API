@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from api.models import *
+from api.models import User, Book
 from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
@@ -8,19 +8,13 @@ from functools import wraps
 
 b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
 b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
-b2 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
+b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
 
 
 class GetAllBooks(Resource):
-    """"
     """
-    def post(self):
-        """
 
-        :return:
-        """
-
-        pass
+    """
 
     def get(self):
         """
@@ -28,16 +22,27 @@ class GetAllBooks(Resource):
         :return:
         """
 
-        return jsonify(Book.get_all_books())
+        return jsonify(Book.get_all_books(), 200)
+
+    def post(self):
+        """
+
+        :param book_id:
+        :return:
+        """
+
+        data = request.get_json(self)
+
+        return jsonify(Book(title=data['title'], author=data['author'], isbn=data['isbn']).createbook(), 201)
 
 
 class BookOps(Resource):
 
     def get(self, book_id):
         """
-
+        Function takes in a book id and returns book information for that book
         :param book_id:
-        :return:
+        :return: Book Details for book with id book_id
         """
 
         return jsonify(Book.getbook(id=book_id))
@@ -56,18 +61,6 @@ class BookOps(Resource):
     def delete(self, book_id):
 
         return jsonify(Book.deletebook(id=book_id))
-
-    def post(self, book_id):
-        """
-
-        :param book_id:
-        :return:
-        """
-
-        data = request.get_json(self)
-
-        return jsonify(Book.apicreatebook(id=book_id, data=data))
-
 
 def token_required(f):
     """
@@ -119,7 +112,8 @@ class CreateUser(Resource):
         :return:
         """
         data = request.get_json(self)
-        hashed_password = generate_password_hash(data['password'], method='sha256')
+        hashed_password = generate_password_hash(
+            data['password'], method='sha256')
         return jsonify(User(id=data['id'], username=data['username'], password=hashed_password, admin=data['admin']).createUser())
 
 
@@ -156,7 +150,8 @@ class LoginUser(Resource):
             if auth.username in user['username']:
 
                 if check_password_hash(user['password'], auth.password):
-                    token = jwt.encode({'id': user['id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, 'super-secret-key')
+                    token = jwt.encode({'id': user['id'], 'exp': datetime.datetime.utcnow(
+                    ) + datetime.timedelta(minutes=30)}, 'super-secret-key')
 
                     return jsonify({'token': token.decode('UTF-8')})
 
@@ -200,9 +195,11 @@ class UpdatePassword(Resource):
 
                 if check_password_hash(user['password'], data['password']):
 
-                    user['password'] = generate_password_hash(data['newpassword'])
+                    user['password'] = generate_password_hash(
+                        data['newpassword'])
 
-                    newUser = User.updatePassword(id=user_id, username=user['username'], password=user['password'])
+                    newUser = User.updatePassword(
+                        id=user_id, username=user['username'], password=user['password'])
                     return jsonify({'Message': 'Password Reset Successful'})
 
                 else:

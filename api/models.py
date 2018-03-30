@@ -77,7 +77,6 @@ class User(object):
 
                 return {'Message': 'User Password Update Failed'}
 
-
     def borrowBook(book_id):
         """
 
@@ -95,8 +94,6 @@ class User(object):
                 return {'Message': 'Book Does Not Exist'}
 
 
-
-
 class Book(object):
 
     book_id = 1
@@ -112,6 +109,7 @@ class Book(object):
         self.book = {}
         self.id = str(Book.book_id)
         Book.book_id += 1
+        self.book['id'] = self.id
         self.book['title'] = title
         self.book['author'] = author
         self.book['isbn'] = isbn
@@ -123,47 +121,32 @@ class Book(object):
         """
 
         if len(books) == 0:
-            book = {}
-            book[self.id] = self.book
-            books.append(book)
-
+            books.append(self.book)
             return {'Success': 'Book Created Successfully'}
 
         else:
 
             for book in books:
 
-                if self.id in book.keys():
+                if book['isbn'] == self.book['isbn']:
 
-                    return {'Error': 'Book Already Exists'}
+                    return {'Message': 'Book Already Exists'}
 
-                else:
+            books.append(self.book)
 
-                    book = {}
-                    book[str(self.id)] = self.book
-                    books.append(book)
+            return {'Success': 'Book Created Successfully'}
 
-                    return {'Success': 'Book Created Successfully'}
-
-    def apicreatebook(id, data):
-        """
-
-        :param data:
-        :return:
-        """
+    def getBookId(isbn):
 
         for book in books:
 
-            if id in book.keys():
+            if isbn in book.values():
 
-                return {'Error': 'Book Already Exists'}
+                return book['id']
 
             else:
 
-                new_book = {str(id): data}
-                books.append(new_book)
-
-                return {'Success': 'Book Created Successfully'}
+                return {'Message': 'Book Does Not Exist'}
 
     def get_all_books():
         """
@@ -181,15 +164,13 @@ class Book(object):
 
         for book in books:
 
-            if id in book.keys():
+            if book['id'] == id:
 
                 books.remove(book)
 
-                return {'Success': 'Book Deleted Successfully'}
-
-            else:
-
-                return {'Error': 'Book Does Not Exist'}
+                return {'Message': 'Book Deleted Successfully'}
+                
+        return {'Message': 'Book Does Not Exist'}
 
     def updatebook(id, data):
         """
@@ -200,15 +181,15 @@ class Book(object):
 
         for book in books:
 
-            if id in book.keys():
+            if book['id'] == id:
 
-                book[id] = data
+                book['title'] = data['title']
+                book['author'] = data['author']
+                book['isbn'] = data['isbn']
 
-                return {'Success': 'Book Update Successful'}
+                return {'Message': 'Book Update Successful'}
 
-            else:
-
-                return {'Error': 'Book Does Not Exist'}
+        return {'Message': 'Book Does Not Exist'}
 
     def getbook(id):
         """
@@ -218,13 +199,11 @@ class Book(object):
 
         for book in books:
 
-            if id in book.keys():
+            if book['id'] == id:
 
-                return book
+                return book, 200
 
-            else:
-
-                return {'Error': 'Book Does not Exist'}
+        return {'Message': 'Book Does not Exist'}, 404
 
 
 def main():
@@ -234,10 +213,11 @@ def main():
     b2 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
     print(books)
 
-    user = User(1, 'dmwangi', 'dmwangi123').createUser()
-    user = User(2, 'dmwang', 'dmwangi12').createUser()
+    user = User(1, 'dmwangi', 'dmwangi123', True).createUser()
+    user1 = User(2, 'dmwang', 'dmwangi12', False).createUser()
 
     print(users)
+
 
 if __name__ == '__main__':
 

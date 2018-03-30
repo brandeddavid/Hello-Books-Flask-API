@@ -5,8 +5,12 @@ python:
 # install dependencies
 install:
   - pip install -r requirements.txt
+  - pip install coveralls
 
 script:
 
-  - python3 ./apitests.py
-  - python3 ./modelstests.py
+  - python modelstests.py
+
+after_success:
+
+  - coveralls

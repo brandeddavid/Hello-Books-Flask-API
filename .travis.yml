@@ -9,7 +9,7 @@ install:
 
 script:
 
-  - coverage run modelstests.py
+  - nosetests modelstests.py --with-coverage
 
 after_success:
 

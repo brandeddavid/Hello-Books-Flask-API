@@ -9,7 +9,7 @@ install:
 
 script:
 
-  - python modelstests.py --with-coverage
+  - python modelstests.py
 
 after_success:
 

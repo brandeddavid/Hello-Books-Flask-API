@@ -3,7 +3,7 @@ from api.models import User, Book
 from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
-import datetime
+import datetime, json
 from functools import wraps
 
 b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
@@ -22,18 +22,29 @@ class GetAllBooks(Resource):
         :return:
         """
 
-        return jsonify(Book.get_all_books(), 200)
+        res = jsonify(Book.get_all_books())
+        res.status_code = 200
+
+        return res 
 
     def post(self):
         """
-
-        :param book_id:
         :return:
         """
 
         data = request.get_json(self)
 
-        return jsonify(Book(title=data['title'], author=data['author'], isbn=data['isbn']).createbook(), 201)
+        if len(data) == 0:
+
+            res = jsonify({'Message':'No Book Information Passed'})
+            res.status_code = 400
+
+            return res
+
+        res = jsonify(Book(title=data['title'], author=data['author'], isbn=data['isbn']).createbook())
+        res.status_code = 201
+        return res
+        # Haven't cosidered when Book already Exists
 
 
 class BookOps(Resource):
@@ -45,7 +56,16 @@ class BookOps(Resource):
         :return: Book Details for book with id book_id
         """
 
-        return jsonify(Book.getbook(id=book_id))
+        res = Book.getbook(id=book_id)
+
+        if res == {'Message': 'Book Does not Exist'}:
+             res =  jsonify(res) 
+             res.status_code = 404
+             return res
+
+        res = jsonify(res)
+        res.status_code = 200
+        return res
 
     def put(self, book_id):
         """
@@ -55,12 +75,33 @@ class BookOps(Resource):
         """
 
         data = request.get_json(self)
+        if len(data) == 0:
+            res = jsonify({"Message":"No Book Update Infomation Passed"})
+            res.status_code = 400
+            return res
 
-        return jsonify(Book.updatebook(id=book_id, data=data))
+        res = jsonify(Book.updatebook(id=book_id, data=data))
+        res.status_code = 200
+        return res 
 
     def delete(self, book_id):
+        """
+        [summary]
+        
+        Arguments:
+            book_id {[type]} -- [description]
+        
+        Returns:
+            [type] -- [description]
+        """
+        if Book.deletebook(id=book_id) == {'Message': 'Book Deleted Successfully'}:
+            res = jsonify(Book.deletebook(id=book_id))
+            res.status_code = 200
+            return res
 
-        return jsonify(Book.deletebook(id=book_id))
+        res = jsonify(Book.deletebook(id=book_id))
+        res.status_code = 404
+        return res 
 
 def token_required(f):
     """
@@ -112,10 +153,15 @@ class CreateUser(Resource):
         :return:
         """
         data = request.get_json(self)
-        hashed_password = generate_password_hash(
-            data['password'], method='sha256')
-        return jsonify(User(id=data['id'], username=data['username'], password=hashed_password, admin=data['admin']).createUser())
 
+        if len(data) == 0:
+            return jsonify({'Message':'No User Data Passed'}, 400)
+
+        hashed_password = generate_password_hash(data['password'], method='sha256')
+        res = jsonify(User(username=data['username'], password=hashed_password, admin=data['admin']).createUser())
+        res.status_code = 201
+
+        return res
 
 class GetAllUsers(Resource):
 

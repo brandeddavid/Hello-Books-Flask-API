@@ -6,7 +6,9 @@ users = []
 
 class User(object):
 
-    def __init__(self, id, username, password, admin):
+    user_id = 1
+
+    def __init__(self, username, password, admin):
         """
 
         :param id:
@@ -16,7 +18,8 @@ class User(object):
         """
 
         self.user = {}
-        self.user['id'] = id
+        self.user['id'] = str(User.user_id)
+        User.user_id += 1
         self.user['username'] = username
         self.user['password'] = password
         self.user['admin'] = admin
@@ -33,21 +36,13 @@ class User(object):
 
         for user in users:
 
-            if user['id'] == self.user['id']:
+            if user['username'] == self.user['username']:
 
-                return {'Message': 'User id Exists'}
+                return {'Message': 'Username Exists'}
 
-            else:
+        users.append(self.user)
 
-                if user['username'] == self.user['username']:
-
-                    return {'Message': 'Username Exists'}
-
-                else:
-
-                    users.append(self.user)
-
-                    return {'Message': 'User Created Successfully'}
+        return {'Message': 'User Created Successfully'}
 
     def getAllUsers():
         """
@@ -136,18 +131,6 @@ class Book(object):
 
             return {'Success': 'Book Created Successfully'}
 
-    def getBookId(isbn):
-
-        for book in books:
-
-            if isbn in book.values():
-
-                return book['id']
-
-            else:
-
-                return {'Message': 'Book Does Not Exist'}
-
     def get_all_books():
         """
 
@@ -169,7 +152,7 @@ class Book(object):
                 books.remove(book)
 
                 return {'Message': 'Book Deleted Successfully'}
-                
+
         return {'Message': 'Book Does Not Exist'}
 
     def updatebook(id, data):
@@ -201,24 +184,6 @@ class Book(object):
 
             if book['id'] == id:
 
-                return book, 200
+                return book
 
-        return {'Message': 'Book Does not Exist'}, 404
-
-
-def main():
-
-    b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
-    b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
-    b2 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
-    print(books)
-
-    user = User(1, 'dmwangi', 'dmwangi123', True).createUser()
-    user1 = User(2, 'dmwang', 'dmwangi12', False).createUser()
-
-    print(users)
-
-
-if __name__ == '__main__':
-
-    main()
+        return {'Message': 'Book Does not Exist'}

@@ -378,7 +378,13 @@ class TestUserAPI(unittest.TestCase):
 
         :return:
         """
-        res = self.app.post('/api/v1/auth/reset-password/<string:user_id>')
+        payload = {
+            "username": "testuser",
+            "password": "testpassword",
+            "admin": "True"
+        }
+        res1 = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
+        res = self.app.post('/api/v1/auth/reset-password/1>', data=json.dumps({"username":"testuser", "password":"newpassword"}))
         self.assertEqual(res.status_code, 200)
 
 

@@ -2,15 +2,18 @@ from flask_restful import Resource
 from api.models import User, Book
 from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
-import datetime
+from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, get_jwt_identity)
+from api import app
 import json
 from functools import wraps
+
+jwt = JWTManager(app)
 
 b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
 b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
 b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
-user1 = User("dmwangi", 'password', 'True')
+user1 = User("dmwangi", 'password', 'True').createUser()
+
 
 class GetAllBooks(Resource):
     """
@@ -106,48 +109,6 @@ class BookOps(Resource):
         return res
 
 
-def token_required(f):
-    """
-
-    :param f:
-    :return:
-    """
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        """
-
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        token = None
-
-        if 'x-access-token' in request.headers:
-
-            token = request.headers['x-access-token']
-
-        if not token:
-
-            return jsonify({'Message': 'Token is Missing'})
-
-        try:
-
-            data = jwt.decode(token, 'super-secret-key')
-            users = User.getAllUsers()
-
-            for user in users:
-
-                if user['id'] == data['id']:
-
-                    current_user = user
-        except:
-            return jsonify({'Message': 'Token is Invalid'})
-
-        return f(current_user, *args, **kwargs)
-
-    return decorated
-
-
 class CreateUser(Resource):
 
     def post(self):
@@ -162,18 +123,15 @@ class CreateUser(Resource):
             res.status_code = 400
             return res
 
-        hashed_password = generate_password_hash(
-            data['password'], method='sha256')
-        res = jsonify(User(
-            username=data['username'], password=hashed_password, admin=data['admin']).createUser())
+        hashed_password = generate_password_hash(data['password'], method='sha256')
+        res = jsonify(User(username=data['username'], password=hashed_password, admin=data['admin']).createUser())
         res.status_code = 201
         return res
 
 
 class GetAllUsers(Resource):
 
-    @token_required
-    def get(self, current_user):
+    def get(self):
         """
 
         :param current_user:
@@ -189,39 +147,46 @@ class LoginUser(Resource):
 
         :return:
         """
+        if not request.is_json:
+            res = jsonify({"Message": "User Information not Passed"})
+            res.status_code = 400
+            return res
 
-        auth = request.authorization
-        print (auth)
+        username = request.json.get('username', None)
+        password = request.json.get('password', None)
 
-        if not auth or not auth.username or not auth.password:
+        if not username:
+            res = jsonify({"Message": "Username Not Provided"})
+            res.status_code = 400
+            return res
 
-            return make_response('Could Not Verify', 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
+        if not password:
+            res = jsonify({"Message": "Password Not Provided"})
+            res.status_code = 400
+            return res
 
         users = User.getAllUsers()
 
         for user in users:
 
-            if auth.username in user['username']:
+            if user['username'] == username:
 
-                if check_password_hash(user['password'], auth.password):
-                    token = jwt.encode({'id': user['id'], 'exp': datetime.datetime.utcnow(
-                    ) + datetime.timedelta(minutes=30)}, 'super-secret-key')
+                if user['password'] == password:
 
-                    res = jsonify({'token': token.decode('UTF-8')})
+                    access_token = create_access_token(identity=username)
+                    res = jsonify(access_token=access_token)
                     res.status_code = 200
                     return res
-
             else:
 
-                return make_response('Could Not Verify', 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
-
-        return make_response('Could Not Verify', 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
+                res = jsonify({"Message":"User Does Not Exist"})
+                res.status_code = 404
+                return res
 
 
 class BorrowBook(Resource):
 
-    @token_required
-    def post(self, current_user, book_id):
+    def post(self, book_id):
         """
 
         :param current_user:
@@ -233,8 +198,7 @@ class BorrowBook(Resource):
 
 class UpdatePassword(Resource):
 
-    @token_required
-    def post(self, current_user, user_id):
+    def post(self, user_id):
         """
 
         :param current_user:
@@ -253,7 +217,7 @@ class UpdatePassword(Resource):
 
                     user['password'] = generate_password_hash(
                         data['newpassword'])
-                
+
                     newUser = User.updatePassword(
                         id=user_id, username=user['username'], password=user['password'])
                     res = jsonify({'Message': 'Password Reset Successful'})
@@ -264,7 +228,7 @@ class UpdatePassword(Resource):
 
                     res = jsonify({'Message': 'Passwords Do Not Match'})
                     res.status_code = 403
-                    return res 
+                    return res
 
             else:
 

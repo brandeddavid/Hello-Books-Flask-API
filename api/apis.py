@@ -10,7 +10,7 @@ from functools import wraps
 b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
 b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
 b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
-
+user1 = User("dmwangi", 'password', 'True')
 
 class GetAllBooks(Resource):
     """
@@ -191,6 +191,7 @@ class LoginUser(Resource):
         """
 
         auth = request.authorization
+        print (auth)
 
         if not auth or not auth.username or not auth.password:
 

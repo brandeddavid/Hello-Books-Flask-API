@@ -308,11 +308,12 @@ class TestUserAPI(unittest.TestCase):
         """
         [summary]
         """
-        User('dmwangi', 'password123', 'True').createUser()
         payload = {
-            "username":"dmwangi",
-            "password":"password123"
+            "username": "username",
+            "password": "password",
+            "admin": "True"
         }
+        res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
         res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
         self.assertEqual(res.status_code, 401)
 

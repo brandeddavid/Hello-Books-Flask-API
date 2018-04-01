@@ -4,12 +4,13 @@ from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
+import json
 from functools import wraps
 
 b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
 b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
 b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
-
+user1 = User("dmwangi", 'password', 'True')
 
 class GetAllBooks(Resource):
     """
@@ -22,18 +23,30 @@ class GetAllBooks(Resource):
         :return:
         """
 
-        return jsonify(Book.get_all_books(), 200)
+        res = jsonify(Book.get_all_books())
+        res.status_code = 200
+
+        return res
 
     def post(self):
         """
-
-        :param book_id:
         :return:
         """
 
         data = request.get_json(self)
 
-        return jsonify(Book(title=data['title'], author=data['author'], isbn=data['isbn']).createbook(), 201)
+        if len(data) == 0:
+
+            res = jsonify({'Message': 'No Book Information Passed'})
+            res.status_code = 400
+
+            return res
+
+        res = jsonify(
+            Book(title=data['title'], author=data['author'], isbn=data['isbn']).createbook())
+        res.status_code = 201
+        return res
+        # Haven't cosidered when Book already Exists
 
 
 class BookOps(Resource):
@@ -45,7 +58,16 @@ class BookOps(Resource):
         :return: Book Details for book with id book_id
         """
 
-        return jsonify(Book.getbook(id=book_id))
+        res = Book.getbook(id=book_id)
+
+        if res == {'Message': 'Book Does not Exist'}:
+            res = jsonify(res)
+            res.status_code = 404
+            return res
+
+        res = jsonify(res)
+        res.status_code = 200
+        return res
 
     def put(self, book_id):
         """
@@ -55,12 +77,34 @@ class BookOps(Resource):
         """
 
         data = request.get_json(self)
+        if len(data) == 0:
+            res = jsonify({"Message": "No Book Update Infomation Passed"})
+            res.status_code = 400
+            return res
 
-        return jsonify(Book.updatebook(id=book_id, data=data))
+        res = jsonify(Book.updatebook(id=book_id, data=data))
+        res.status_code = 200
+        return res
 
     def delete(self, book_id):
+        """
+        [summary]
 
-        return jsonify(Book.deletebook(id=book_id))
+        Arguments:
+            book_id {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
+        """
+        if Book.deletebook(id=book_id) == {'Message': 'Book Deleted Successfully'}:
+            res = jsonify(Book.deletebook(id=book_id))
+            res.status_code = 200
+            return res
+
+        res = jsonify(Book.deletebook(id=book_id))
+        res.status_code = 404
+        return res
+
 
 def token_required(f):
     """
@@ -112,9 +156,18 @@ class CreateUser(Resource):
         :return:
         """
         data = request.get_json(self)
+
+        if len(data) == 0:
+            res = jsonify({'Message': 'No User Data Passed'})
+            res.status_code = 400
+            return res
+
         hashed_password = generate_password_hash(
             data['password'], method='sha256')
-        return jsonify(User(id=data['id'], username=data['username'], password=hashed_password, admin=data['admin']).createUser())
+        res = jsonify(User(
+            username=data['username'], password=hashed_password, admin=data['admin']).createUser())
+        res.status_code = 201
+        return res
 
 
 class GetAllUsers(Resource):
@@ -138,6 +191,7 @@ class LoginUser(Resource):
         """
 
         auth = request.authorization
+        print (auth)
 
         if not auth or not auth.username or not auth.password:
 
@@ -153,7 +207,9 @@ class LoginUser(Resource):
                     token = jwt.encode({'id': user['id'], 'exp': datetime.datetime.utcnow(
                     ) + datetime.timedelta(minutes=30)}, 'super-secret-key')
 
-                    return jsonify({'token': token.decode('UTF-8')})
+                    res = jsonify({'token': token.decode('UTF-8')})
+                    res.status_code = 200
+                    return res
 
             else:
 
@@ -197,14 +253,18 @@ class UpdatePassword(Resource):
 
                     user['password'] = generate_password_hash(
                         data['newpassword'])
-
+                
                     newUser = User.updatePassword(
                         id=user_id, username=user['username'], password=user['password'])
-                    return jsonify({'Message': 'Password Reset Successful'})
+                    res = jsonify({'Message': 'Password Reset Successful'})
+                    res.status_code = 200
+                    return res
 
                 else:
 
-                    return jsonify({'Message': 'Passwords Do Not Match'})
+                    res = jsonify({'Message': 'Passwords Do Not Match'})
+                    res.status_code = 403
+                    return res 
 
             else:
 

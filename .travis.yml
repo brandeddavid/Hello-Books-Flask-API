@@ -9,7 +9,8 @@ install:
 
 script:
 
-  - nosetests modelstests.py --with-coverage --cover-package=api
+  - nosetests run tests.py --with-coverage --cover-package=api
+
 
 after_success:
 

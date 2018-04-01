@@ -148,12 +148,8 @@ class LoginUser(Resource):
 
         :return:
         """
-        # if not request.is_json:
-        #     res = jsonify({"Message": "User Information not Passed"})
-        #     res.status_code = 400
-        #     return res
         data = request.get_json(self)
-        
+
         if len(data) == 0:
             res = jsonify({"Message": "User Information not Passed"})
             res.status_code = 400
@@ -227,21 +223,13 @@ class UpdatePassword(Resource):
 
                 if check_password_hash(user['password'], data['password']):
 
-                    user['password'] = generate_password_hash(
-                        data['newpassword'])
+                    user['password'] = generate_password_hash(data['newpassword'])
 
-                    newUser = User.updatePassword(
-                        id=user_id, username=user['username'], password=user['password'])
+                    newUser = User.updatePassword(id=user_id, username=user['username'], password=user['password'])
                     res = jsonify({'Message': 'Password Reset Successful'})
                     res.status_code = 200
                     return res
 
-                else:
-
-                    res = jsonify({'Message': 'Passwords Do Not Match'})
-                    res.status_code = 403
-                    return res
-
-            else:
-
-                return jsonify({'Message': 'User Does Not Exist'})
+        res = jsonify({'Message': 'User Does Not Exist'})
+        res.status_code = 404
+        return res 

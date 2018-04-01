@@ -2,7 +2,8 @@ from flask_restful import Resource
 from api.models import User, Book
 from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, get_jwt_identity)
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token, get_jwt_identity)
 from api import app
 import json
 from functools import wraps
@@ -147,13 +148,19 @@ class LoginUser(Resource):
 
         :return:
         """
-        if not request.is_json:
+        # if not request.is_json:
+        #     res = jsonify({"Message": "User Information not Passed"})
+        #     res.status_code = 400
+        #     return res
+        data = request.get_json(self)
+        
+        if len(data) == 0:
             res = jsonify({"Message": "User Information not Passed"})
             res.status_code = 400
             return res
 
-        username = request.json.get('username', None)
-        password = request.json.get('password', None)
+        username = data['username']
+        password = data['password']
 
         if not username:
             res = jsonify({"Message": "Username Not Provided"})
@@ -171,17 +178,22 @@ class LoginUser(Resource):
 
             if user['username'] == username:
 
-                if user['password'] == password:
+                if check_password_hash(user['password'], password):
 
                     access_token = create_access_token(identity=username)
                     res = jsonify(access_token=access_token)
                     res.status_code = 200
                     return res
-            else:
 
-                res = jsonify({"Message":"User Does Not Exist"})
-                res.status_code = 404
-                return res
+                else:
+
+                    res = jsonify({"Message": "Invalid Password"})
+                    res.status_code = 401
+                    return res
+
+        res = jsonify({"Message": "User Does Not Exist"})
+        res.status_code = 404
+        return res
 
 
 class BorrowBook(Resource):

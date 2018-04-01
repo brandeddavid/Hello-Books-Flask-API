@@ -58,14 +58,6 @@ class TestBooksModel(unittest.TestCase):
             '1', {'title': 'GOT', 'author': 'George', 'isbn': '827890'})
         self.assertEqual(res, {'Message': 'Book Does Not Exist'})
 
-    # def test_book_delete_successful(self):
-    #     """
-
-    #     :return:
-    #     """
-    #     res = Book.deletebook('1')
-    #     self.assertEqual(res, {'Message': 'Book Deleted Successfully'})
-
     def test_book_delete_unsuccessful(self):
         """
 
@@ -126,8 +118,11 @@ class TestBookAPI(unittest.TestCase):
         """
         :return:
         """
+        payload = {
 
-        res = self.app.post('/api/v1/books', data={})
+        }
+
+        res = self.app.post('/api/v1/books', data=json.dumps(payload))
         return self.assertEqual(res.status_code, 400)
 
     def test_get_book_by_id(self):
@@ -137,7 +132,6 @@ class TestBookAPI(unittest.TestCase):
         """
         Book(title="Book Title", author="Book Author", isbn="456788")
         res = self.app.get('/api/v1/books/1>')
-        print(res.data)
         self.assertEqual(res.status_code, 404)  # Revisit
 
     def test_get_book_by_id_fail(self):
@@ -285,7 +279,8 @@ class TestUserAPI(unittest.TestCase):
         Send a post request to register user API with no user information(Bad Request).
         :return: 400 Bad Request Status Response
         """
-        res = self.app.post('/api/v1/auth/register', data={})
+        payload = {}
+        res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
         self.assertEqual(res.status_code, 400)
 
     def test_register_user_success(self):
@@ -301,13 +296,55 @@ class TestUserAPI(unittest.TestCase):
         res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
         self.assertEqual(res.status_code, 201)
 
-    def test_get_all_user_api_exits(self):
+    def test_get_all_users(self):
         """
 
         :return:
         """
         res = self.app.get('/api/v1/users')
         self.assertEqual(res.status_code, 200)
+
+    def test_login_successful(self):
+        """
+        [summary]
+        """
+        User('dmwangi', 'password123', 'True').createUser()
+        payload = {
+            "username":"dmwangi",
+            "password":"password123"
+        }
+        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 200)
+
+    def test_login_bad_request(self):
+        """
+        [summary]
+        """
+        payload = {}
+        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 401)
+
+    def test_login_user_not_registered(self):
+        """
+        [summary]
+        """
+        payload = {
+            "username":"notregistered",
+            "password":"password"
+        }
+        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 401)
+
+    def test_login_wrong_password(self):
+        """
+        [summary]
+        """
+        payload = {
+            "username":"dmwangi",
+            "password":"password"
+        }
+        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 401)
 
     def test_borrow_book_api_endpoint(self):
         """
@@ -317,7 +354,7 @@ class TestUserAPI(unittest.TestCase):
         res = self.app.post('/api/v1/users/books/<string:book_id>')
         self.assertEqual(res.status_code, 200)
 
-    def test_update_password_exists(self):
+    def test_update_password_success(self):
         """
 
         :return:

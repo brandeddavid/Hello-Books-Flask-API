@@ -392,7 +392,7 @@ class TestUserAPI(unittest.TestCase):
 
         :return:
         """
-        res = self.app.post('/api/v1/auth/reset-password/1>', data=json.dumps({"username":"usewwr", "password":"newpassword"}))
+        res = self.app.post('/api/v1/auth/reset-password/100>', data=json.dumps({"username":"usewwr", "password":"newpassword"}))
         self.assertEqual(res.status_code, 404)
 
 

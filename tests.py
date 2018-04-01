@@ -386,7 +386,7 @@ class TestUserAPI(unittest.TestCase):
         res1 = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
         res = self.app.post('/api/v1/auth/reset-password/1>', data=json.dumps({"username":"testuser1", "password":"newpassword"}))
         print(res.data)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 404)
 
     def test_update_password_user_not_exist(self):
         """

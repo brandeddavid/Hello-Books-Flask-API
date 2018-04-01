@@ -1,4 +1,8 @@
 # Hello-Books-Flask-API
+[![Build Status](https://travis-ci.org/brandeddavid/Hello-Books-Flask-API.svg?branch=master)](https://travis-ci.org/brandeddavid/Hello-Books-Flask-API)
+[![Maintainability](https://api.codeclimate.com/v1/badges/182ddd7c594c32ca147b/maintainability)](https://codeclimate.com/github/brandeddavid/Hello-Books-Flask-API/maintainability)
+[![Coverage Status](https://coveralls.io/repos/github/brandeddavid/Hello-Books-Flask-API/badge.svg?branch=master)](https://coveralls.io/github/brandeddavid/Hello-Books-Flask-API?branch=master)
+
 This repository contains Flask API endpoints and tests for the Hello-World Application.
 
 ## Runnning Application
@@ -17,28 +21,39 @@ This repository contains Flask API endpoints and tests for the Hello-World Appli
 
 ### Add a Book
 
+![Add a Book](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/bookcreated.PNG "Add a Book")
+
+#### View After Add
+
+![View adter Add](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/aftercreation.PNG "View after Add")
 
 ### View All Books
 
-![View All Books](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/api-endpoints/api/screenshots/Get%20al%20books.PNG, "View All Images")
+![View All Books](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/getallbooks.PNG "View All Books")
 
 ### View Image by ID
 
-![View All Books](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/api-endpoints/api/screenshots/Get%20book%20by%20id.PNG, "View All Images")
+![View Book By ID](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/getbookbyid.PNG "View Book by ID")
 
 ### Update Image
 
+![Update a Book](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/bookupdate.PNG "Update Book")
+
+#### View After Update
+
+![View after Update](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/afterupdate.PNG "View after Update")
+
 ### Delete Image
 
-![View All Books](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/api-endpoints/api/screenshots/delete%20book.PNG, "View All Images")
+![Delete a Book](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/deletebook.PNG "Delete a Book")
 
 #### Try Delete Again
 
-![View All Books](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/api-endpoints/api/screenshots/delete%20again.PNG, "View All Images")
+![Try Delete Again](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/deleteagain.PNG, "Try Delete Again")
 
 #### Get After Delete
 
-![View All Books](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/api-endpoints/api/screenshots/get%20after%20delete.PNG, "View All Images")
+![Get After Delete](https://github.com/brandeddavid/Hello-Books-Flask-API/blob/master/api/screenshots/getafterdelete.PNG "Get After Delete")
 
 ## Project Owner 
 

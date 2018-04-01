@@ -263,7 +263,7 @@ class TestUserAPI(unittest.TestCase):
         """
         app.testing = True
         self.app = app.test_client()
-        self.user = User('dmwangi', 'password123', 'True').createUser()
+        self.user = User('dmwang', 'password123', 'True').createUser()
 
     def tearDown(self):
         """
@@ -309,13 +309,13 @@ class TestUserAPI(unittest.TestCase):
         [summary]
         """
         payload = {
-            "username": "username",
-            "password": "password",
+            "username": "testuser",
+            "password": "testpassword",
             "admin": "True"
         }
         res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
-        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 401)
+        res1 = self.app.post('/api/v1/auth/login', data=json.dumps({"username": "testuser", "password": "testpassword"}))
+        self.assertEqual(res1.status_code, 200)
 
     def test_login_bad_request(self):
         """
@@ -323,7 +323,7 @@ class TestUserAPI(unittest.TestCase):
         """
         payload = {}
         res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 401)
+        self.assertEqual(res.status_code, 400)
 
     def test_login_user_not_registered(self):
         """
@@ -334,18 +334,36 @@ class TestUserAPI(unittest.TestCase):
             "password":"password"
         }
         res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 401)
+        self.assertEqual(res.status_code, 404)
 
     def test_login_wrong_password(self):
         """
         [summary]
         """
         payload = {
-            "username":"dmwangi",
-            "password":"password"
+            "username": "testuser",
+            "password": "testpassword",
+            "admin": "True"
+        }
+        res1 = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
+        res = self.app.post('/api/v1/auth/login', data=json.dumps({"username":"testuser", "password":"wrongpassword"}))
+        self.assertEqual(res.status_code, 401)
+
+    def test_login_no_username(self):
+        payload = {
+            "username": "",
+            "password": "testpassword"
         }
         res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 401)
+        self.assertEqual(res.status_code, 400)
+
+    def test_login_no_password(self):
+        payload = {
+            "username": "dmwangi",
+            "password": ""
+        }
+        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 400)
 
     def test_borrow_book_api_endpoint(self):
         """
@@ -360,8 +378,22 @@ class TestUserAPI(unittest.TestCase):
 
         :return:
         """
-        res = self.app.post('/api/v1/auth/reset-password/<string:user_id>')
-        self.assertEqual(res.status_code, 200)
+        payload = {
+            "username": "testuser1",
+            "password": "testpassword1",
+            "admin": "True"
+        }
+        res1 = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
+        res = self.app.post('/api/v1/auth/reset-password/1>', data=json.dumps({"username":"testuser1", "password":"newpassword"}))
+        self.assertEqual(res.status_code, 404)
+
+    def test_update_password_user_not_exist(self):
+        """
+
+        :return:
+        """
+        res = self.app.post('/api/v1/auth/reset-password/100>', data=json.dumps({"username":"usewwr", "password":"newpassword"}))
+        self.assertEqual(res.status_code, 404)
 
 
 if __name__ == '__main__':

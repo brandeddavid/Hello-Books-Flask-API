@@ -314,7 +314,7 @@ class TestUserAPI(unittest.TestCase):
             "password":"password123"
         }
         res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 401)
 
     def test_login_bad_request(self):
         """

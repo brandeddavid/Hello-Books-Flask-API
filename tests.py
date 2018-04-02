@@ -9,50 +9,46 @@ class TestBooksModel(unittest.TestCase):
 
     def setUp(self):
         """
-
-        :return:
+        Set Up function to run before every test function runs
         """
-        self.book = Book('Game of Thrones',
-                         'George R.R. Martin', '3878749').createbook()
+
+        self.book = Book('Game of Thrones', 'George R.R. Martin', '3878749').createbook()
 
     def tearDown(self):
         """
-
-        :return:
+        Functions does clean up. Runs after every test function runs
         """
-        pass
+        self.book = None 
 
     def test_book_creation_successful(self):
         """
-
-        :return:
+        Function tests successful book creation.
+        Asserts message returned after successful book creation
         """
 
-        res = Book('Game of Thrones', 'George R.R. Martin',
-                   '363837').createbook()
+        res = Book('Game of Thrones', 'George R.R. Martin', '363837').createbook()
         self.assertEqual(res, {'Success': 'Book Created Successfully'})
 
     def test_book_already_exists(self):
         """
-
-        :return:
+        Function tests book being added already exists
+        Asserts message returned if book being added exists
         """
-        res = Book('Game of Thrones', 'George R.R. Martin',
-                   '3878749').createbook()
+        res = Book('Game of Thrones', 'George R.R. Martin', '3878749').createbook()
         self.assertEqual(res, {'Message': 'Book Already Exists'})
 
     def test_book_does_not_exist(self):
         """
-
-        :return:
+        Function tests query for a book that does not exist
+        Asserts message returned if book does not exist
         """
         res = Book.getbook('30')
         self.assertEqual(res, {'Message': 'Book Does not Exist'})
 
     def test_book_update_unsuccessful(self):
         """
-
-        :return:
+        Function unsuccessful book update
+        Asserts message returned if book update unsuccessful
         """
         res = Book.updatebook(
             '1', {'title': 'GOT', 'author': 'George', 'isbn': '827890'})
@@ -60,8 +56,8 @@ class TestBooksModel(unittest.TestCase):
 
     def test_book_delete_unsuccessful(self):
         """
-
-        :return:
+        Function tests unsuccessful book deletion
+        Asserts message returned if book deletion is unsuccessful
         """
         res = Book.deletebook('100')
         self.assertEqual(res, {'Message': 'Book Does Not Exist'})
@@ -71,8 +67,7 @@ class TestBookAPI(unittest.TestCase):
 
     def setUp(self):
         """
-
-        :return:
+        Set Up function to run before every test function runs
         """
 
         app.testing = True
@@ -82,8 +77,7 @@ class TestBookAPI(unittest.TestCase):
 
     def tearDown(self):
         """
-
-        :return:
+        Functions does clean up. Runs after every test function runs
         """
         app.testing = False
         self.app = None
@@ -93,7 +87,7 @@ class TestBookAPI(unittest.TestCase):
     def test_get_all_books(self):
         """
         Tests the get all boooks API endpoint.
-        :return: 200 OK Status Code Response
+        Asserts 200 OK Status Code Response
         """
 
         res = self.app.get('/api/v1/books')
@@ -102,7 +96,7 @@ class TestBookAPI(unittest.TestCase):
     def test_create_book(self):
         """
         Tests Create book API endpoint
-        :return: 201 Created Status Code Response
+        Asserts 201 Created Status Code Response
         """
 
         payload = {
@@ -116,7 +110,8 @@ class TestBookAPI(unittest.TestCase):
 
     def test_create_book_empty_object(self):
         """
-        :return:
+        Tests Create book API endpoint when empty object is passed
+        Asserts 400 Bad Request Status Code Response
         """
         payload = {
 
@@ -127,8 +122,8 @@ class TestBookAPI(unittest.TestCase):
 
     def test_get_book_by_id(self):
         """
-
-        :return:
+        Tests Get book by id API endpoint
+        Asserts 200 OK Status Code Response
         """
         Book(title="Book Title", author="Book Author", isbn="456788")
         res = self.app.get('/api/v1/books/1>')
@@ -136,16 +131,16 @@ class TestBookAPI(unittest.TestCase):
 
     def test_get_book_by_id_fail(self):
         """
-
-        :return:
+        Tests Get book by id API endpoint
+        Asserts 200 OK Status Code Response
         """
         res = self.app.get('/api/v1/books/100>')
         self.assertEqual(res.status_code, 404)
 
     def test_book_update_success(self):
         """
-
-        :return:
+        Tests Update book API endpoint
+        Asserts 200 OK Status Code Response
         """
         payload = {
             "title": "New Title",
@@ -157,18 +152,17 @@ class TestBookAPI(unittest.TestCase):
 
     def test_book_update_bad_request(self):
         """
-
-        :return:
+        Tests Update book API endpoint when an empty object is passed
+        Asserts 400 Bad Request Status Code Response
         """
-        payload = {
-
-        }
+        payload = {}
         res = self.app.put('/api/v1/books/1>', data=json.dumps(payload))
         self.assertEqual(res.status_code, 400)
 
     def test_delete_book_success(self):
         """
-        [summary]
+        Tests Delete book API endpoint
+        Asserts 200 OK Status Code Response
         """
 
         res = self.app.delete('/api/v1/books/1')
@@ -176,7 +170,8 @@ class TestBookAPI(unittest.TestCase):
 
     def test_delete_book_book_not_found(self):
         """
-        [summary]
+        Tests Delete book API endpoint if book does not exist
+        Asserts 404 Not Found Status Code Response
         """
 
         res = self.app.delete('/api/v1/books/100')
@@ -188,56 +183,51 @@ class TestUserModel(unittest.TestCase):
     def setUp(self):
         """
         Function run before each test is run
-        :return:
         """
         self.user = User('dmwangi', 'password', True).createUser()
 
     def tearDown(self):
         """
         Function run after each test is run
-        :return:
         """
         pass
 
     def test_user_creation_successful(self):
         """
         Function tests user creation function
-        :return:
+        Asserts message returned after successful user creation
         """
         res = User('jdoe', 'jdoe123', False).createUser()
         self.assertEqual(res, {'Message': 'User Created Successfully'})
 
     def test_username_exists(self):
         """
-
-        :return:
+        Function tests user creation function fail because username exists
+        Asserts message returned after failed user creation if user already exists
         """
         res = User('dmwangi', 'password', True).createUser()
         self.assertEqual(res, {'Message': 'Username Exists'})
 
     def test_get_all_users(self):
         """
-
-        :return:
+        Functions tests get all user function
         """
         res = User.getAllUsers()
         self.assertIn('dmwangi', str(res))
 
     def test_user_update_password(self):
         """
-
-        :return:
+        Function tests user update password function
+        Asserts message returned after successful password update
         """
         user = self.user
-        res = User.updatePassword(
-            id=1, username='dmwangi', password='password1')
-        self.assertEqual(
-            res, {'Message': 'User Password Updated Successfully'})
+        res = User.updatePassword(id=1, username='dmwangi', password='password1')
+        self.assertEqual(res, {'Message': 'User Password Updated Successfully'})
 
     def test_user_update_fail(self):
         """
-
-        :return:
+        Function tests user update password function fail
+        Asserts message returned after a failed password update
         """
         user = self.user
         res = User.updatePassword(id=1, username='tom', password='password1')
@@ -245,11 +235,10 @@ class TestUserModel(unittest.TestCase):
 
     def test_book_borrowing_fail(self):
         """
-
-        :return:
+        Function tests user borrow book function fail
+        Asserts message returned after a failed book borrow
         """
-        book = Book(title='Book Title', author='Book Author',
-                    isbn="64368").createbook()
+        book = Book(title='Book Title', author='Book Author',isbn="64368").createbook()
         res = User.borrowBook("10")
         self.assertEqual(res, {'Message': 'Book Does Not Exist'})
 
@@ -258,8 +247,7 @@ class TestUserAPI(unittest.TestCase):
 
     def setUp(self):
         """
-
-        :return:
+        Set Up function to run before every test function runs
         """
         app.testing = True
         self.app = app.test_client()
@@ -267,8 +255,7 @@ class TestUserAPI(unittest.TestCase):
 
     def tearDown(self):
         """
-
-        :return:
+        Functions does clean up. Runs after every test function runs
         """
         app.testing = False
         self.app = None
@@ -277,7 +264,7 @@ class TestUserAPI(unittest.TestCase):
         """
         Tests whether the register user API endpoint can pass a Bad Request(Missing User Information)
         Send a post request to register user API with no user information(Bad Request).
-        :return: 400 Bad Request Status Response
+        Asserts 400 Bad Request Status Response
         """
         payload = {}
         res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
@@ -286,7 +273,7 @@ class TestUserAPI(unittest.TestCase):
     def test_register_user_success(self):
         """
         Tests 201 status code response when user has been created successfully
-        :return: 201 Created Status Response
+        Asserts 201 Created Status Response
         """
         payload = {
             "username": "username",
@@ -298,15 +285,16 @@ class TestUserAPI(unittest.TestCase):
 
     def test_get_all_users(self):
         """
-
-        :return:
+        Tests Get All Users API endpoint
+        Asserts 200 OK Status Code Response
         """
         res = self.app.get('/api/v1/users')
         self.assertEqual(res.status_code, 200)
 
     def test_login_successful(self):
         """
-        [summary]
+        Tests Login API endpoint
+        Asserts 200 OK Status Code Response
         """
         payload = {
             "username": "testuser",
@@ -319,7 +307,8 @@ class TestUserAPI(unittest.TestCase):
 
     def test_login_bad_request(self):
         """
-        [summary]
+        Tests Login API endpoint when an empty object is passed
+        Asserts 400 Bad Request Status Code Response
         """
         payload = {}
         res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
@@ -327,7 +316,8 @@ class TestUserAPI(unittest.TestCase):
 
     def test_login_user_not_registered(self):
         """
-        [summary]
+        Tests Login API endpoint when user does not exist
+        Asserts 404 Not Found Status Code Response
         """
         payload = {
             "username":"notregistered",
@@ -338,7 +328,8 @@ class TestUserAPI(unittest.TestCase):
 
     def test_login_wrong_password(self):
         """
-        [summary]
+        Tests Login API endpoint with a wrong password
+        Asserts 401 Unauthorized Status Code Response
         """
         payload = {
             "username": "testuser",
@@ -350,6 +341,11 @@ class TestUserAPI(unittest.TestCase):
         self.assertEqual(res.status_code, 401)
 
     def test_login_no_username(self):
+        """
+        Tests Login API endpoint when username is not provided
+        Asserts 400 Bad Request Status Code Response
+        """
+
         payload = {
             "username": "",
             "password": "testpassword"
@@ -358,6 +354,11 @@ class TestUserAPI(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
 
     def test_login_no_password(self):
+        """
+        Tests Login API endpoint when password is not provided
+        Asserts 400 Bad Request Status Code Response
+        """
+
         payload = {
             "username": "dmwangi",
             "password": ""
@@ -367,16 +368,16 @@ class TestUserAPI(unittest.TestCase):
 
     def test_borrow_book_api_endpoint(self):
         """
-
-        :return:
+        Tests Borrow book API endpoint
+        Asserts 200 OK Status Code Response     
         """
         res = self.app.post('/api/v1/users/books/<string:book_id>')
         self.assertEqual(res.status_code, 200)
 
     def test_update_password_success(self):
         """
-
-        :return:
+        Tests Update password API endpoint
+        Asserts 200 OK Status Code Response 
         """
         payload = {
             "username": "testuser1",
@@ -389,8 +390,8 @@ class TestUserAPI(unittest.TestCase):
 
     def test_update_password_user_not_exist(self):
         """
-
-        :return:
+        Tests Update password API endpoint if user does not exist
+        Asserts 404 Not Found Status Code Response 
         """
         res = self.app.post('/api/v1/auth/reset-password/100>', data=json.dumps({"username":"usewwr", "password":"newpassword"}))
         self.assertEqual(res.status_code, 404)

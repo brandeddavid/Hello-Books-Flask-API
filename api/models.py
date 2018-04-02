@@ -10,11 +10,12 @@ class User(object):
 
     def __init__(self, username, password, admin):
         """
+        [summary]
 
-        :param id:
-        :param username:
-        :param password:
-        :param admin:
+        Arguments:
+            username {[type]} -- [description]
+            password {[type]} -- [description]
+            admin {[type]} -- [description]
         """
 
         self.user = {}
@@ -26,8 +27,10 @@ class User(object):
 
     def createUser(self):
         """
+        [Summary]
 
-        :return:
+        Returns:
+            [type] -- [description]
         """
 
         if len(users) == 0:
@@ -46,18 +49,25 @@ class User(object):
 
     def getAllUsers():
         """
+        [summary]
 
-        :return:
+        Returns:
+            [type] -- [description]
         """
 
         return users
 
     def updatePassword(id, username, password):
         """
+        [summary]
 
-        :param username:
-        :param password:
-        :return:
+        Arguments:
+            id {[type]} -- [description]
+            username {[type]} -- [description]
+            password {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
         """
 
         for user in users:
@@ -74,8 +84,13 @@ class User(object):
 
     def borrowBook(book_id):
         """
+        [summary]
 
-        :return:
+        Arguments:
+            book_id {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
         """
 
         for book in books:
@@ -95,10 +110,12 @@ class Book(object):
 
     def __init__(self, title, author, isbn):
         """
-        Class Initializes a Book instance with following parameters:
-        :param title: Bool Title
-        :param author: Book Author
-        :param isbn: Book ISBN Number
+        [summary]
+
+        Arguments:
+            title {[type]} -- [description]
+            author {[type]} -- [description]
+            isbn {bool} -- [description]
         """
 
         self.book = {}
@@ -111,8 +128,10 @@ class Book(object):
 
     def createbook(self):
         """
-        Functions assigns the book object an id and appends it to the book list
-        :return: Success message
+        [summary]
+
+        Returns:
+            [type] -- [description]
         """
 
         if len(books) == 0:
@@ -133,16 +152,23 @@ class Book(object):
 
     def get_all_books():
         """
+        [summary]
 
-        :return:
+        Returns:
+            [type] -- [description]
         """
 
         return books
 
     def deletebook(id):
         """
+        [summary]
 
-        :return:
+        Arguments:
+            id {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
         """
 
         for book in books:
@@ -157,9 +183,14 @@ class Book(object):
 
     def updatebook(id, data):
         """
+        [summary]
 
-        :param data:
-        :return:
+        Arguments:
+            id {[type]} -- [description]
+            data {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
         """
 
         for book in books:
@@ -176,8 +207,13 @@ class Book(object):
 
     def getbook(id):
         """
+        [summary]
 
-        :return:
+        Arguments:
+            id {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
         """
 
         for book in books:

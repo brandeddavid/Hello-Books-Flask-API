@@ -2,8 +2,7 @@ from flask_restful import Resource
 from api.models import User, Book
 from flask import jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token, get_jwt_identity)
+from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, get_jwt_identity)
 from api import app
 import json
 from functools import wraps
@@ -17,15 +16,16 @@ user1 = User("dmwangi", 'password', 'True').createUser()
 
 
 class GetAllBooks(Resource):
-    """
-
-    """
+   
 
     def get(self):
         """
-
-        :return:
+        Get method returns json object with list of all books
+        
+        Returns:
+            [json object] -- [With a list of all books]
         """
+
 
         res = jsonify(Book.get_all_books())
         res.status_code = 200
@@ -34,8 +34,12 @@ class GetAllBooks(Resource):
 
     def post(self):
         """
-        :return:
+        Post Method is user to add/create new book
+        
+        Returns:
+            [json object] -- [Has appropriate message and correct status code]
         """
+
 
         data = request.get_json(self)
 
@@ -57,10 +61,15 @@ class BookOps(Resource):
 
     def get(self, book_id):
         """
-        Function takes in a book id and returns book information for that book
-        :param book_id:
-        :return: Book Details for book with id book_id
+        Get Method returns single book
+        
+        Arguments:
+            book_id {str} -- [str representattion of the book id]
+        
+        Returns:
+            [json object] -- [Has appropriate response and status code]
         """
+
 
         res = Book.getbook(id=book_id)
 
@@ -75,9 +84,13 @@ class BookOps(Resource):
 
     def put(self, book_id):
         """
-
-        :param book_id:
-        :return:
+        Put Method updates book informatio
+        
+        Arguments:
+            book_id {[str]} -- [str representation of the book id]
+        
+        Returns:
+            [json object] -- [With the appropriate response and status code]
         """
 
         data = request.get_json(self)
@@ -92,13 +105,13 @@ class BookOps(Resource):
 
     def delete(self, book_id):
         """
-        [summary]
+        [Delete method deletes a book]
 
         Arguments:
-            book_id {[type]} -- [description]
+            book_id {[str]} -- [str representation of the book id]
 
         Returns:
-            [type] -- [description]
+            [json object] -- [With the appropriate response and status code]
         """
         if Book.deletebook(id=book_id) == {'Message': 'Book Deleted Successfully'}:
             res = jsonify(Book.deletebook(id=book_id))
@@ -114,9 +127,11 @@ class CreateUser(Resource):
 
     def post(self):
         """
-
-        :return:
+        [Post method creates a new user]
+        Returns:
+            [json object] -- [With the approriate response and status code]
         """
+
         data = request.get_json(self)
 
         if len(data) == 0:
@@ -134,10 +149,12 @@ class GetAllUsers(Resource):
 
     def get(self):
         """
-
-        :param current_user:
-        :return:
+        [Get method returns a list of all users]
+        
+        Returns:
+            [json object] -- [With the list of all users]
         """
+
         return jsonify({"Users": User.getAllUsers()})
 
 
@@ -145,9 +162,12 @@ class LoginUser(Resource):
 
     def post(self):
         """
-
-        :return:
+        [Post method passes user info to the login endpoint]
+        
+        Returns:
+            [json object] -- [With appropriate response and status code]
         """
+
         data = request.get_json(self)
 
         if len(data) == 0:
@@ -196,11 +216,15 @@ class BorrowBook(Resource):
 
     def post(self, book_id):
         """
-
-        :param current_user:
-        :param book_id:
-        :return:
+        [Post method used to pass book id to be borrowed]
+        
+        Arguments:
+            book_id {[str]} -- [str representation of the book id]
+        
+        Returns:
+            [json object] -- [With the appropriate response and status code]
         """
+
         return jsonify(User.borrowBook(book_id=book_id))
 
 
@@ -208,11 +232,15 @@ class UpdatePassword(Resource):
 
     def post(self, user_id):
         """
-
-        :param current_user:
-        :param user_id:
-        :return:
+        [Post method used to update password]
+        
+        Arguments:
+            user_id {[str]} -- [str representation of the user id]
+        
+        Returns:
+            [json object] -- [with the appropriate response and status code]
         """
+
         data = request.get_json(self)
 
         users = User.getAllUsers()

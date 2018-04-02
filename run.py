@@ -1,9 +1,10 @@
 from api import app
 from api import routes
 
+# Register API Blueprint
 app.register_blueprint(routes.mod)
 
-
+# Route to Index Page
 @app.route('/')
 def index():
     """
@@ -15,6 +16,6 @@ def index():
 
 if __name__ == '__main__':
     """
-        Starts Flask Server Once File is run
+    Starts Flask Server Once File is run
     """
     app.run(debug=True)

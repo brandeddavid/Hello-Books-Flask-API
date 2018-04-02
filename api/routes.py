@@ -1,5 +1,5 @@
 from flask import Blueprint
-from api.apis import *
+from api.apis import GetAllBooks, BookOps, BorrowBook, GetAllUsers, CreateUser, LoginUser, UpdatePassword
 from flask_restful import Api
 
 mod = Blueprint('api', __name__)

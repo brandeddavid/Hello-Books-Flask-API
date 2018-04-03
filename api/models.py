@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, json, Response
 
 books = []
 users = []
@@ -35,73 +35,80 @@ class User(object):
 
         if len(users) == 0:
             users.append(self.user)
-            return {'Message': 'User Created Successfully'}
+            return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
 
         for user in users:
 
             if user['username'] == self.user['username']:
 
-                return {'Message': 'Username Exists'}
+                return Response(json.dumps({'Message': 'Username Exists'}), status=409)
 
         users.append(self.user)
 
-        return {'Message': 'User Created Successfully'}
+        return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
 
-    def getAllUsers():
-        """
-        [summary]
 
-        Returns:
-            [type] -- [description]
-        """
+def getAllUsers():
+    """
+    [summary]
 
-        return users
+    Returns:
+        [type] -- [description]
+    """
 
-    def updatePassword(id, username, password):
-        """
-        [summary]
+    if len(users) == 0:
 
-        Arguments:
-            id {[type]} -- [description]
-            username {[type]} -- [description]
-            password {[type]} -- [description]
+        return Response(json.dumps({'Message': 'No Users'}), status=404)
 
-        Returns:
-            [type] -- [description]
-        """
+    return Response(json.dumps({'Users': users}), status=200)
 
-        for user in users:
 
-            if username in user.values():
+def updatePassword(id, username, password):
+    """
+    [summary]
 
-                user['password'] = password
+    Arguments:
+        id {[type]} -- [description]
+        username {[type]} -- [description]
+        password {[type]} -- [description]
 
-                return {'Message': 'User Password Updated Successfully'}
+    Returns:
+        [type] -- [description]
+    """
 
-            else:
+    for user in users:
 
-                return {'Message': 'User Password Update Failed'}
+        if user['username'] == username:
 
-    def borrowBook(book_id):
-        """
-        [summary]
+            user['password'] = password
 
-        Arguments:
-            book_id {[type]} -- [description]
+            return Response(json.dumps({'Message': 'User Password Updated Successfully'}), status=200)
 
-        Returns:
-            [type] -- [description]
-        """
+        else:
 
-        for book in books:
+            return Response(json.dumps({'Message': 'User Password Update Failed'}), status=200)
 
-            if book_id in book.keys():
 
-                return {'Message': 'Successfully Borrowed Book'}
+def borrowBook(book_id):
+    """
+    [summary]
 
-            else:
+    Arguments:
+        book_id {[type]} -- [description]
 
-                return {'Message': 'Book Does Not Exist'}
+    Returns:
+        [type] -- [description]
+    """
+
+    for book in books:
+
+        if book['id'] == book_id:
+
+            return Response(json.dumps({'Message': 'Successfully Borrowed Book'}), status=200)
+
+        else:
+
+            return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
 
 
 class Book(object):
@@ -136,7 +143,7 @@ class Book(object):
 
         if len(books) == 0:
             books.append(self.book)
-            return {'Success': 'Book Created Successfully'}
+            return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
 
         else:
 
@@ -144,82 +151,90 @@ class Book(object):
 
                 if book['isbn'] == self.book['isbn']:
 
-                    return {'Message': 'Book Already Exists'}
+                    return Response(json.dumps({'Message': 'Book Already Exists'}), status=409)
 
             books.append(self.book)
 
-            return {'Success': 'Book Created Successfully'}
+            return Response(json.dumps({'Message': 'Book Created Successfully'}), status=201)
 
-    def get_all_books():
-        """
-        [summary]
 
-        Returns:
-            [type] -- [description]
-        """
+def getAllBooks():
+    """
+    [summary]
 
-        return books
+    Returns:
+        [type] -- [description]
+    """
 
-    def deletebook(id):
-        """
-        [summary]
+    if len(books) == 0:
+        return Response(json.dumps({'Message': 'No Books'}), status=404)
 
-        Arguments:
-            id {[type]} -- [description]
+    return Response(json.dumps({'Books': books}), status=201)
 
-        Returns:
-            [type] -- [description]
-        """
 
-        for book in books:
+def deleteBook(id):
+    """
+    [summary]
 
-            if book['id'] == id:
+    Arguments:
+        id {[type]} -- [description]
 
-                books.remove(book)
+    Returns:
+        [type] -- [description]
+    """
 
-                return {'Message': 'Book Deleted Successfully'}
+    for book in books:
 
-        return {'Message': 'Book Does Not Exist'}
+        if book['id'] == id:
 
-    def updatebook(id, data):
-        """
-        [summary]
+            msg = {'Message': 'Book Deleted Successfully'}
+            books.remove(book)
 
-        Arguments:
-            id {[type]} -- [description]
-            data {[type]} -- [description]
+            return Response(json.dumps(msg), status=204)
 
-        Returns:
-            [type] -- [description]
-        """
+    return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
 
-        for book in books:
 
-            if book['id'] == id:
+def updateBook(id, data):
+    """
+    [summary]
 
-                book['title'] = data['title']
-                book['author'] = data['author']
-                book['isbn'] = data['isbn']
+    Arguments:
+        id {[type]} -- [description]
+        data {[type]} -- [description]
 
-                return {'Message': 'Book Update Successful'}
+    Returns:
+        [type] -- [description]
+    """
 
-        return {'Message': 'Book Does Not Exist'}
+    for book in books:
 
-    def getbook(id):
-        """
-        [summary]
+        if book['id'] == id:
 
-        Arguments:
-            id {[type]} -- [description]
+            book['title'] = data['title'].strip()
+            book['author'] = data['author'].strip()
+            book['isbn'] = data['isbn'].strip()
 
-        Returns:
-            [type] -- [description]
-        """
+            return Response(json.dumps({'Message': 'Book Updated Successfully'}), status=200)
 
-        for book in books:
+    return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
 
-            if book['id'] == id:
 
-                return book
+def getBook(id):
+    """
+    [summary]
 
-        return {'Message': 'Book Does not Exist'}
+    Arguments:
+        id {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
+
+    for book in books:
+
+        if book['id'] == id:
+
+            return Response(json.dumps(book), status=200)
+
+    return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)

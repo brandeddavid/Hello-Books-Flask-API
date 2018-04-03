@@ -120,7 +120,7 @@ class CreateUser(Resource):
         if data['password'] == '':
             return Response(json.dumps({'Message': 'Password Not Provided'}), status=403)
 
-        if data['password'] < 8:
+        if len(data['password']) < 8:
             return Response(json.dumps({'Message': 'Password too Short'}), status=403)
 
         hashed_password = generate_password_hash(
@@ -232,4 +232,4 @@ class UpdatePassword(Resource):
 
                     return updatePassword(id=user_id, username=user['username'], password=user['password'])
 
-        return Response(json.dumps({'Message': 'User Does Not Exist'}), 404)
+        return Response(json.dumps({'Message': 'User Does Not Exist'}), status=404)

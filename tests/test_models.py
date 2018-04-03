@@ -1,7 +1,7 @@
 import unittest
 import json
 from run import app
-from api.models import Book, User
+from api.models import *
 
 
 class TestBooksModel(unittest.TestCase):
@@ -11,8 +11,7 @@ class TestBooksModel(unittest.TestCase):
         Set Up function to run before every test function runs
         """
 
-        self.book = Book('Game of Thrones',
-                         'George R.R. Martin', '3878749').createbook()
+        self.book = Book('Game of Thrones', 'George R.R. Martin', '3878749').createbook()
 
     def tearDown(self):
         """
@@ -28,7 +27,7 @@ class TestBooksModel(unittest.TestCase):
 
         res = Book('Game of Thrones', 'George R.R. Martin',
                    '363837').createbook()
-        self.assertEqual(res, {'Success': 'Book Created Successfully'})
+        self.assertEqual(res.status_code, 201)
 
     def test_book_already_exists(self):
         """
@@ -37,32 +36,57 @@ class TestBooksModel(unittest.TestCase):
         """
         res = Book('Game of Thrones', 'George R.R. Martin',
                    '3878749').createbook()
-        self.assertEqual(res, {'Message': 'Book Already Exists'})
+        self.assertEqual(res.status_code, 409)
 
-    def test_book_does_not_exist(self):
+    def test_get_book(self):
         """
         Function tests query for a book that does not exist
         Asserts message returned if book does not exist
         """
-        res = Book.getbook('30')
-        self.assertEqual(res, {'Message': 'Book Does not Exist'})
+        res = getBook('1')
+        self.assertEqual(res.status_code, 404)
+
+    def test_get_book_does_not_exist(self):
+        """
+        Function tests query for a book that does not exist
+        Asserts message returned if book does not exist
+        """
+        res = getBook('30')
+        self.assertEqual(res.status_code, 404)
+
+    def test_book_update(self):
+        """
+        Function unsuccessful book update
+        Asserts message returned if book update unsuccessful
+        """
+        res = updateBook(
+            '1', {'title': 'GOT', 'author': 'George', 'isbn': '827890'})
+        self.assertEqual(res.status_code, 404)
 
     def test_book_update_unsuccessful(self):
         """
         Function unsuccessful book update
         Asserts message returned if book update unsuccessful
         """
-        res = Book.updatebook(
+        res = updateBook(
             '10', {'title': 'GOT', 'author': 'George', 'isbn': '827890'})
-        self.assertEqual(res, {'Message': 'Book Does Not Exist'})
+        self.assertEqual(res.status_code, 404)
+
+    def test_book_delete(self):
+        """
+        Function tests unsuccessful book deletion
+        Asserts message returned if book deletion is unsuccessful
+        """
+        res = deleteBook('1')
+        self.assertEqual(res.status_code, 204)
 
     def test_book_delete_unsuccessful(self):
         """
         Function tests unsuccessful book deletion
         Asserts message returned if book deletion is unsuccessful
         """
-        res = Book.deletebook('100')
-        self.assertEqual(res, {'Message': 'Book Does Not Exist'})
+        res = deleteBook('100')
+        self.assertEqual(res.status_code, 404)
 
 
 class TestUserModel(unittest.TestCase):
@@ -85,7 +109,7 @@ class TestUserModel(unittest.TestCase):
         Asserts message returned after successful user creation
         """
         res = User('jdoe', 'jdoe123', False).createUser()
-        self.assertEqual(res, {'Message': 'User Created Successfully'})
+        self.assertEqual(res.status_code, 201)
 
     def test_username_exists(self):
         """
@@ -93,14 +117,14 @@ class TestUserModel(unittest.TestCase):
         Asserts message returned after failed user creation if user already exists
         """
         res = User('dmwangi', 'password', True).createUser()
-        self.assertEqual(res, {'Message': 'Username Exists'})
+        self.assertEqual(res.status_code, 409)
 
     def test_get_all_users(self):
         """
         Functions tests get all user function
         """
-        res = User.getAllUsers()
-        self.assertIn('dmwangi', str(res))
+        res = getAllUsers()
+        self.assertEqual(res.status_code, 200)
 
     def test_user_update_password(self):
         """
@@ -108,29 +132,27 @@ class TestUserModel(unittest.TestCase):
         Asserts message returned after successful password update
         """
         user = self.user
-        res = User.updatePassword(
+        res = updatePassword(
             id=1, username='dmwangi', password='password1')
-        self.assertEqual(
-            res, {'Message': 'User Password Updated Successfully'})
+        self.assertEqual(res.status_code, 200)
 
     def test_user_update_fail(self):
         """
         Function tests user update password function fail
         Asserts message returned after a failed password update
         """
-        user = self.user
-        res = User.updatePassword(id=1, username='tom', password='password1')
-        self.assertEqual(res, {'Message': 'User Password Update Failed'})
+        res = updatePassword(id=1, username='tom', password='password1')
+        self.assertEqual(res.status_code, 200)
 
     def test_book_borrowing_fail(self):
         """
         Function tests user borrow book function fail
         Asserts message returned after a failed book borrow
         """
-        book = Book(title='Book Title', author='Book Author',
+        Book(title='Book Title', author='Book Author',
                     isbn="64368").createbook()
-        res = User.borrowBook("10")
-        self.assertEqual(res, {'Message': 'Book Does Not Exist'})
+        res = borrowBook("10")
+        self.assertEqual(res.status_code, 404)
 
 
 if __name__ == '__main__':

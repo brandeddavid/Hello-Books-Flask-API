@@ -169,7 +169,7 @@ def getAllBooks():
     if len(books) == 0:
         return Response(json.dumps({'Message': 'No Books'}), status=404)
 
-    return Response(json.dumps({'Books': books}), status=201)
+    return Response(json.dumps({'Books': books}), status=200)
 
 
 def deleteBook(id):

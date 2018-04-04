@@ -1,7 +1,5 @@
-from flask import jsonify
-
-books = []
-users = []
+from flask import json, Response
+from api import users, books
 
 
 class User(object):
@@ -35,73 +33,17 @@ class User(object):
 
         if len(users) == 0:
             users.append(self.user)
-            return {'Message': 'User Created Successfully'}
+            return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
 
         for user in users:
 
             if user['username'] == self.user['username']:
 
-                return {'Message': 'Username Exists'}
+                return Response(json.dumps({'Message': 'Username Exists'}), status=409)
 
         users.append(self.user)
 
-        return {'Message': 'User Created Successfully'}
-
-    def getAllUsers():
-        """
-        [summary]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        return users
-
-    def updatePassword(id, username, password):
-        """
-        [summary]
-
-        Arguments:
-            id {[type]} -- [description]
-            username {[type]} -- [description]
-            password {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        for user in users:
-
-            if username in user.values():
-
-                user['password'] = password
-
-                return {'Message': 'User Password Updated Successfully'}
-
-            else:
-
-                return {'Message': 'User Password Update Failed'}
-
-    def borrowBook(book_id):
-        """
-        [summary]
-
-        Arguments:
-            book_id {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        for book in books:
-
-            if book_id in book.keys():
-
-                return {'Message': 'Successfully Borrowed Book'}
-
-            else:
-
-                return {'Message': 'Book Does Not Exist'}
+        return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
 
 
 class Book(object):
@@ -136,7 +78,7 @@ class Book(object):
 
         if len(books) == 0:
             books.append(self.book)
-            return {'Success': 'Book Created Successfully'}
+            return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
 
         else:
 
@@ -144,82 +86,8 @@ class Book(object):
 
                 if book['isbn'] == self.book['isbn']:
 
-                    return {'Message': 'Book Already Exists'}
+                    return Response(json.dumps({'Message': 'Book Already Exists'}), status=409)
 
             books.append(self.book)
 
-            return {'Success': 'Book Created Successfully'}
-
-    def get_all_books():
-        """
-        [summary]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        return books
-
-    def deletebook(id):
-        """
-        [summary]
-
-        Arguments:
-            id {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        for book in books:
-
-            if book['id'] == id:
-
-                books.remove(book)
-
-                return {'Message': 'Book Deleted Successfully'}
-
-        return {'Message': 'Book Does Not Exist'}
-
-    def updatebook(id, data):
-        """
-        [summary]
-
-        Arguments:
-            id {[type]} -- [description]
-            data {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        for book in books:
-
-            if book['id'] == id:
-
-                book['title'] = data['title']
-                book['author'] = data['author']
-                book['isbn'] = data['isbn']
-
-                return {'Message': 'Book Update Successful'}
-
-        return {'Message': 'Book Does Not Exist'}
-
-    def getbook(id):
-        """
-        [summary]
-
-        Arguments:
-            id {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        for book in books:
-
-            if book['id'] == id:
-
-                return book
-
-        return {'Message': 'Book Does not Exist'}
+            return Response(json.dumps({'Message': 'Book Created Successfully'}), status=201)

@@ -1,8 +1,10 @@
 import unittest
 import json
-from api.models import Book, User, getBookId, getUserId, users, books
+from api.models import Book, User 
+from api.apis import getBookId, getUserId, users, books
 from run import app
 from flask import jsonify
+from api import users, books
 
 
 class TestBookAPI(unittest.TestCase):

@@ -11,7 +11,8 @@ class TestBooksModel(unittest.TestCase):
         Set Up function to run before every test function runs
         """
 
-        self.book = Book('Game of Thrones', 'George R.R. Martin', '3878749').createbook()
+        self.book = Book('Game of Thrones',
+                         'George R.R. Martin', '3878749').createbook()
 
     def tearDown(self):
         """
@@ -53,7 +54,7 @@ class TestBooksModel(unittest.TestCase):
         """
         res = getBook('30')
         self.assertEqual(res.status_code, 404)
-    
+
     def test_get_all_books(self):
         """
         [summary]
@@ -65,7 +66,7 @@ class TestBooksModel(unittest.TestCase):
         """
         [summary]
         """
-        
+
         deleteBook(getBookId('3878749'))
         deleteBook(getBookId('363837'))
         deleteBook(getBookId('827890'))
@@ -176,7 +177,7 @@ class TestUserModel(unittest.TestCase):
         Asserts message returned after a failed book borrow
         """
         Book(title='Book Title', author='Book Author',
-                    isbn="64368").createbook()
+             isbn="64368").createbook()
         res = borrowBook(getBookId("64368"))
         self.assertEqual(res.status_code, 200)
 

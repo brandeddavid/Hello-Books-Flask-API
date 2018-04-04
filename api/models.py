@@ -2,7 +2,6 @@ from flask import json, Response
 from api import users, books
 
 
-
 class User(object):
 
     user_id = 1

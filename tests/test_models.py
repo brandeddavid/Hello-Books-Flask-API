@@ -2,7 +2,7 @@ import unittest
 import json
 from run import app
 from api.models import Book, User
-from api.apis import getAllUsers, getAllBooks, getBook, getBookId, updateBook, updatePassword, deleteAllBooks, deleteBook, borrowBook
+from api.bkendlogic import getAllUsers, getAllBooks, getBook, getBookId, updateBook, updatePassword, deleteAllBooks, deleteBook, borrowBook
 
 
 class TestBooksModel(unittest.TestCase):

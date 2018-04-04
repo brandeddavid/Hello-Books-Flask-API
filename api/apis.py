@@ -1,19 +1,20 @@
 from flask_restful import Resource
-from api.models import User, Book, getAllUsers, updatePassword, borrowBook, getAllBooks, deleteBook, updateBook, getBook, login
+from api.models import User, Book
+from api.bkendlogic import *
 from flask import jsonify, request, make_response, Response, json
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token, get_jwt_identity)
-from api import app
-from functools import wraps
+    JWTManager, jwt_required, create_access_token, get_jwt_identity, get_raw_jwt)
+from api import app, users, books
 
 jwt = JWTManager(app)
 
-# b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
+blacklist = set()
+
+b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
 # b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
 # b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
-# user1 = User("dmwangi", 'password', 'True').createUser()
-
+user1 = User("dmwangi", 'password', True).createUser()
 
 class GetAllBooks(Resource):
 
@@ -126,7 +127,7 @@ class CreateUser(Resource):
         hashed_password = generate_password_hash(
             data['password'], method='sha256')
         res = User(username=data['username'],
-                   password=hashed_password, admin=data['admin']).createUser()
+                   password=hashed_password, admin=False).createUser()
         return res
 
 
@@ -169,9 +170,16 @@ class LoginUser(Resource):
 
         return login(username, password)
 
+class LogoutUser(Resource):
+    @jwt_required
+    def post(self):
+        jti = get_raw_jwt()['jti']
+        blacklist.add(jti)
+        return Response(json.dumps({"Message": "Successfully logged out"}), status=200)
+
 
 class BorrowBook(Resource):
-
+    @jwt_required
     def post(self, book_id):
         """
         [Post method used to pass book id to be borrowed]

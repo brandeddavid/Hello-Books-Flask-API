@@ -1,8 +1,10 @@
 import unittest
 import json
-from api.models import Book, User, getBookId, getUserId, users, books
+from api.models import Book, User
+from api.bkendlogic import getBookId, getUserId, users, books
 from run import app
 from flask import jsonify
+from api import users, books
 
 
 class TestBookAPI(unittest.TestCase):
@@ -14,7 +16,8 @@ class TestBookAPI(unittest.TestCase):
 
         app.testing = True
         self.app = app.test_client()
-        self.book = Book(title="Book Title", author="Book Author", isbn="456788")
+        self.book = Book(title="Book Title",
+                         author="Book Author", isbn="456788")
 
     def tearDown(self):
         """
@@ -335,12 +338,12 @@ class TestUserAPI(unittest.TestCase):
         Book('Title', 'Author', '34678').createbook()
         id = getBookId('34678')
         res = self.app.post('/api/v1/users/books/'+id)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 401)
 
     # def test_update_password_success(self):
     #     """
     #     Tests Update password API endpoint
-    #     Asserts 200 OK Status Code Response 
+    #     Asserts 200 OK Status Code Response
     #     """
     #     payload = {
     #         "username": "testuser1",
@@ -354,10 +357,11 @@ class TestUserAPI(unittest.TestCase):
     # def test_update_password_user_not_exist(self):
     #     """
     #     Tests Update password API endpoint if user does not exist
-    #     Asserts 404 Not Found Status Code Response 
+    #     Asserts 404 Not Found Status Code Response
     #     """
     #     res = self.app.post('/api/v1/auth/reset-password/100>', data=json.dumps({"username":"usewwr", "password":"newpassword"}))
     #     self.assertEqual(res.status_code, 404)
+
 
 if __name__ == '__main__':
     unittest.main()

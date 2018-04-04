@@ -1,5 +1,5 @@
 from flask import Blueprint
-from api.apis import GetAllBooks, BookOps, BorrowBook, GetAllUsers, CreateUser, LoginUser, UpdatePassword
+from api.apis import GetAllBooks, BookOps, BorrowBook, GetAllUsers, CreateUser, LoginUser, UpdatePassword, LogoutUser
 from flask_restful import Api
 
 mod = Blueprint('api', __name__)
@@ -11,5 +11,5 @@ api.add_resource(BorrowBook, '/api/v1/users/books/<string:book_id>')
 api.add_resource(GetAllUsers, '/api/v1/users')
 api.add_resource(CreateUser, '/api/v1/auth/register')
 api.add_resource(LoginUser, '/api/v1/auth/login')
-# api.add_resource( '/api/v1/auth/logout')
+api.add_resource(LogoutUser, '/api/v1/auth/logout')
 api.add_resource(UpdatePassword, '/api/v1/auth/reset-password/<string:user_id>')

@@ -19,6 +19,7 @@ class TestBooksModel(unittest.TestCase):
         Functions does clean up. Runs after every test function runs
         """
         self.book = None
+        books = []
 
     def test_book_creation_successful(self):
         """
@@ -120,7 +121,8 @@ class TestUserModel(unittest.TestCase):
         """
         Function run after each test is run
         """
-        pass
+        self.user = None
+        users = []
 
     def test_user_creation_successful(self):
         """

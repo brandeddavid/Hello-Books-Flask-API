@@ -265,10 +265,10 @@ def getBookId(isbn):
 
 ### DANGER ZONE ##
 def deleteAll():
-    if len(users != 0):
+    if len(users) != 0:
         for user in users:
             users.remove(user)
 
-    if len(books != 0):
+    if len(books) != 0:
         for book in books:
             books.remove(book)

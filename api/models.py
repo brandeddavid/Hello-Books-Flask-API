@@ -48,6 +48,55 @@ class User(object):
         return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
 
 
+class Book(object):
+
+    book_id = 1
+
+    def __init__(self, title, author, isbn):
+        """
+        [summary]
+
+        Arguments:
+            title {[type]} -- [description]
+            author {[type]} -- [description]
+            isbn {bool} -- [description]
+        """
+
+        self.book = {}
+        self.id = str(Book.book_id)
+        Book.book_id += 1
+        self.book['id'] = self.id
+        self.book['title'] = title
+        self.book['author'] = author
+        self.book['isbn'] = isbn
+
+    def createbook(self):
+        """
+        [summary]
+
+        Returns:
+            [type] -- [description]
+        """
+
+        if len(books) == 0:
+            books.append(self.book)
+            return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
+
+        else:
+
+            for book in books:
+
+                if book['isbn'] == self.book['isbn']:
+
+                    return Response(json.dumps({'Message': 'Book Already Exists'}), status=409)
+
+            books.append(self.book)
+
+            return Response(json.dumps({'Message': 'Book Created Successfully'}), status=201)
+
+# USER'S FUNCTIONS
+
+
 def getAllUsers():
     """
     [summary]
@@ -106,56 +155,23 @@ def borrowBook(book_id):
 
             return Response(json.dumps({'Message': 'Successfully Borrowed Book'}), status=200)
 
-        else:
-
-            return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
+    return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
 
 
-class Book(object):
+def deleteUser(id):
+    for user in users:
+        if user['id'] == id:
+            users.remove(user)
 
-    book_id = 1
+def getUserId(username):
 
-    def __init__(self, title, author, isbn):
-        """
-        [summary]
+    for user in users:
 
-        Arguments:
-            title {[type]} -- [description]
-            author {[type]} -- [description]
-            isbn {bool} -- [description]
-        """
+        if user['username'] == username:
 
-        self.book = {}
-        self.id = str(Book.book_id)
-        Book.book_id += 1
-        self.book['id'] = self.id
-        self.book['title'] = title
-        self.book['author'] = author
-        self.book['isbn'] = isbn
+            return user['id']
 
-    def createbook(self):
-        """
-        [summary]
-
-        Returns:
-            [type] -- [description]
-        """
-
-        if len(books) == 0:
-            books.append(self.book)
-            return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
-
-        else:
-
-            for book in books:
-
-                if book['isbn'] == self.book['isbn']:
-
-                    return Response(json.dumps({'Message': 'Book Already Exists'}), status=409)
-
-            books.append(self.book)
-
-            return Response(json.dumps({'Message': 'Book Created Successfully'}), status=201)
+# BOOK'S FUNCTIONS
 
 
 def getAllBooks():
@@ -169,10 +185,10 @@ def getAllBooks():
     if len(books) == 0:
         return Response(json.dumps({'Message': 'No Books'}), status=404)
 
-    return Response(json.dumps({'Books': books}), status=201)
+    return Response(json.dumps({'Books': books}), status=200)
 
 
-def deleteBook(id):
+def getBook(id):
     """
     [summary]
 
@@ -187,10 +203,7 @@ def deleteBook(id):
 
         if book['id'] == id:
 
-            msg = {'Message': 'Book Deleted Successfully'}
-            books.remove(book)
-
-            return Response(json.dumps(msg), status=204)
+            return Response(json.dumps(book), status=200)
 
     return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
 
@@ -220,7 +233,7 @@ def updateBook(id, data):
     return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
 
 
-def getBook(id):
+def deleteBook(id):
     """
     [summary]
 
@@ -230,11 +243,37 @@ def getBook(id):
     Returns:
         [type] -- [description]
     """
-
     for book in books:
 
         if book['id'] == id:
 
-            return Response(json.dumps(book), status=200)
+            msg = {'Message': 'Book Deleted Successfully'}
+            books.remove(book)
+
+            return Response(json.dumps(msg), status=204)
 
     return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
+
+
+def getBookId(isbn):
+
+    for book in books:
+
+        if book['isbn'] == isbn:
+
+            return book['id']
+
+### DANGER ZONE ##
+def deleteAllUsers():
+
+    if len(users) == 0:
+        pass 
+    for user in users:
+        users.remove(user)
+
+def deleteAllBooks():
+
+    if len(books) == 0:
+        pass 
+    for book in books:
+        books.remove(book)

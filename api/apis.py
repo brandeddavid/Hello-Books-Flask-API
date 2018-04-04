@@ -9,9 +9,9 @@ from functools import wraps
 
 jwt = JWTManager(app)
 
-b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
-b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
-b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
+# b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
+# b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
+# b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
 # user1 = User("dmwangi", 'password', 'True').createUser()
 
 
@@ -120,7 +120,7 @@ class CreateUser(Resource):
         if data['password'] == '':
             return Response(json.dumps({'Message': 'Password Not Provided'}), status=403)
 
-        if data['password'] < 8:
+        if len(data['password']) < 8:
             return Response(json.dumps({'Message': 'Password too Short'}), status=403)
 
         hashed_password = generate_password_hash(
@@ -232,4 +232,4 @@ class UpdatePassword(Resource):
 
                     return updatePassword(id=user_id, username=user['username'], password=user['password'])
 
-        return Response(json.dumps({'Message': 'User Does Not Exist'}), 404)
+        return Response(json.dumps({'Message': 'User Does Not Exist'}), status=404)

@@ -1,6 +1,6 @@
 import unittest
 import json
-from api.models import Book, User, getBookId, getUserId
+from api.models import Book, User, getBookId, getUserId, users, books
 from run import app
 from flask import jsonify
 
@@ -22,6 +22,7 @@ class TestBookAPI(unittest.TestCase):
         """
         app.testing = False
         self.app = None
+        books = []
 
     # This section checks availability of various HTTP methods for different endpoints
 
@@ -179,6 +180,7 @@ class TestUserAPI(unittest.TestCase):
         """
         app.testing = False
         self.app = None
+        users = []
 
     def test_register_user_bad_request(self):
         """

@@ -262,3 +262,13 @@ def getBookId(isbn):
         if book['isbn'] == isbn:
 
             return book['id']
+
+### DANGER ZONE ##
+def deleteAll():
+    if len(users != 0):
+        for user in users:
+            users.remove(user)
+
+    if len(books != 0):
+        for book in books:
+            books.remove(book)

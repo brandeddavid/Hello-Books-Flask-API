@@ -68,9 +68,7 @@ class TestBooksModel(unittest.TestCase):
         [summary]
         """
 
-        deleteBook(getBookId('3878749'))
-        deleteBook(getBookId('363837'))
-        deleteBook(getBookId('827890'))
+        deleteAll()
         res = getAllBooks()
         print(res.data)
         self.assertEqual(res.status_code, 404)
@@ -152,9 +150,8 @@ class TestUserModel(unittest.TestCase):
         """
         Functions tests get all user function if no user present
         """
-        deleteUser(getUserId('dmwangi'))
+        deleteAll()
         res = getAllUsers()
-        print(res.data)
         self.assertEqual(res.status_code, 404)
 
     def test_user_update_password(self):

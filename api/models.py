@@ -158,6 +158,11 @@ def borrowBook(book_id):
     return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
 
 
+def deleteUser(id):
+    for user in users:
+        if user['id'] == id:
+            users.remove(user)
+
 def getUserId(username):
 
     for user in users:

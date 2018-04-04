@@ -144,6 +144,14 @@ class TestUserModel(unittest.TestCase):
         res = getAllUsers()
         self.assertEqual(res.status_code, 200)
 
+    def test_get_all_users_none(self):
+        """
+        Functions tests get all user function if no user present
+        """
+        deleteUser(getUserId('dmwangi'))
+        res = getAllUsers()
+        self.assertEqual(res.status_code, 404)
+
     def test_user_update_password(self):
         """
         Function tests user update password function

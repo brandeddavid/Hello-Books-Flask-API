@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from api.models import User, Book, getAllUsers, updatePassword, borrowBook, getAllBooks, deleteBook, updateBook, getBook
+from api.models import User, Book, getAllUsers, updatePassword, borrowBook, getAllBooks, deleteBook, updateBook, getBook, login
 from flask import jsonify, request, make_response, Response, json
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (
@@ -40,13 +40,13 @@ class GetAllBooks(Resource):
         if len(data) == 0:
 
             return Response(json.dumps({'Message': 'No Book Information Passed'}), 403)
-        
+
         if data['title'].strip() == '':
             return Response(json.dumps({'Message': 'Title Not Provided'}), 403)
-        
+
         if data['author'].strip() == '':
             return Response(json.dumps({'Message': 'Author Not Provided'}), 403)
-        
+
         if data['isbn'].strip() == '':
             return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
 
@@ -167,25 +167,7 @@ class LoginUser(Resource):
         if not password:
             return Response(json.dumps({'Message': 'Password Not Provided'}), status=403)
 
-        users = jsonify(getAllUsers())
-
-        for user in users['Users']:
-
-            if user['username'] == username:
-
-                if check_password_hash(user['password'], password):
-
-                    access_token = create_access_token(identity=username)
-                    # res = jsonify(access_token=access_token)
-                    # res.status_code = 200
-                    # return res
-                    return Response(json.dumps({'access_token': access_token}), status=200)
-
-                else:
-
-                    return Response(json.dumps({'Message': 'Invalid Password'}), status=401)
-
-        return Response(json.dumps({'Message': 'User Does Not Exist'}), status=404)
+        return login(username, password)
 
 
 class BorrowBook(Resource):

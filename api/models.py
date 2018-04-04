@@ -1,4 +1,6 @@
 from flask import jsonify, json, Response
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, get_jwt_identity)
 
 books = []
 users = []
@@ -136,6 +138,20 @@ def updatePassword(id, username, password):
         else:
 
             return Response(json.dumps({'Message': 'User Password Update Failed'}), status=200)
+
+def login(username, password):
+    for user in users:
+
+        if user['username'] == username:
+
+            if check_password_hash(user['password'], password):
+
+                access_token = create_access_token(identity=username)
+                return Response(json.dumps({'access_token': access_token}), status=200)
+
+            return Response(json.dumps({'Message': 'Invalid Password'}), status=401)
+
+    return Response(json.dumps({'Message': 'User Does Not Exist'}), status=404)
 
 
 def borrowBook(book_id):

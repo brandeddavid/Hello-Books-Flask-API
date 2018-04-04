@@ -72,6 +72,7 @@ class TestBooksModel(unittest.TestCase):
         deleteBook(getBookId('363837'))
         deleteBook(getBookId('827890'))
         res = getAllBooks()
+        print(res.data)
         self.assertEqual(res.status_code, 404)
 
     def test_book_update(self):
@@ -153,6 +154,7 @@ class TestUserModel(unittest.TestCase):
         """
         deleteUser(getUserId('dmwangi'))
         res = getAllUsers()
+        print(res.data)
         self.assertEqual(res.status_code, 404)
 
     def test_user_update_password(self):

@@ -264,11 +264,16 @@ def getBookId(isbn):
             return book['id']
 
 ### DANGER ZONE ##
-def deleteAll():
-    if len(users) != 0:
-        for user in users:
-            users.remove(user)
+def deleteAllUsers():
 
-    if len(books) != 0:
-        for book in books:
-            books.remove(book)
+    if len(users) == 0:
+        pass 
+    for user in users:
+        users.remove(user)
+
+def deleteAllBooks():
+
+    if len(books) == 0:
+        pass 
+    for book in books:
+        books.remove(book)

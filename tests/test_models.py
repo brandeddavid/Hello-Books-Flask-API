@@ -68,7 +68,7 @@ class TestBooksModel(unittest.TestCase):
         [summary]
         """
 
-        deleteAll()
+        deleteAllBooks()
         res = getAllBooks()
         print(res.data)
         self.assertEqual(res.status_code, 404)
@@ -150,7 +150,7 @@ class TestUserModel(unittest.TestCase):
         """
         Functions tests get all user function if no user present
         """
-        deleteAll()
+        deleteAllUsers()
         res = getAllUsers()
         self.assertEqual(res.status_code, 404)
 

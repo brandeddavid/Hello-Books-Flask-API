@@ -4,11 +4,10 @@ from api.bkendlogic import getAllBooks, getBook, createBook, updateBook, deleteB
 from flask import request, Response, json
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, get_raw_jwt)
-from api import app, users, books
+from api import app, users, books, blacklist
 
 jwt = JWTManager(app)
 
-blacklist = set()
 
 b1 = Book('The Lean Start Up', 'Eric Ries', '12345')
 books[b1.id] = b1.__dict__
@@ -17,7 +16,8 @@ books[b2.id] = b2.__dict__
 b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321')
 books[b3.id] = b3.__dict__
 user1 = User("dmwangi", 'password')
-users[user1.id] =user1.__dict__
+users[user1.id] = user1.__dict__
+
 
 class Books(Resource):
 
@@ -54,7 +54,6 @@ class Books(Resource):
         if data['isbn'].strip() == '':
             return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
 
-        
         return createBook(data)
 
 
@@ -132,11 +131,14 @@ class CreateUser(Resource):
         if data['password'] == '':
             return Response(json.dumps({'Message': 'Password Not Provided'}), status=403)
 
+        if data['confirm'] == '':
+            return Response(json.dumps({'Message': 'Required to Confirm Password'}), status=403)
+
         if len(data['password']) < 8:
             return Response(json.dumps({'Message': 'Password too Short'}), status=403)
 
         if data['password'] != data['confirm']:
-            return Response(json.dumps({"Message":"Passwords Do Not Match"}), status=403)
+            return Response(json.dumps({"Message": "Passwords Do Not Match"}), status=403)
 
         return createUser(data)
 
@@ -180,6 +182,7 @@ class LoginUser(Resource):
 
         return login(username, password)
 
+
 class LogoutUser(Resource):
     @jwt_required
     def post(self):
@@ -200,8 +203,8 @@ class BorrowBook(Resource):
         Returns:
             [json object] -- [With the appropriate response and status code]
         """
-
-        return borrowBook(book_id=book_id)
+        data = request.get_json(self)
+        return borrowBook(book_id=book_id, data=data)
 
 
 class UpdatePassword(Resource):

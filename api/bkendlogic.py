@@ -162,7 +162,7 @@ def login(username, password):
 
     return Response(json.dumps({'Message': 'User Does Not Exist'}), status=404)
 
-def borrowBook(book_id):
+def borrowBook(book_id, data):
     """
     [summary]
 
@@ -172,15 +172,21 @@ def borrowBook(book_id):
     Returns:
         [type] -- [description]
     """
-
+    
     for key in books:
 
         if books[key]['id'] == book_id:
             
-            books[key]['available'] = False
-            return Response(json.dumps({'Message': 'Successfully Borrowed Book'}), status=200)
+            if books[key]['available'] == True:
 
-    return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
+                id = getUserId(data['username'])
+
+                for key in users:
+                    if key == id:
+                        users[key]['borrowedbooks'].append(book_id)
+                        return Response(json.dumps({'Message': 'Successfully Borrowed Book'}), status=200)
+
+        return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
 
 
 def updatePassword(id, data):
@@ -244,7 +250,5 @@ def deleteAllUsers():
 
 def deleteAllBooks():
 
-    if len(books) == 0:
-        pass
     for key in books:
         del(books[key])

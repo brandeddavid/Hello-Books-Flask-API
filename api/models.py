@@ -21,6 +21,7 @@ class User:
         self.username = username
         self.password = password
         self.admin = False
+        self.borrowedbooks = []
 
 
 class Book:

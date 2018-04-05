@@ -9,12 +9,12 @@ from api import app, users, books, blacklist
 jwt = JWTManager(app)
 
 
-b1 = Book('The Lean Start Up', 'Eric Ries', '12345')
-books[b1.id] = b1.__dict__
-b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890')
-books[b2.id] = b2.__dict__
-b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321')
-books[b3.id] = b3.__dict__
+# b1 = Book('The Lean Start Up', 'Eric Ries', '12345')
+# books[b1.id] = b1.__dict__
+# b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890')
+# books[b2.id] = b2.__dict__
+# b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321')
+# books[b3.id] = b3.__dict__
 # user1 = User("dmwangi", 'password')
 # users[user1.id] = user1.__dict__
 
@@ -40,20 +40,14 @@ class Books(Resource):
         """
 
         data = request.get_json(self)
-
         if len(data) == 0:
-
             return Response(json.dumps({'Message': 'No Book Information Passed'}), 403)
-
         if data['title'].strip() == '':
             return Response(json.dumps({'Message': 'Title Not Provided'}), 403)
-
         if data['author'].strip() == '':
             return Response(json.dumps({'Message': 'Author Not Provided'}), 403)
-
         if data['isbn'].strip() == '':
             return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
-
         return createBook(data)
 
 
@@ -86,16 +80,12 @@ class BookOps(Resource):
         data = request.get_json(self)
         if len(data) == 0:
             return Response(json.dumps({'Message': 'No Book Information Passed'}), status=403)
-
         if data['title'].strip() == '':
             return Response(json.dumps({'Message': 'Title Not Provided'}), 403)
-
         if data['author'].strip() == '':
             return Response(json.dumps({'Message': 'Author Not Provided'}), 403)
-
         if data['isbn'].strip() == '':
             return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
-
         return updateBook(id=book_id, data=data)
 
     def delete(self, book_id):
@@ -124,22 +114,16 @@ class CreateUser(Resource):
 
         if len(data) == 0:
             return Response(json.dumps({'Message': 'No User Information Passed'}), status=403)
-
         if data['username'] == '':
             return Response(json.dumps({'Message': 'Username Not Provided'}), status=403)
-
         if data['password'] == '':
             return Response(json.dumps({'Message': 'Password Not Provided'}), status=403)
-
         if data['confirm'] == '':
             return Response(json.dumps({'Message': 'Required to Confirm Password'}), status=403)
-
         if len(data['password']) < 8:
             return Response(json.dumps({'Message': 'Password too Short'}), status=403)
-
         if data['password'] != data['confirm']:
             return Response(json.dumps({"Message": "Passwords Do Not Match"}), status=403)
-
         return createUser(data)
 
 
@@ -167,19 +151,14 @@ class LoginUser(Resource):
         """
 
         data = request.get_json(self)
-
         if len(data) == 0:
             return Response(json.dumps({'Message': 'User Login Not Passed'}), status=403)
-
         username = data['username'].strip()
         password = data['password'].strip()
-
         if not username:
             return Response(json.dumps({'Message': 'Username Not Provided'}), status=403)
-
         if not password:
             return Response(json.dumps({'Message': 'Password Not Provided'}), status=403)
-
         return login(username, password)
 
 
@@ -221,17 +200,12 @@ class UpdatePassword(Resource):
         """
 
         data = request.get_json(self)
-
         if len(data) == 0:
             return Response(json.dumps({'Message': 'User Login Not Passed'}), status=403)
-
         username = data['username'].strip()
         password = data['password'].strip()
-
         if not username:
             return Response(json.dumps({'Message': 'Username Not Provided'}), status=403)
-
         if not password:
             return Response(json.dumps({'Message': 'Password Not Provided'}), status=403)
-
         return updatePassword(user_id, data)

@@ -1,11 +1,11 @@
 from flask import Blueprint
-from api.apis import GetAllBooks, BookOps, BorrowBook, GetAllUsers, CreateUser, LoginUser, UpdatePassword, LogoutUser
+from api.apis import Books, BookOps, BorrowBook, GetAllUsers, CreateUser, LoginUser, UpdatePassword, LogoutUser
 from flask_restful import Api
 
 mod = Blueprint('api', __name__)
 api = Api(mod)
 
-api.add_resource(GetAllBooks, '/api/v1/books')
+api.add_resource(Books, '/api/v1/books')
 api.add_resource(BookOps, '/api/v1/books/<string:book_id>')
 api.add_resource(BorrowBook, '/api/v1/users/books/<string:book_id>')
 api.add_resource(GetAllUsers, '/api/v1/users')

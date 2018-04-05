@@ -1,8 +1,7 @@
 from flask_restful import Resource
 from api.models import User, Book
-from api.bkendlogic import *
-from flask import jsonify, request, make_response, Response, json
-from werkzeug.security import generate_password_hash, check_password_hash
+from api.bkendlogic import getAllBooks, getBook, createBook, updateBook, deleteBook, createUser, getAllUsers, login, updatePassword, borrowBook
+from flask import request, Response, json
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, get_raw_jwt)
 from api import app, users, books
@@ -11,12 +10,16 @@ jwt = JWTManager(app)
 
 blacklist = set()
 
-b1 = Book('The Lean Start Up', 'Eric Ries', '12345').createbook()
-# b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890').createbook()
-# b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321').createbook()
-user1 = User("dmwangi", 'password', True).createUser()
+b1 = Book('The Lean Start Up', 'Eric Ries', '12345')
+books[b1.id] = b1.__dict__
+b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890')
+books[b2.id] = b2.__dict__
+b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321')
+books[b3.id] = b3.__dict__
+user1 = User("dmwangi", 'password')
+users[user1.id] =user1.__dict__
 
-class GetAllBooks(Resource):
+class Books(Resource):
 
     def get(self):
         """
@@ -51,9 +54,8 @@ class GetAllBooks(Resource):
         if data['isbn'].strip() == '':
             return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
 
-        res = Book(title=data['title'].strip(), author=data['author'].strip(),
-                   isbn=data['isbn'].strip()).createbook()
-        return res
+        
+        return createBook(data)
 
 
 class BookOps(Resource):
@@ -85,6 +87,15 @@ class BookOps(Resource):
         data = request.get_json(self)
         if len(data) == 0:
             return Response(json.dumps({'Message': 'No Book Information Passed'}), status=403)
+
+        if data['title'].strip() == '':
+            return Response(json.dumps({'Message': 'Title Not Provided'}), 403)
+
+        if data['author'].strip() == '':
+            return Response(json.dumps({'Message': 'Author Not Provided'}), 403)
+
+        if data['isbn'].strip() == '':
+            return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
 
         return updateBook(id=book_id, data=data)
 
@@ -124,11 +135,10 @@ class CreateUser(Resource):
         if len(data['password']) < 8:
             return Response(json.dumps({'Message': 'Password too Short'}), status=403)
 
-        hashed_password = generate_password_hash(
-            data['password'], method='sha256')
-        res = User(username=data['username'],
-                   password=hashed_password, admin=False).createUser()
-        return res
+        if data['password'] != data['confirm']:
+            return Response(json.dumps({"Message":"Passwords Do Not Match"}), status=403)
+
+        return createUser(data)
 
 
 class GetAllUsers(Resource):
@@ -157,10 +167,10 @@ class LoginUser(Resource):
         data = request.get_json(self)
 
         if len(data) == 0:
-            return Response(json.dumps({'Message': 'User Information Not Passed'}), status=403)
+            return Response(json.dumps({'Message': 'User Login Not Passed'}), status=403)
 
-        username = data['username']
-        password = data['password']
+        username = data['username'].strip()
+        password = data['password'].strip()
 
         if not username:
             return Response(json.dumps({'Message': 'Username Not Provided'}), status=403)
@@ -174,12 +184,12 @@ class LogoutUser(Resource):
     @jwt_required
     def post(self):
         jti = get_raw_jwt()['jti']
+        print(jti)
         blacklist.add(jti)
         return Response(json.dumps({"Message": "Successfully logged out"}), status=200)
 
 
 class BorrowBook(Resource):
-    @jwt_required
     def post(self, book_id):
         """
         [Post method used to pass book id to be borrowed]
@@ -209,17 +219,16 @@ class UpdatePassword(Resource):
 
         data = request.get_json(self)
 
-        users = jsonify(getAllUsers())
+        if len(data) == 0:
+            return Response(json.dumps({'Message': 'User Login Not Passed'}), status=403)
 
-        for user in users:
+        username = data['username'].strip()
+        password = data['password'].strip()
 
-            if user['username'] == data['username']:
+        if not username:
+            return Response(json.dumps({'Message': 'Username Not Provided'}), status=403)
 
-                if check_password_hash(user['password'], data['password']):
+        if not password:
+            return Response(json.dumps({'Message': 'Password Not Provided'}), status=403)
 
-                    user['password'] = generate_password_hash(
-                        data['newpassword'])
-
-                    return updatePassword(id=user_id, username=user['username'], password=user['password'])
-
-        return Response(json.dumps({'Message': 'User Does Not Exist'}), status=404)
+        return updatePassword(user_id, data)

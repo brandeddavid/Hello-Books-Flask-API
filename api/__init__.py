@@ -7,5 +7,5 @@ app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
 
 
-users = []
-books = []
+users = {}
+books = {}

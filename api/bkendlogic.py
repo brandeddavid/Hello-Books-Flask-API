@@ -5,32 +5,34 @@ from api import app, users, books
 from flask import jsonify, request, make_response, Response, json
 from api.models import Book, User
 
+
 def createBook(data):
-        """
-        [summary]
+    """
+    [summary]
 
-        Returns:
-            [type] -- [description]
-        """
+    Returns:
+        [type] -- [description]
+    """
 
-        if len(books) == 0:
-            book = Book(data['title'], data['author'], data['isbn'])
-            books[book.id] = book.__dict__
-            return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
+    if len(books) == 0:
+        book = Book(data['title'], data['author'], data['isbn'])
+        books[book.id] = book.__dict__
+        return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
 
-        else:
+    else:
 
-            for key in books:
+        for key in books:
 
-                if books[key]['isbn'] == data['isbn']:
+            if books[key]['isbn'] == data['isbn']:
 
-                    return Response(json.dumps({'Message': 'Book Already Exists'}), status=409)
+                return Response(json.dumps({'Message': 'Book Already Exists'}), status=409)
 
-            book = Book(data['title'], data['author'], data['isbn'])
-            books[book.id] = book.__dict__
+        book = Book(data['title'], data['author'], data['isbn'])
+        books[book.id] = book.__dict__
 
-            return Response(json.dumps({'Message': 'Book Created Successfully'}), status=201)
-        
+        return Response(json.dumps({'Message': 'Book Created Successfully'}), status=201)
+
+
 def getAllBooks():
     """
     [summary]
@@ -43,6 +45,7 @@ def getAllBooks():
         return Response(json.dumps({'Message': 'No Books'}), status=404)
 
     return Response(json.dumps(books), status=200)
+
 
 def getBook(id):
     """
@@ -62,6 +65,7 @@ def getBook(id):
             return Response(json.dumps(books[key]), status=200)
 
     return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
+
 
 def updateBook(id, data):
     """
@@ -87,6 +91,7 @@ def updateBook(id, data):
 
     return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
 
+
 def deleteBook(id):
     """
     [summary]
@@ -110,29 +115,30 @@ def deleteBook(id):
 
 
 def createUser(data):
-        """
-        [Summary]
+    """
+    [Summary]
 
-        Returns:
-            [type] -- [description]
-        """
-        hashed_password = generate_password_hash(data['password'], method='sha256')
+    Returns:
+        [type] -- [description]
+    """
+    hashed_password = generate_password_hash(data['password'], method='sha256')
 
-        if len(users) == 0:
-            user = User(data['username'], hashed_password)
-            users[user.id] = user.__dict__
-            return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
-
-        for key in users:
-
-            if users[key]['username'] == data['username']:
-
-                return Response(json.dumps({'Message': 'Username Exists'}), status=409)
-
+    if len(users) == 0:
         user = User(data['username'], hashed_password)
         users[user.id] = user.__dict__
-
         return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
+
+    for key in users:
+
+        if users[key]['username'] == data['username']:
+
+            return Response(json.dumps({'Message': 'Username Exists'}), status=409)
+
+    user = User(data['username'], hashed_password)
+    users[user.id] = user.__dict__
+
+    return Response(json.dumps({'Message': 'User Created Successfully'}), status=201)
+
 
 def getAllUsers():
     """
@@ -148,6 +154,7 @@ def getAllUsers():
 
     return Response(json.dumps(users), status=200)
 
+
 def login(username, password):
     for key in users:
 
@@ -162,6 +169,7 @@ def login(username, password):
 
     return Response(json.dumps({'Message': 'User Does Not Exist'}), status=404)
 
+
 def borrowBook(book_id, data):
     """
     [summary]
@@ -172,22 +180,23 @@ def borrowBook(book_id, data):
     Returns:
         [type] -- [description]
     """
-    
+    id = getUserId(data['username'])
+    for key in users:
+        if key == id:
+            user = users[key]
     for key in books:
-
-        if books[key]['id'] == book_id:
-            
-            if books[key]['available'] == True:
-
-                id = getUserId(data['username'])
-
-                for key in users:
-                    if key == id:
-                        users[key]['borrowedbooks'].append(book_id)
-                        return Response(json.dumps({'Message': 'Successfully Borrowed Book'}), status=200)
-
-        return Response(json.dumps({'Message': 'Book Does Not Exist'}), status=404)
-
+        if books[key]['id'] == book_id and books[key]['available'] == True:
+            book = books[key]
+    if len(user['borrowedbooks']) == 0:
+        user['borrowedbooks'].append(book_id)
+        book['available'] = False
+        return Response(json.dumps({'Message': 'Successfully Borrowed Book'}), status=200)
+    for bookid in user['borrowedbooks']:
+        if bookid == book_id:
+            return Response(json.dumps({"Message":"Book Already Borrowed"}), status=403)
+    user['borrowedbooks'].append(book_id)
+    book['available'] = False
+    return Response(json.dumps({'Message': 'Successfully Borrowed Book'}), status=200)
 
 def updatePassword(id, data):
     """
@@ -203,52 +212,69 @@ def updatePassword(id, data):
     """
 
     for key in users:
-
         if users[key]['username'] == data['username']:
-
             if check_password_hash(users[key]['password'], data['password']):
-
                 users[key]['password'] = generate_password_hash(
                     data['newpassword'])
                 return Response(json.dumps({'Message': 'User Password Updated Successfully'}), status=200)
-
         return Response(json.dumps({'Message': 'User Does Not Exist'}), status=404)
-
     return Response(json.dumps({'Message': 'User Password Update Failed'}), status=200)
 
 def deleteUser(id):
+    """
+    [summary]
+    
+    Arguments:
+        id {[type]} -- [description]
+    """
+
     for key in users:
         if users[key]['id'] == id:
             del(books[key])
 
+
 def getUserId(username):
-
+    """
+    [summary]
+    
+    Arguments:
+        username {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     for key in users:
-
         if users[key]['username'] == username:
-
             return users[key]['id']
 
+
 def getBookId(isbn):
+    """"[summary]
+    
+    Arguments:
+        isbn {bool} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
 
     for key in books:
-
         if books[key]['isbn'] == isbn:
-
             return books[key]['id']
 
 ### DANGER ZONE ##
 
 
 def deleteAllUsers():
-
+    """"[summary]
+    """
     if len(users) == 0:
         pass
     for key in users:
         del(books[key])
 
-
 def deleteAllBooks():
-
+    """"[summary]
+    """
     for key in books:
         del(books[key])

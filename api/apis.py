@@ -15,8 +15,8 @@ b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890')
 books[b2.id] = b2.__dict__
 b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321')
 books[b3.id] = b3.__dict__
-user1 = User("dmwangi", 'password')
-users[user1.id] = user1.__dict__
+# user1 = User("dmwangi", 'password')
+# users[user1.id] = user1.__dict__
 
 
 class Books(Resource):

@@ -14,14 +14,19 @@ This repository contains Flask API endpoints and tests for the Hello-World Appli
 | Endpoint | Description |
 | --- | --- |
 | POST /api/v1/books | Adds a New Book
-| PUT /api/v1/books/<bookId> | Edits Individal Book Info
-| DELETE /api/v1/books/<bookId> | Deletes A Book
+| PUT /api/v1/books/<string:bookId> | Edits Individal Book Info
+| DELETE /api/v1/books/<string:bookId> | Deletes A Book
 | GET /api/v1/books | Retrieves All Books
-| GET /api/v1/books/<bookId> | Get Book by id
-| POST /api/v1/users/books/<bookId> | Borrow a book
+| GET /api/v1/books/<string: bookId> | Get Book by id
+| POST /api/v1/users/books/<string: bookId> | Borrow a book
 | POST /api/v1/auth/register | Register a New User
+| POST /api/v1/users | Gets all Users
 | POST /api/v1/auth/login | Logs in a registered User
-| POST /api/v1/auth/logout | Logs Out a Logged in User
+| POST /api/v1/auth/logout | Logs Out a Logged in 
+
+## API Endpoints Documentation
+
+Find API endpoints documentation [here](https://banana-pie-71385.herokuapp.com/)
 
 ## Testing API Endpoints
 

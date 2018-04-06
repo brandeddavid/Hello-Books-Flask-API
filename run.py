@@ -1,6 +1,7 @@
+from flask import render_template
+
 from api import app
 from api import routes
-from flask import render_template
 
 # Register API Blueprint
 app.register_blueprint(routes.mod)

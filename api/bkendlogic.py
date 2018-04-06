@@ -123,15 +123,15 @@ def createUser(data):
     if len(users) == 0:
         user = User(data['username'].strip().lower(), hashed_password)
         users[user.id] = user.__dict__
-        return Response(json.dumps({'Message': 'User Created \
-        Successfully'}), status=201)
+        return Response(json.dumps({'Message': 'User Created\
+ Successfully'}), status=201)
     for key in users:
         if users[key]['username'] == data['username']:
             return Response(json.dumps({'Message': 'Username Exists'}),
                 status=409)
     user = User(data['username'], hashed_password)
     users[user.id] = user.__dict__
-    return Response(json.dumps({'Message': 'User Created \
+    return Response(json.dumps({'Message': 'User Created\
     Successfully'}), status=201)
 
 
@@ -183,25 +183,36 @@ def borrowBook(book_id, data):
         [type] -- [description]
     """
     id = getUserId(data['username'])
+    if not id:
+        return Response(json.dumps({'Message': 'User Does Not Exist'}), status=404)
     for key in users:
         if key == id:
             user = users[key]
-    for key in books:
-        if books[key]['id'] == book_id and books[key]['available'] == True:
-            book = books[key]
+    if len(books) == 0:
+        return Response(json.dumps({'Message': 'No Books Available'}), status=404)
+    else:
+        if book_id not in books.keys():
+            return Response(json.dumps({'Message': 'Book Not Available'}), status=404)
+        for key in books:
+            if books[key]['id'] == book_id:
+                if books[key]['available'] == True:
+                    book = books[key]
+            else:
+                    return Response(json.dumps({"Message": "Book Not Available"}),
+             status=403)    
     if len(user['borrowedbooks']) == 0:
         user['borrowedbooks'].append(book_id)
         book['available'] = False
-        return Response(json.dumps({'Message': 'Successfully Borrowed \
-        Book'}), status=200)
+        return Response(json.dumps({'Message': 'Successfully Borrowed Book'}),
+         status=200)
     for bookid in user['borrowedbooks']:
         if bookid == book_id:
-            return Response(json.dumps({"Message": "Book Already \
-            Borrowed"}), status=403)
+            return Response(json.dumps({"Message": "Book Already Borrowed"}),
+             status=403)
     user['borrowedbooks'].append(book_id)
     book['available'] = False
-    return Response(json.dumps({'Message': 'Successfully \
-    Borrowed Book'}), status=200)
+    return Response(json.dumps({'Message': 'Successfully Borrowed Book'}),
+     status=200)
 
 
 def updatePassword(id, data):
@@ -248,6 +259,9 @@ def getUserId(username):
     Returns:
         [str] -- [id of the user]
     """
+    if len(users) == 0:
+        user = None
+        return user
     for key in users:
         if users[key]['username'] == username:
             return users[key]['id']
@@ -261,6 +275,9 @@ def getBookId(isbn):
     Returns:
         [str] -- [id of the book]
     """
+    if len(books) == 0:
+        book = None
+        return book
     for key in books:
         if books[key]['isbn'] == isbn:
             return books[key]['id']

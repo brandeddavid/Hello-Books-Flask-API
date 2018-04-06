@@ -31,7 +31,6 @@ class TestBookAPI(unittest.TestCase):
         Tests the get all boooks API endpoint.
         Asserts 200 OK Status Code Response
         """
-
         res = self.app.get('/api/v1/books')
         self.assertEqual(res.status_code, 200)
 
@@ -40,13 +39,11 @@ class TestBookAPI(unittest.TestCase):
         Tests Create book API endpoint
         Asserts 404 Created Status Code Response
         """
-
         payload = {
             "title": "New Book",
             "author": "New Author",
             "isbn": "389837"
         }
-
         res = self.app.post('/api/v1/books', data=json.dumps(payload))
         return self.assertEqual(res.status_code, 201)
 
@@ -56,7 +53,6 @@ class TestBookAPI(unittest.TestCase):
         Asserts 400 Bad Request Status Code Response
         """
         payload = {}
-
         res = self.app.post('/api/v1/books', data=json.dumps(payload))
         return self.assertEqual(res.status_code, 403)
 
@@ -65,13 +61,11 @@ class TestBookAPI(unittest.TestCase):
         Tests Create book API endpoint
         Asserts 201 Created Status Code Response
         """
-
         payload = {
             "title": "",
             "author": "New Author",
             "isbn": "389837"
         }
-
         res = self.app.post('/api/v1/books', data=json.dumps(payload))
         return self.assertEqual(res.status_code, 403)
 
@@ -80,13 +74,11 @@ class TestBookAPI(unittest.TestCase):
         Tests Create book API endpoint
         Asserts 201 Created Status Code Response
         """
-
         payload = {
             "title": "New title",
             "author": "",
             "isbn": "389837"
         }
-
         res = self.app.post('/api/v1/books', data=json.dumps(payload))
         return self.assertEqual(res.status_code, 403)
 
@@ -95,13 +87,50 @@ class TestBookAPI(unittest.TestCase):
         Tests Create book API endpoint
         Asserts 201 Created Status Code Response
         """
-
         payload = {
             "title": "New title",
             "author": "New Author",
             "isbn": ""
         }
+        res = self.app.post('/api/v1/books', data=json.dumps(payload))
+        return self.assertEqual(res.status_code, 403)
 
+    def test_create_book_empty_title(self):
+        """
+        Tests Create book API endpoint
+        Asserts 201 Created Status Code Response
+        """
+        payload = {
+            "title": "   ",
+            "author": "New Author",
+            "isbn": "4647689"
+        }
+        res = self.app.post('/api/v1/books', data=json.dumps(payload))
+        return self.assertEqual(res.status_code, 403)
+
+    def test_create_book_empty_author(self):
+        """
+        Tests Create book API endpoint
+        Asserts 201 Created Status Code Response
+        """
+        payload = {
+            "title": "New Title",
+            "author": "     ",
+            "isbn": ""
+        }
+        res = self.app.post('/api/v1/books', data=json.dumps(payload))
+        return self.assertEqual(res.status_code, 403)
+
+    def test_create_book_empty_isbn(self):
+        """
+        Tests Create book API endpoint
+        Asserts 201 Created Status Code Response
+        """
+        payload = {
+            "title": "New Title",
+            "author": "New Author",
+            "isbn": "     "
+        }
         res = self.app.post('/api/v1/books', data=json.dumps(payload))
         return self.assertEqual(res.status_code, 403)
 
@@ -202,7 +231,6 @@ class TestBookAPI(unittest.TestCase):
         Tests Delete book API endpoint if book does not exist
         Asserts 404 Not Found Status Code Response
         """
-
         res = self.app.delete('/api/v1/books/100')
         self.assertEqual(res.status_code, 404)
 

@@ -185,8 +185,26 @@ class TestUserAPI(unittest.TestCase):
         book = Book('Title', 'Author', '34678')
         books[book.id] = book.__dict__
         id = getBookId('34678')
-        res = self.app.post('/api/v1/users/books/'+id)
+        payload = {
+            "username":"dmwangi"
+        }
+        res = self.app.post('/api/v1/users/books/'+id, data=json.dumps(payload))
         self.assertEqual(res.status_code, 200)
+
+    def test_borrow_book_api_endpoint_non_user(self):
+        """
+        Tests Borrow book API endpoint
+        Asserts 200 OK Status Code Response     
+        """
+        book = Book('Title', 'Author', '34678')
+        books[book.id] = book.__dict__
+        id = getBookId('34678')
+        payload = {
+            "username":"noreg"
+        }
+        res = self.app.post('/api/v1/users/books/'+id, data=json.dumps(payload))
+        self.assertEqual(res.status_code, 200)
+        
         
 
 if __name__ == '__main__':

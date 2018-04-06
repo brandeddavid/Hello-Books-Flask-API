@@ -17,16 +17,6 @@ from api.models import Admin
 jwt = JWTManager(app)
 
 
-# b1 = Book('The Lean Start Up', 'Eric Ries', '12345')
-# books[b1.id] = b1.__dict__
-# b2 = Book('A Game of Thrones', 'George R.R. Martin', '67890')
-# books[b2.id] = b2.__dict__
-# b3 = Book('If Tomorrow Comes', 'Sidney Sheldon', '54321')
-# books[b3.id] = b3.__dict__
-# user1 = User("dmwangi", 'password')
-# users[user1.id] = user1.__dict__
-
-
 class Books(Resource):
     """
     Resource with methods serving the Books api endpoints
@@ -56,10 +46,17 @@ class Books(Resource):
              Passed'}), 403)
         if data['title'].strip() == '':
             return Response(json.dumps({'Message': 'Title Not Provided'}), 403)
+        if len(data['title'].strip()) == 0:
+            return Response(json.dumps({'Message': 'Title Not Provided'}), 403)
         if data['author'].strip() == '':
             return Response(json.dumps({'Message': 'Author Not \
             Provided'}), 403)
+        if len(data['author'].strip()) == 0:
+            return Response(json.dumps({'Message': 'Author Not \
+            Provided'}), 403)
         if data['isbn'].strip() == '':
+            return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
+        if len(data['isbn'].strip()) == 0:
             return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
         return createBook(data)
 
@@ -108,7 +105,6 @@ class BookOps(Resource):
     def delete(self, book_id):
         """
         [Delete method deletes a book]
-
         Arguments:
             book_id {[str]} -- [str representation of the book id]
 

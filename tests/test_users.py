@@ -25,19 +25,7 @@ class TestUserAPI(unittest.TestCase):
         self.app = None
         self.user = None
 
-    def test_register_user_success(self):
-        """
-        Tests 201 status code response when user has been created successfully
-        Asserts 201 Created Status Response
-        """
-        payload = {
-            "username": "username",
-            "password": "password1234",
-            "confirm": "password1234"
-        }
-        res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 201)
-
+    
     def test_register_user_bad_request(self):
         """
         Tests whether the register user API endpoint can pass a Bad Request(Missing User Information)
@@ -100,26 +88,6 @@ class TestUserAPI(unittest.TestCase):
         res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
         self.assertEqual(res.status_code, 403)
 
-    def test_get_all_users(self):
-        """
-        Tests Get All Users API endpoint
-        Asserts 200 OK Status Code Response
-        """
-        res = self.app.get('/api/v1/users')
-        self.assertEqual(res.status_code, 200)
-
-    def test_login_successful(self):
-        """
-        Tests Login API endpoint
-        Asserts 200 OK Status Code Response
-        """
-        payload = {
-            "username": "dmwangi",
-            "password": "password123",
-        }
-        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 200)
-
     def test_login_no_username(self):
         """
         Tests Login API endpoint
@@ -151,60 +119,7 @@ class TestUserAPI(unittest.TestCase):
         """
         payload = {}
         res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 403)
-
-    def test_login_user_not_registered(self):
-        """
-        Tests Login API endpoint
-        Asserts 404 OK Status Code Response
-        """
-        payload = {
-            "username": "notauser",
-            "password": "password123",
-        }
-        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 404)
-
-    def test_login_user_wrong_password(self):
-        """
-        Tests Login API endpoint
-        Asserts 404 OK Status Code Response
-        """
-        payload = {
-            "username": "dmwangi",
-            "password": "password",
-        }
-        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
-        self.assertEqual(res.status_code, 401)
-
-    def test_borrow_book_api_endpoint(self):
-        """
-        Tests Borrow book API endpoint
-        Asserts 200 OK Status Code Response     
-        """
-        book = Book('Title', 'Author', '34678')
-        books[book.id] = book.__dict__
-        id = getBookId('34678')
-        payload = {
-            "username":"dmwangi"
-        }
-        res = self.app.post('/api/v1/users/books/'+id, data=json.dumps(payload))
-        self.assertEqual(res.status_code, 200)
-
-    def test_borrow_book_api_endpoint_non_user(self):
-        """
-        Tests Borrow book API endpoint
-        Asserts 200 OK Status Code Response     
-        """
-        book = Book('Title', 'Author', '34678')
-        books[book.id] = book.__dict__
-        id = getBookId('34678')
-        payload = {
-            "username":"noreg"
-        }
-        res = self.app.post('/api/v1/users/books/'+id, data=json.dumps(payload))
-        self.assertEqual(res.status_code, 200)
-        
+        self.assertEqual(res.status_code, 403)     
         
 
 if __name__ == '__main__':

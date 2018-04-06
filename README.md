@@ -6,8 +6,30 @@
 This repository contains Flask API endpoints and tests for the Hello-World Application.
 
 ## Runnning Application
-
-**To Be Updated**
+Clone Repo From GitHub
+```
+git clone https://github.com/brandeddavid/Hello-Books-Flask-API.git
+```
+Enter Directory
+```
+cd Hello-Books-Flask-API
+```
+Create Virtual Environment
+```
+virtualenv -p python3 venv
+```
+Start virtualenv
+```
+source venv/bin/activate
+```
+Install Dependencies
+```
+pip install -r requrements.txt
+```
+Run app
+```
+python run.py
+```
 
 ## Available API Endpoints
 

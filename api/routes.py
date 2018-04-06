@@ -1,6 +1,13 @@
+"""
+[
+    File maps apiendpoints to resourses serving them
+]
+"""
 from flask import Blueprint
-from api.apis import Books, BookOps, BorrowBook, GetAllUsers, CreateUser, LoginUser, UpdatePassword, LogoutUser
 from flask_restful import Api
+
+from api.apis import Books, BookOps, BorrowBook, GetAllUsers
+from api.apis import CreateUser, LoginUser, UpdatePassword, LogoutUser
 
 mod = Blueprint('api', __name__)
 api = Api(mod)

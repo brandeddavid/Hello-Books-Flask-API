@@ -14,7 +14,7 @@ class TestUserAPI(unittest.TestCase):
         """
         app.testing = True
         self.app = app.test_client()
-        self.user = User('dmwangi', 'password123')
+        self.user = User('dmwangi', 'password1234')
         users[self.user.id] = self.user
 
     def tearDown(self):
@@ -25,7 +25,19 @@ class TestUserAPI(unittest.TestCase):
         self.app = None
         self.user = None
 
-    
+    def test_register_user_success(self):
+        """
+        Tests 201 status code response when user has been created successfully
+        Asserts 201 Created Status Response
+        """
+        payload = {
+            "username": "username",
+            "password": "password1234",
+            "confirm": "password1234"
+        }
+        res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 201)
+
     def test_register_user_bad_request(self):
         """
         Tests whether the register user API endpoint can pass a Bad Request(Missing User Information)
@@ -84,6 +96,19 @@ class TestUserAPI(unittest.TestCase):
             "username": "username",
             "password": "pas",
             "confirm": "pas"
+        }
+        res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 403)
+    
+    def test_register_user_password_mismatch(self):
+        """
+        Tests 201 status code response when user has been created successfully
+        Asserts 201 Created Status Response
+        """
+        payload = {
+            "username": "username",
+            "password": "password1234",
+            "confirm": "password123456"
         }
         res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
         self.assertEqual(res.status_code, 403)

@@ -121,18 +121,19 @@ def createUser(data):
     """
     hashed_password = generate_password_hash(data['password'], method='sha256')
     if len(users) == 0:
-        user = User(data['username'].strip().lower(), hashed_password)
+        user = User(data['username'], hashed_password)
         users[user.id] = user.__dict__
         return Response(json.dumps({'Message': 'User Created\
  Successfully'}), status=201)
-    for key in users:
-        if users[key]['username'] == data['username']:
-            return Response(json.dumps({'Message': 'Username Exists'}),
-                status=409)
-    user = User(data['username'], hashed_password)
-    users[user.id] = user.__dict__
-    return Response(json.dumps({'Message': 'User Created\
-    Successfully'}), status=201)
+    else:
+        for key in users:
+            if users[key].username == data['username']:
+                return Response(json.dumps({'Message': 'Username Exists'}),
+                    status=409)
+        user = User(data['username'], hashed_password)
+        users[user.id] = user.__dict__
+        return Response(json.dumps({'Message': 'User Created\
+        Successfully'}), status=201)
 
 
 def getAllUsers():

@@ -210,8 +210,8 @@ class TestBookAPI(unittest.TestCase):
         """
         payload = {
             "title": "New Title",
-            "author": "",
-            "isbn": "3786376"
+            "author": "New Title",
+            "isbn": ""
         }
         id = getBookId("456788")
         res = self.app.put('/api/v1/books/' +id, data=json.dumps(payload))

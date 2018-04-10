@@ -37,7 +37,7 @@ class TestBookAPI(unittest.TestCase):
     def test_create_book(self):
         """
         Tests Create book API endpoint
-        Asserts 404 Created Status Code Response
+        Asserts 201 Created Status Code Response
         """
         payload = {
             "title": "New Book",
@@ -134,6 +134,19 @@ class TestBookAPI(unittest.TestCase):
         res = self.app.post('/api/v1/books', data=json.dumps(payload))
         return self.assertEqual(res.status_code, 403)
 
+    def test_create_book_already_exists(self):
+        """
+        Tests Create book API endpoint
+        Asserts 409 Created Status Code Response
+        """
+        payload = {
+            "title": "Book Title1", 
+            "author": "Book Author1", 
+            "isbn": "456788"
+        }
+        res = self.app.post('/api/v1/books', data=json.dumps(payload))
+        return self.assertEqual(res.status_code, 409)
+
     def test_get_book_by_id(self):
         """
         Tests Get book by id API endpoint
@@ -210,12 +223,25 @@ class TestBookAPI(unittest.TestCase):
         """
         payload = {
             "title": "New Title",
-            "author": "",
-            "isbn": "3786376"
+            "author": "New Title",
+            "isbn": ""
         }
         id = getBookId("456788")
         res = self.app.put('/api/v1/books/' +id, data=json.dumps(payload))
         self.assertEqual(res.status_code, 403)
+
+    def test_book_update_not_exist(self):
+        """
+        Tests Update book API endpoint
+        Asserts 200 OK Status Code Response
+        """
+        payload = {
+            "title": "New Title",
+            "author": "New Author",
+            "isbn": "3786376"
+        }
+        res = self.app.put('/api/v1/books/1000', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 404)
 
     def test_delete_book_success(self):
         """
@@ -225,6 +251,7 @@ class TestBookAPI(unittest.TestCase):
         id = getBookId("456788")
         res = self.app.delete('/api/v1/books/'+id)
         self.assertEqual(res.status_code, 204)
+        print(books)
 
     def test_delete_book_book_not_found(self):
         """

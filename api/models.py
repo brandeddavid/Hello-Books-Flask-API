@@ -8,7 +8,7 @@ from flask import json, Response
 from api import users, books
 
 
-class User:
+class User(object):
     """
     [
         Class creating a user object
@@ -51,7 +51,7 @@ class Admin(User):
         self.borrowedbooks = None
 
 
-class Book:
+class Book(object):
     """
     [
         Class creates a book object

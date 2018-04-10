@@ -44,19 +44,15 @@ class Books(Resource):
         if len(data) == 0:
             return Response(json.dumps({'Message': 'No Book Information\
              Passed'}), 403)
-        if data['title'].strip() == '':
+        data['title'] = data['title'].strip()
+        data['author'] = data['author'].strip()
+        data['isbn'] = data['isbn'].strip()
+        if data['title'] == '':
             return Response(json.dumps({'Message': 'Title Not Provided'}), 403)
-        if len(data['title'].strip()) == 0:
-            return Response(json.dumps({'Message': 'Title Not Provided'}), 403)
-        if data['author'].strip() == '':
+        if data['author'] == '':
             return Response(json.dumps({'Message': 'Author Not \
             Provided'}), 403)
-        if len(data['author'].strip()) == 0:
-            return Response(json.dumps({'Message': 'Author Not \
-            Provided'}), 403)
-        if data['isbn'].strip() == '':
-            return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
-        if len(data['isbn'].strip()) == 0:
+        if data['isbn'] == '':
             return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
         return createBook(data)
 
@@ -93,12 +89,15 @@ class BookOps(Resource):
         if len(data) == 0:
             return Response(json.dumps({'Message': 'No Book Information \
             Passed'}), status=403)
-        if data['title'].strip() == '':
+        data['title'] = data['title'].strip()
+        data['author'] = data['author'].strip()
+        data['isbn'] = data['isbn'].strip()
+        if data['title'] == '':
             return Response(json.dumps({'Message': 'Title Not Provided'}), 403)
-        if data['author'].strip() == '':
+        if data['author'] == '':
             return Response(json.dumps({'Message': 'Author Not \
             Provided'}), 403)
-        if data['isbn'].strip() == '':
+        if data['isbn'] == '':
             return Response(json.dumps({'Message': 'ISBN Not Provided'}), 403)
         return updateBook(id=book_id, data=data)
 
@@ -126,17 +125,19 @@ class CreateUser(Resource):
         """
 
         data = request.get_json(self)
-
         if len(data) == 0:
             return Response(json.dumps({'Message': 'No User Information \
             Passed'}), status=403)
-        if data['username'].strip() == '':
+        data['username'] = data['username'].strip().lower()
+        data['password'] = data['password'].strip()
+        data['confirm'] = data['confirm'].strip()
+        if data['username'] == '':
             return Response(json.dumps({'Message': 'Username Not \
             Provided'}), status=403)
-        if data['password'].strip() == '':
+        if data['password'] == '':
             return Response(json.dumps({'Message': 'Password Not \
             Provided'}), status=403)
-        if data['confirm'].strip() == '':
+        if data['confirm'] == '':
             return Response(json.dumps({'Message': 'Required to Confirm \
             Password'}), status=403)
         if len(data['password']) < 8:

@@ -14,8 +14,10 @@ class TestUserAPI(unittest.TestCase):
         """
         app.testing = True
         self.app = app.test_client()
-        self.user = User('dmwangi', 'password1234')
+        self.user = User('dmwangi', 'password12345')
         users[self.user.id] = self.user
+        self.user1 = User('testuser', 'password')
+        users[self.user1.id] = self.user1
 
     def tearDown(self):
         """
@@ -26,6 +28,19 @@ class TestUserAPI(unittest.TestCase):
         self.user = None
 
     def test_register_user_success(self):
+        """
+        Tests 201 status code response when user has been created successfully
+        Asserts 201 Created Status Response
+        """
+        payload = {
+            "username": "dmwangi",
+            "password": "password1234",
+            "confirm": "password1234"
+        }
+        res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 409)
+
+    def test_register_user_username_exists(self):
         """
         Tests 201 status code response when user has been created successfully
         Asserts 201 Created Status Response
@@ -112,6 +127,44 @@ class TestUserAPI(unittest.TestCase):
         }
         res = self.app.post('/api/v1/auth/register', data=json.dumps(payload))
         self.assertEqual(res.status_code, 403)
+
+    # def test_login_success(self):
+    #     """
+    #     Tests Login API endpoint
+    #     Asserts 200 OK Status Code Response
+    #     """
+    #     payload = {
+    #         "username": "testuser",
+    #         "password": "password"
+    #     }
+    #     for key in users:
+    #         print(users[key].password)
+    #     res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
+    #     self.assertEqual(res.status_code, 200)
+
+    def test_login_invalid_password(self):
+        """
+        Tests Login API endpoint
+        Asserts 200 OK Status Code Response
+        """
+        payload = {
+            "username": "dmwangi",
+            "password": "password12345736",
+        }
+        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 401)
+    
+    def test_login_user_does_not_exist(self):
+        """
+        Tests Login API endpoint
+        Asserts 200 OK Status Code Response
+        """
+        payload = {
+            "username": "nouser",
+            "password": "password12345",
+        }
+        res = self.app.post('/api/v1/auth/login', data=json.dumps(payload))
+        self.assertEqual(res.status_code, 404)
 
     def test_login_no_username(self):
         """

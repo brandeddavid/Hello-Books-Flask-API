@@ -163,8 +163,8 @@ def login(username, password):
         ]
     """
     for key in users:
-        if users[key]['username'] == username:
-            if check_password_hash(users[key]['password'], password):
+        if users[key].username == username:
+            if check_password_hash(users[key].password, password):
                 access_token = create_access_token(identity=username)
                 return Response(json.dumps({'access_token': access_token}),
                  status=200)
@@ -246,7 +246,6 @@ def deleteUser(id):
     Arguments:
         id {[str]} -- [id of the user to be deleted]
     """
-
     for key in users:
         if users[key]['id'] == id:
             del(books[key])

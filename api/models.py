@@ -22,17 +22,24 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     is_admin = db.Column(db.Boolean, default=False)
 
-    @property
-    def password(self):
-        """
-        [
-            Prevents password from being accessed
-        ]
-        """
-        raise AttributeError("Password is not readable")
+    def __init__(self, email, username, first_name, last_name, password):
+        self.email = email
+        self.username = username
+        self.first_name = first_name
+        self.last_name = last_name
+        self.password_hash = self.hash_password(password)
 
-    @password.setter
-    def password(self, password):
+    # @property
+    # def password(self):
+    #     """
+    #     [
+    #         Prevents password from being accessed
+    #     ]
+    #     """
+    #     raise AttributeError("Password is not readable")
+
+    @staticmethod
+    def hash_password(password):
         """
         [
             Hashes user password
@@ -40,9 +47,9 @@ class User(db.Model):
         Arguments:
             password {[str]} -- [User's password]
         """
-        self.password_hash = generate_password_hash(password)
+        return generate_password_hash(password)
 
-    def verify_password(self, password):
+    def verify_password(password):
         """
         [
             Check is password hash matches actual password
@@ -53,6 +60,34 @@ class User(db.Model):
             [bool] -- [True is matches, False is not]
         """
         return check_password_hash(self.password_hash, password)
+    
+    def save(self):
+        """
+        [
+            
+        ]
+        """
+        db.session.add(self)
+        db.session.commit()
+    
+    @staticmethod
+    def all_users():
+        """[summary]
+        
+        Returns:
+            [type] -- [description]
+        """
+
+        return User.query.all()
+    
+    @property
+    def serialize(self):
+        return {
+            "email": self.email,
+            "username": self.username,
+            "full_name": self.first_name + " " + self.last_name,
+            "is_admin": self.is_admin,
+        }
 
     def __repr__(self):
         return "User: {}".format(self.username)

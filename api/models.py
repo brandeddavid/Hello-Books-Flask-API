@@ -106,4 +106,51 @@ class Book(db.Model):
     author = db.Column(db.String(68), index=True)
     isbn = db.Column(db.String(68), index=True)
     publisher = db.Column(db.String(68), index=True)
-    quantity = db.Column(db.Integer)
+    quantity = db.Column(db.Integer, default=0)
+    availability = False
+
+    @staticmethod
+    def all_books():
+        """[summary]
+        
+        Returns:
+            [type] -- [description]
+        """
+        return Book.query.all()
+
+    @staticmethod
+    def book_by_id(id):
+        """[summary]
+        
+        Arguments:
+            id {[type]} -- [description]
+        
+        Returns:
+            [type] -- [description]
+        """
+        return Book.query.filter_by(id=id).first()
+    
+    @property
+    def serialize(self):
+        """[summary]
+        
+        Returns:
+            [type] -- [description]
+        """
+        if self.quantity == 0:
+            self.availability = False
+        self.availability = True
+        return {
+            "title": self.title,
+            "author": self.author,
+            "isbn": self.isbn,
+            "publisher": self.publisher,
+            "availability": self.availability
+        }
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "Book: {}".format(self.title)

@@ -1,78 +1,74 @@
 """
 [
-    File defines the user, book and the admin classes.
+    File defines the user, book classes.
 ]
 """
-from flask import json, Response
+from werkzeug.security import generate_password_hash, check_password_hash
+from api import db
 
-from api import users, books
-
-
-class User(object):
+class User(db.Model):
     """
     [
-        Class creating a user object
+        User Model
     ]
     """
-    user_id = 1
+    #Ensure table name is in plural
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(60), index=True, unique=True)
+    username = db.Column(db.String(60), index=True, unique=True)
+    first_name = db.Column(db.String(60), index=True)
+    last_name = db.Column(db.String(60), index=True)
+    password_hash = db.Column(db.String(128))
+    is_admin = db.Column(db.Boolean, default=False)
 
-    def __init__(self, username, password):
+    @property
+    def password(self):
         """
         [
-            Initializes a User Object
+            Prevents password from being accessed
+        ]
+        """
+        raise AttributeError("Password is not readable")
+
+    @password.setter
+    def password(self, password):
+        """
+        [
+            Hashes user password
         ]
         Arguments:
-            username {[str]} -- [User's username]
             password {[str]} -- [User's password]
         """
-        self.id = str(User.user_id)
-        User.user_id += 1
-        self.username = username
-        self.password = password
-        self.admin = False
-        self.borrowedbooks = []
+        self.password_hash = generate_password_hash(password)
 
-
-class Admin(User):
-    """
-    [
-        Class inherits from User class and creates an admin
-    ]
-    Arguments:
-        User {[object]} -- [Inherited User object]
-    """
-    def __init__(self):
+    def verify_password(self, password):
         """
         [
-            Defines propeerties specific to the admin object
+            Check is password hash matches actual password
         ]
-        """
-        self.admin = True
-        self.borrowedbooks = None
-
-
-class Book(object):
-    """
-    [
-        Class creates a book object
-    ]
-    """
-    book_id = 1
-
-    def __init__(self, title, author, isbn):
-        """
-        [
-            Initializes a book object
-        ]
-
         Arguments:
-            title {[str]} -- [Book's title]
-            author {[str]} -- [Book's author]
-            isbn {str} -- [Book's isbn]
+            password {[str]} -- [Password input]
+        Returns:
+            [bool] -- [True is matches, False is not]
         """
-        self.id = str(Book.book_id)
-        Book.book_id += 1
-        self.title = title
-        self.author = author
-        self.isbn = isbn
-        self.available = True
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return "User: {}".format(self.username)
+
+
+class Book(db.Model):
+    """
+    [
+        Book Model
+    ]
+    """
+    #Ensure table name is in plural
+    __tablename__ = 'books'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(68), index=True)
+    author = db.Column(db.String(68), index=True)
+    isbn = db.Column(db.String(68), index=True)
+    publisher = db.Column(db.String(68), index=True)
+    quantity = db.Column(db.Integer)

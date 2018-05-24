@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import request, json, Response, Markup
+from flask import request, json, Response
 from api.models import User
 
 class CreateUser(Resource):

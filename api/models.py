@@ -109,6 +109,13 @@ class Book(db.Model):
     quantity = db.Column(db.Integer, default=0)
     availability = False
 
+    def __init__(self, title, author, isbn, publisher, quantity):
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+        self.publisher = publisher
+        self.quantity = quantity
+
     @staticmethod
     def all_books():
         """[summary]
@@ -139,7 +146,8 @@ class Book(db.Model):
         """
         if self.quantity == 0:
             self.availability = False
-        self.availability = True
+        else:
+            self.availability = True
         return {
             "title": self.title,
             "author": self.author,

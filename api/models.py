@@ -102,11 +102,11 @@ class Book(db.Model):
     #Ensure table name is in plural
     __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(68), index=True)
-    author = db.Column(db.String(68), index=True)
-    isbn = db.Column(db.String(68), index=True)
-    publisher = db.Column(db.String(68), index=True)
-    quantity = db.Column(db.Integer, default=0)
+    title = db.Column(db.String(500), index=True)
+    author = db.Column(db.String(100), index=True)
+    isbn = db.Column(db.String(100), index=True, unique=True)
+    publisher = db.Column(db.String(100), index=True)
+    quantity = db.Column(db.Integer)
     availability = False
 
     def __init__(self, title, author, isbn, publisher, quantity):

@@ -4,6 +4,7 @@
 ]
 """
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 from api import db
 
 class User(db.Model):
@@ -21,6 +22,7 @@ class User(db.Model):
     last_name = db.Column(db.String(60), index=True)
     password_hash = db.Column(db.String(128))
     is_admin = db.Column(db.Boolean, default=False)
+    joined = db.Column(db.Date, default=datetime.today())
 
     def __init__(self, email, username, first_name, last_name, password):
         self.email = email
@@ -28,15 +30,6 @@ class User(db.Model):
         self.first_name = first_name
         self.last_name = last_name
         self.password_hash = self.hash_password(password)
-
-    # @property
-    # def password(self):
-    #     """
-    #     [
-    #         Prevents password from being accessed
-    #     ]
-    #     """
-    #     raise AttributeError("Password is not readable")
 
     @staticmethod
     def hash_password(password):
@@ -49,7 +42,8 @@ class User(db.Model):
         """
         return generate_password_hash(password)
 
-    def verify_password(password):
+    @staticmethod
+    def verify_password(saved_password, password):
         """
         [
             Check is password hash matches actual password
@@ -59,7 +53,7 @@ class User(db.Model):
         Returns:
             [bool] -- [True is matches, False is not]
         """
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(saved_password, password)
     
     def save(self):
         """
@@ -77,7 +71,6 @@ class User(db.Model):
         Returns:
             [type] -- [description]
         """
-
         return User.query.all()
     
     @property
@@ -88,6 +81,11 @@ class User(db.Model):
             "full_name": self.first_name + " " + self.last_name,
             "is_admin": self.is_admin,
         }
+    
+    def admin(self):
+        if self.is_admin:
+            return True
+        return False
 
     def __repr__(self):
         return "User: {}".format(self.username)
@@ -108,6 +106,7 @@ class Book(db.Model):
     publisher = db.Column(db.String(100), index=True)
     quantity = db.Column(db.Integer)
     availability = False
+    created = db.Column(db.Date, default=datetime.today())
 
     def __init__(self, title, author, isbn, publisher, quantity):
         self.title = title
@@ -162,3 +161,29 @@ class Book(db.Model):
 
     def __repr__(self):
         return "Book: {}".format(self.title)
+
+
+class Token(db.Model):
+    """[summary]
+    
+    Arguments:
+        db {[type]} -- [description]
+    """
+    __tablename__ = 'tokens'
+
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String, nullable=False)
+    owner = db.Column(db.String, nullable=False)
+    created = db.Column(db.DateTime, default=datetime.today())
+
+    def __init__(self, token, owner):
+        self.token = token
+        self.owner = owner
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+# admin = User('david.mathenge98@gmail.com', 'dmwangi', 'David', 'Mwangi', 'marigi@98').save()
+# admin.is_admin = True

@@ -1,5 +1,5 @@
 from api import jwt
-from api.models import User, Token
+from api.models import User, Token, Revoked
 from flask_restful import Resource
 from flask import json, request, Response
 from flask_jwt_extended import create_access_token, get_raw_jwt, get_jwt_identity, jwt_manager, jwt_required
@@ -68,8 +68,33 @@ class Login(Resource):
         user = [user for user in users if user.username == data['username']]
         if user:
             if User.verify_password(user[0].password_hash, data['password']):
+                logged_in = Token.token_by_owner(user[0].username)
+                if logged_in:
+                    return Response(json.dumps({"Message": "Already logged in", "Token": logged_in.token}), status=403)
                 token = create_access_token(identity=user[0].username)
-                Token(token, user[0].username).save()
+                tk = Token(token, user[0].username).save()
                 return Response(json.dumps({"Message": "Successfully logged in", "Token": token}), status=200)
-            return Response(json.dumps({"Message": "Passwords do not match"}), status=403)
+            return Response(json.dumps({"Message": "Passwords do not match"}), status=409)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
+    
+
+class Logout(Resource):
+    """[summary]
+    
+    Arguments:
+        Resource {[type]} -- [description]
+    """
+
+    @jwt_required
+    def post(self):
+        try:
+            current_user = get_jwt_identity()
+            jti = get_raw_jwt()['jti']
+            if not Revoked.is_blacklisted(jti):
+                Revoked(jti).save()
+                Token.delete(Token.token_by_owner(current_user))
+                return Response(json.dumps({"Message": "Logged out successfully"}), status=200)
+            return Response(json.dumps({"Message": "User token has been revoked"}), status=403)
+        except Exception as e:
+            print (e)
+            return Response(json.dumps({"Message": "Not logged in"}), status=403)

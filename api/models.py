@@ -172,18 +172,52 @@ class Token(db.Model):
     __tablename__ = 'tokens'
 
     id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String, nullable=False)
-    owner = db.Column(db.String, nullable=False)
+    token = db.Column(db.String(1000), index=True, unique=True)
+    owner = db.Column(db.String(60))
     created = db.Column(db.DateTime, default=datetime.today())
 
     def __init__(self, token, owner):
         self.token = token
         self.owner = owner
 
+    @staticmethod
+    def all_tokens():
+        return Token.query.all()
+
+    @staticmethod
+    def token_by_owner(username):
+        return Token.query.filter_by(owner=username).first()
+
     def save(self):
         db.session.add(self)
         db.session.commit()
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
-# admin = User('david.mathenge98@gmail.com', 'dmwangi', 'David', 'Mwangi', 'marigi@98').save()
-# admin.is_admin = True
+class Revoked(db.Model):
+    """[summary]
+    
+    Arguments:
+        db {[type]} -- [description]
+    """
+
+    __tablename__ = 'revoked'
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(1000), index=True)
+    date_revoked = db.Column(db.DateTime, default=datetime.now())
+
+    def __init__(self, token):
+        self.token = token
+
+    @staticmethod
+    def is_blacklisted(token):
+        if Revoked.query.filter_by(token=token).first():
+            return True
+        return False
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+

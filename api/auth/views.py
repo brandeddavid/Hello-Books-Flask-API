@@ -20,12 +20,12 @@ class Register(Resource):
             [type] -- [description]
         """
         data = request.get_json(self)
+        if len(data) == 0:
+            return Response(json.dumps({"Message":"User data information not passed"}), status=403)
         data['email'] = data['email'].replace(" ", "").lower()
         data['username'] = data['username'].replace(" ", "").lower()
         data['first_name'] = data['first_name'].replace(" ", "")
         data['last_name'] = data['last_name'].replace(" ", "")
-        if len(data) == 0:
-            return Response(json.dumps({"Message":"User data information not passed"}), status=403)
         if not data['email']:
             return Response(json.dumps({"Message":"Email not provided"}), status=403)
         if len(data['email']) > 60:
@@ -60,7 +60,6 @@ class Login(Resource):
     Arguments:
         Resource {[type]} -- [description]
     """
-
     def post(self):
         data = request.get_json(self)
         data['username'] = data['username'].replace(" ", "").lower()
@@ -84,7 +83,6 @@ class Logout(Resource):
     Arguments:
         Resource {[type]} -- [description]
     """
-
     @jwt_required
     def post(self):
         try:
@@ -97,4 +95,35 @@ class Logout(Resource):
             return Response(json.dumps({"Message": "User token has been revoked"}), status=403)
         except Exception as e:
             print (e)
-            return Response(json.dumps({"Message": "Not logged in"}), status=403)
+            return Response(json.dumps({"Message": "Not logged in"}), status=401)
+
+
+class ResetPassword(Resource):
+    """[summary]
+    
+    Arguments:
+        Resource {[type]} -- [description]
+    """
+    @jwt_required
+    def post(self):
+        try:
+            identity = get_jwt_identity()
+            current_user = User.get_user_by_username(identity)
+            data = request.get_json(self)
+            if not data:
+                return  Response(json.dumps({"Message": "No Data Passed"}), status=403)
+            if not data["password"]:
+                return Response(json.dumps({"Message": "Current password not provided"}), status=403)
+            if not data["newpassword"]:
+                return Response(json.dumps({"Message": "New password not provided"}), status=403)
+            if not data["confirmpassword"]:
+                return Response(json.dumps({"Message": "Password confirmation not provided"}), status=403)
+            if data["newpassword"] != data["confirmpassword"]:
+                return Response(json.dumps({"Message": "Password confirmation failed"}), status=403)
+            if User.verify_password(current_user.password_hash, data["password"]):
+                current_user.update_password(data["password"])
+                return Response(json.dumps({"Message": "Password updated successfully"}), status=200)
+            return Response(json.dumps({"Message": "Password do not match"}), status=403)
+        except Exception as e:
+            print(e)
+            return Response(json.dumps({"Message": "Not logged in"}), status=401)

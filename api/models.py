@@ -72,16 +72,51 @@ class User(db.Model):
             [type] -- [description]
         """
         return User.query.all()
+
+    @staticmethod
+    def get_user_by_username(username):
+        """[summary]
+        
+        Arguments:
+            username {[type]} -- [description]
+        
+        Returns:
+            [type] -- [description]
+        """
+        return User.query.filter_by(username=username).first()
+    
+    def update_password(self, password):
+        """[summary]
+        
+        Arguments:
+            password {[type]} -- [description]
+        """
+        self.hash_password = User.hash_password(password)
+        User.save(self)
     
     @property
     def serialize(self):
+        """[summary]
+        
+        Returns:
+            [type] -- [description]
+        """
         return {
             "email": self.email,
             "username": self.username,
             "full_name": self.first_name + " " + self.last_name,
             "is_admin": self.is_admin,
         }
-    
+
+    @property  
+    def promote(self):
+        """[summary]
+        """
+        if self.is_admin == True:
+            pass
+        self.is_admin = True
+        User.save(self)
+
     def admin(self):
         if self.is_admin:
             return True

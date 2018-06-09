@@ -6,13 +6,16 @@
 from flask import Blueprint
 from flask_restful import Api
 from api.users.views import GetAllUsers
-from api.books.views import Books, BookOps
+from api.admin.views import AddBook, BookOps
+from api.books.views import GetBooks, GetBook
 from api.auth.views import Register, Login, Logout, ResetPassword
 
 mod = Blueprint('api', __name__)
 api = Api(mod)
 
-api.add_resource(Books, '/api/v1/books')
+api.add_resource(AddBook, '/api/v1/books')
+api.add_resource(GetBooks, '/api/v1/books')
+api.add_resource(GetBook, '/api/v1/book/<book_id>')
 api.add_resource(BookOps, '/api/v1/book/<book_id>')
 # api.add_resource(BorrowBook, '/api/v1/users/books/<string:book_id>')
 api.add_resource(GetAllUsers, '/api/v1/users')

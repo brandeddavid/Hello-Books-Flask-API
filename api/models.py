@@ -151,7 +151,7 @@ class Book(db.Model):
         self.quantity = quantity
 
     @staticmethod
-    def all_books():
+    def get_all_books():
         """[summary]
         
         Returns:
@@ -160,7 +160,7 @@ class Book(db.Model):
         return Book.query.all()
 
     @staticmethod
-    def book_by_id(id):
+    def get_book_by_id(id):
         """[summary]
         
         Arguments:
@@ -192,6 +192,10 @@ class Book(db.Model):
     
     def save(self):
         db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
 
     def __repr__(self):

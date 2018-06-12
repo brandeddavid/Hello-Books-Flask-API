@@ -4,8 +4,9 @@
 ]
 """
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from api import db
+
 
 class User(db.Model):
     """
@@ -23,6 +24,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     is_admin = db.Column(db.Boolean, default=False)
     joined = db.Column(db.Date, default=datetime.today())
+    borrowed_books = db.relationship('Book', secondary='borrowed_books', lazy='dynamic')
 
     def __init__(self, email, username, first_name, last_name, password):
         self.email = email
@@ -142,6 +144,7 @@ class Book(db.Model):
     quantity = db.Column(db.Integer)
     availability = False
     created = db.Column(db.Date, default=datetime.today())
+    borrowers = db.relationship('User', secondary='borrowed_books', lazy='dynamic')
 
     def __init__(self, title, author, isbn, publisher, quantity):
         self.title = title
@@ -201,6 +204,42 @@ class Book(db.Model):
     def __repr__(self):
         return "Book: {}".format(self.title)
 
+
+class BorrowBook(db.Model):
+    """
+    [
+        Association Table
+    ]
+    
+    Arguments:
+        db {[type]} -- [description]
+    """
+    __tablename__="borrowed_books"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
+    date_borrowed = db.Column(db.DateTime, default=datetime.now())
+    date_due = db.Column(db.DateTime, default=datetime.now()+timedelta(days=30))
+    returned = db.Column(db.Boolean, default=False)
+    date_returned = db.Column(db.DateTime, nullable=True)
+    user = db.relationship(User, backref='book')
+    book = db.relationship(Book, backref='user')
+
+    @staticmethod
+    def get_all_borrowed_books():
+        """[summary]
+        
+        Returns:
+            [type] -- [description]
+        """
+        return BorrowBook.query.all()
+
+    def save(self):
+        """
+        [summary]
+        """
+        db.session.add(self)
+        db.session.commit()
 
 class Token(db.Model):
     """[summary]

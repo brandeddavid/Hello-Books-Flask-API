@@ -234,6 +234,22 @@ class BorrowBook(db.Model):
         """
         return BorrowBook.query.all()
 
+    @staticmethod
+    def get_user_borrowing_history(user_id):
+        borrowed_books = BorrowBook.get_all_borrowed_books()
+        user_books = [book for book in borrowed_books if book.user_id == user_id]
+        borrowing_history = []
+        book_details = {}
+        for book in user_books:
+            book_details["title"] = Book.get_book_by_id(book.book_id).title
+            book_details["date_borrowed"] = book.date_borrowed
+            if book.returned:
+                book_details["date_returned"] = book.date_returned
+            else:
+                book_details["due_date"] = book.date_due
+            borrowing_history.append(book_details)
+        return borrowing_history
+
     def save(self):
         """
         [summary]

@@ -59,6 +59,9 @@ class BorrowOps(Resource):
         
         Arguments:
             book_id {[type]} -- [description]
+        
+        Returns:
+            [type] -- [description]
         """
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
@@ -81,3 +84,34 @@ class BorrowOps(Resource):
                 return Response(json.dumps({"Message": "You had not borrowed this book"}), status=403)
             return Response(json.dumps({"Message": "Book does not exist"}), status=404)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
+
+
+class BorrowHistory(Resource):
+    """[summary]
+    
+    Arguments:
+        Resource {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
+
+    @jwt_required
+    def get(self):
+        """[summary]
+        
+        Returns:
+            [type] -- [description]
+        """
+        current_user = get_jwt_identity()
+        user = User.get_user_by_username(current_user)
+        if user:
+            borrow_history = BorrowBook.get_user_borrowing_history(user.id)
+            if borrow_history:
+                return Response(json.dumps({"Borrow History": borrow_history}), status=200)
+            return Response(json.dumps({"Message": "You have not borrowed any book"}), status=404)
+        return Response(json.dumps({"Message": "User does not exist"}), status=404)
+
+
+
+

@@ -236,19 +236,49 @@ class BorrowBook(db.Model):
 
     @staticmethod
     def get_user_borrowing_history(user_id):
+        """[summary]
+        
+        Arguments:
+            user_id {[type]} -- [description]
+        
+        Returns:
+            [type] -- [description]
+        """
         borrowed_books = BorrowBook.get_all_borrowed_books()
         user_books = [book for book in borrowed_books if book.user_id == user_id]
         borrowing_history = []
         book_details = {}
         for book in user_books:
-            book_details["title"] = Book.get_book_by_id(book.book_id).title
-            book_details["date_borrowed"] = book.date_borrowed
+            book_details["Title"] = Book.get_book_by_id(book.book_id).title
+            book_details["Date Borrowed"] = book.date_borrowed
             if book.returned:
-                book_details["date_returned"] = book.date_returned
+                book_details["Date Returned"] = book.date_returned
             else:
-                book_details["due_date"] = book.date_due
+                book_details["Due Date"] = book.date_due
             borrowing_history.append(book_details)
         return borrowing_history
+
+    @staticmethod
+    def get_books_not_returned(user_id):
+        """[summary]
+        
+        Arguments:
+            user_id {[type]} -- [description]
+        
+        Returns:
+            [type] -- [description]
+        """
+        borrowed_books = Book.get_all_books()
+        # User non returned books
+        user_books = [book for book in borrowed_books if book.user_id == user_id and book.returned == False]
+        unreturned_books = []
+        book_details = {}
+        for book in user_books:
+            book_details["Title"] = Book.get_book_by_id(book.book_id).title
+            book_details["Date Borrowed"] = book.date_borrowed
+            book_details["Due Date"] = book.date_due
+            unreturned_books.append(book_details)
+        return unreturned_books
 
     def save(self):
         """

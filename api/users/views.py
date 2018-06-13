@@ -95,7 +95,6 @@ class BorrowHistory(Resource):
     Returns:
         [type] -- [description]
     """
-
     @jwt_required
     def get(self):
         """[summary]
@@ -113,5 +112,22 @@ class BorrowHistory(Resource):
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
 
 
-
-
+class NotReturned(Resource):
+    """[summary]
+    
+    Arguments:
+        Resource {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
+    @jwt_required
+    def get(self):
+        current_user = get_jwt_identity()
+        user = User.get_user_by_username(current_user)
+        if user:
+            unreturned_books = BorrowBook.get_books_not_returned(user.id)
+            if unreturned_books:
+                return Response(json.dumps({"Unreturned Books": unreturned_books}), status=200)
+            return Response(json.dumps({"Message": "You do not have any unreturned book"}), status=403)
+        return Response(json.dumps({"Message": "User does not exist"}), status=404)

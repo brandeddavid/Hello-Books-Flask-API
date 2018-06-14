@@ -1,8 +1,10 @@
 from api.models import User, Book, BorrowBook
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 from flask import request, json, Response
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from datetime import datetime
+
+parser = reqparse.RequestParser()
 
 
 class GetAllUsers(Resource):
@@ -105,29 +107,15 @@ class BorrowHistory(Resource):
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
+            args = parser.parse_args()
+            returned = request.args.get('returned')
+            if returned == 'false':
+                unreturned_books = BorrowBook.get_books_not_returned(user.id)
+                if unreturned_books:
+                    return Response(json.dumps({"Unreturned Books": unreturned_books}), status=200)
+                return Response(json.dumps({"Message": "You do not have any unreturned book"}), status=403)
             borrow_history = BorrowBook.get_user_borrowing_history(user.id)
             if borrow_history:
                 return Response(json.dumps({"Borrow History": borrow_history}), status=200)
             return Response(json.dumps({"Message": "You have not borrowed any book"}), status=404)
-        return Response(json.dumps({"Message": "User does not exist"}), status=404)
-
-
-class NotReturned(Resource):
-    """[summary]
-    
-    Arguments:
-        Resource {[type]} -- [description]
-    
-    Returns:
-        [type] -- [description]
-    """
-    @jwt_required
-    def get(self):
-        current_user = get_jwt_identity()
-        user = User.get_user_by_username(current_user)
-        if user:
-            unreturned_books = BorrowBook.get_books_not_returned(user.id)
-            if unreturned_books:
-                return Response(json.dumps({"Unreturned Books": unreturned_books}), status=200)
-            return Response(json.dumps({"Message": "You do not have any unreturned book"}), status=403)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)

@@ -268,7 +268,7 @@ class BorrowBook(db.Model):
         Returns:
             [type] -- [description]
         """
-        borrowed_books = Book.get_all_books()
+        borrowed_books = BorrowBook.get_all_borrowed_books()
         # User non returned books
         user_books = [book for book in borrowed_books if book.user_id == user_id and book.returned == False]
         unreturned_books = []

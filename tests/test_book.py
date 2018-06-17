@@ -19,5 +19,13 @@ class BookTestCase(TestHelloBooks):
     def test_add_book(self):
         empty_book =self.add_book(self.empty_book_data)
         self.assertEqual(empty_book.status_code, 403)
+        no_title = self.add_book(self.book_data_no_title)
+        self.assertEqual(no_title.status_code, 403)
+        no_author = self.add_book(self.book_data_no_author)
+        self.assertEqual(no_author.status_code, 403)
+        no_isbn = self.add_book(self.book_data_no_isbn)
+        self.assertEqual(no_isbn.status_code, 403)
+        no_publisher = self.add_book(self.book_data_no_publisher)
+        self.assertEqual(no_publisher.status_code, 403)
         add_book = self.add_book(self.book_data)
         self.assertEqual(add_book.status_code, 201)

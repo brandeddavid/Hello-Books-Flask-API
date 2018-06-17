@@ -141,6 +141,34 @@ class TestHelloBooks(unittest.TestCase):
         self.empty_book_data = {
 
         }
+        self.book_data_no_title = {
+            "title":"",
+            "author":"Sidney Sheldon",
+            "isbn":"36524728764",
+            "publisher": "Publisher",
+            "quantity": 45
+        }
+        self.book_data_no_author = {
+            "title":"Windmills of Gods",
+            "author":"",
+            "isbn":"36524728764",
+            "publisher": "Publisher",
+            "quantity": 45
+        }
+        self.book_data_no_isbn = {
+            "title":"Windmills of Gods",
+            "author":"Sidney Sheldon",
+            "isbn":"",
+            "publisher": "Publisher",
+            "quantity": 45
+        }
+        self.book_data_no_publisher = {
+            "title":"Windmills of Gods",
+            "author":"Sidney Sheldon",
+            "isbn":"36524728764",
+            "publisher": "",
+            "quantity": 45
+        }
 
     def tearDown(self):
         db.session.close()
@@ -153,11 +181,11 @@ class TestHelloBooks(unittest.TestCase):
     def login_user(self, data):
         return self.client.post('/api/v1/auth/login', data=json.dumps(data), content_type='application/json')
 
-    # def logout_user(self, user):
-    #     msg = json.loads(user.data)
-    #     print(msg)
-    #     token = msg['Token']
-    #     return self.client.post('/api/v1/auth/logout', headers={"Authorization": "Bearer {}".format(token)})
+    def logout_user(self, user):
+        msg = json.loads(user.data)
+        print(msg)
+        token = msg['Token']
+        return self.client.post('/api/v1/auth/logout', headers={"Authorization": "Bearer {}".format(token)})
 
     def get_all_users(self):
         return self.client.get('/api/v1/users')

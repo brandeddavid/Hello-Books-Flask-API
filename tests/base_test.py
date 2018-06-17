@@ -169,6 +169,58 @@ class TestHelloBooks(unittest.TestCase):
             "publisher": "",
             "quantity": 45
         }
+        self.book_data_no_quantity = {
+            "title":"Windmills of Gods",
+            "author":"Sidney Sheldon",
+            "isbn":"36524728764",
+            "publisher": "Publisher",
+            "quantity": None
+        }
+        self.update_book_data = {
+            "title":"Windmills of Gods",
+            "author":"Sidney Sheldon",
+            "isbn":"36524728764",
+            "publisher": "Publisher",
+            "quantity": 100
+        }
+        self.update_book_data_empty = {
+          
+        }
+        self.update_book_data_no_title = {
+            "title":"",
+            "author":"Sidney Sheldon",
+            "isbn":"36524728764",
+            "publisher": "Publisher",
+            "quantity": 100
+        }
+        self.update_book_data_no_author = {
+            "title":"Windmills of Gods",
+            "author":"",
+            "isbn":"36524728764",
+            "publisher": "Publisher",
+            "quantity": 100
+        }
+        self.update_book_data_no_isbn = {
+            "title":"Windmills of Gods",
+            "author":"Sidney Sheldon",
+            "isbn":"",
+            "publisher": "Publisher",
+            "quantity": 100
+        }
+        self.update_book_data_no_publisher = {
+            "title":"Windmills of Gods",
+            "author":"Sidney Sheldon",
+            "isbn":"36524728764",
+            "publisher": "",
+            "quantity": 100
+        }
+        self.update_book_data_no_quantity = {
+            "title":"Windmills of Gods",
+            "author":"Sidney Sheldon",
+            "isbn":"36524728764",
+            "publisher": "Publisher",
+            "quantity": None
+        }
 
     def tearDown(self):
         db.session.close()
@@ -206,4 +258,7 @@ class TestHelloBooks(unittest.TestCase):
         token = json.loads(admin.data)['Token']
         return self.client.post('/api/v1/books', data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
 
-    
+    def update_book(self, data, id):
+        admin = self.login_admin()
+        token = json.loads(admin.data)['Token']
+        return self.client.put('/api/v1/book/'+str(id), data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')

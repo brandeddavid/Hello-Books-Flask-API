@@ -21,6 +21,7 @@ class TestHelloBooks(unittest.TestCase):
         self.app_context.push()
         db.create_all()
 
+        # Registration Test Data
         self.user_data = {
             "email":"geof@yahoo.com",
             "username":"geof",
@@ -116,6 +117,19 @@ class TestHelloBooks(unittest.TestCase):
             "password":"pass"
         }
         
+        #Login Test Data
+        self.login_data = {
+            "username": "geof",
+            "password": "password1234"
+        }
+        self.login_data_user_not_exist = {
+            "username": "harry",
+            "password": "password1234"
+        }
+        self.login_data_password_mismatch = {
+            "username": "geof",
+            "password": "password123"
+        }
 
     def tearDown(self):
         db.session.close()
@@ -124,3 +138,6 @@ class TestHelloBooks(unittest.TestCase):
 
     def register_user(self, data):
         return self.client.post('/api/v1/auth/register', data=json.dumps(data), content_type='application/json')
+
+    def login_user(self, data):
+        return self.client.post('/api/v1/auth/login', data=json.dumps(data), content_type='application/json')

@@ -42,4 +42,12 @@ class AuthTestCase(TestHelloBooks):
         self.assertEqual(username_exists.status_code, 409)
     
     def test_login(self):
-        pass
+        self.register_user(self.user_data)
+        user_not_exist = self.login_user(self.login_data_user_not_exist)
+        self.assertEqual(user_not_exist.status_code, 404)
+        password_mismatch = self.login_user(self.login_data_password_mismatch)
+        self.assertEqual(password_mismatch.status_code, 409)
+        login = self.login_user(self.login_data)
+        self.assertEqual(login.status_code, 200)
+        login2 = self.login_user(self.login_data)
+        self.assertEqual(login2.status_code, 403)

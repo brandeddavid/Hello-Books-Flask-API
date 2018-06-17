@@ -1,6 +1,7 @@
 import run
 from api import app, db
 from config import app_config
+from api.models import User
 
 import unittest
 import json
@@ -143,6 +144,7 @@ class TestHelloBooks(unittest.TestCase):
         return self.client.post('/api/v1/auth/login', data=json.dumps(data), content_type='application/json')
 
     def logout_user(self, user):
-        msg = json.loads(user.text)
+        msg = json.loads(user.data)
+        print(msg)
         token = msg['Token']
         return self.client.post('/api/v1/auth/logout', headers={"Authorization": "Bearer {}".format(token)})

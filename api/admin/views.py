@@ -34,21 +34,21 @@ class AddBook(Resource):
                 if not data['author']:
                     return Response(json.dumps({"Message": "Book author not provided"}), status=403)
                 if len(data['author']) > 100:
-                    return Response(json.dumps({"Message": "Author exceeds 500 character limit"}), status=403)
+                    return Response(json.dumps({"Message": "Author exceeds 100 character limit"}), status=403)
                 if not data['isbn']:
                     return Response(json.dumps({"Message": "Book isbn not provided"}), status=403)
                 if len(data['isbn']) > 100:
-                    return Response(json.dumps({"Message": "ISBN exceeds 500 character limit"}), status=403)
+                    return Response(json.dumps({"Message": "ISBN exceeds 100 character limit"}), status=403)
                 if not data['publisher']:
                     return Response(json.dumps({"Message": "Book publisher not provided"}), status=403)
                 if len(data['publisher']) > 100:
-                    return Response(json.dumps({"Message": "Publisher exceeds 500 character limit"}), status=403)
+                    return Response(json.dumps({"Message": "Publisher exceeds 100 character limit"}), status=403)
                 if not data['quantity']:
                     return Response(json.dumps({"Message": "Book quantity not provided"}), status=403)
                 books = Book.get_all_books()
                 isbn = [book for book in books if book.isbn == data['isbn']]
                 if isbn:
-                    return Response(json.dumps({"Message": "Book already exists"}), status=403)
+                    return Response(json.dumps({"Message": "Book already exists"}), status=409)
                 Book(data['title'], data['author'], data['isbn'], data['publisher'], data['quantity']).save()
                 return Response(json.dumps({"Message": "Book added successfully"}), status=201)
             return Response(json.dumps({"Message": "User not an admin"}), status=401)
@@ -70,12 +70,12 @@ class BookOps(Resource):
                 try:
                     book_id = int(book_id)
                 except Exception as e:
-                    return Response(json.dumps({"Message": "Invalid argument passed"}), status=403)
+                    return Response(json.dumps({"Message": "Invalid argument passed"}), status=400)
                 book = Book.get_book_by_id(book_id)
                 if book:
                     data = request.get_json(self)
                     if len(data) == 0:
-                        return Response(json.dumps({"Message": "Book information not passed"}), status=403)
+                        return Response(json.dumps({"Message": "Book information not passed"}), status=400)
                     data['title'] = data['title'].strip().lower().title()
                     data['author'] = data['author'].strip().title()
                     data['isbn'] = data['isbn'].strip()
@@ -83,19 +83,19 @@ class BookOps(Resource):
                     if not data['title']:
                         return Response(json.dumps({"Message": "Book title not provided"}), status=403)
                     if len(data['title']) > 500:
-                        return Response(json.dumps({"Message": "Title exceeds 500 character limit"}), status=403)
+                        return Response(json.dumps({"Message": "Title exceeds 100 character limit"}), status=403)
                     if not data['author']:
                         return Response(json.dumps({"Message": "Book author not provided"}), status=403)
                     if len(data['author']) > 100:
-                        return Response(json.dumps({"Message": "Author exceeds 500 character limit"}), status=403)
+                        return Response(json.dumps({"Message": "Author exceeds 100 character limit"}), status=403)
                     if not data['isbn']:
                         return Response(json.dumps({"Message": "Book isbn not provided"}), status=403)
                     if len(data['isbn']) > 100:
-                        return Response(json.dumps({"Message": "ISBN exceeds 500 character limit"}), status=403)
+                        return Response(json.dumps({"Message": "ISBN exceeds 100 character limit"}), status=403)
                     if not data['publisher']:
                         return Response(json.dumps({"Message": "Book publisher not provided"}), status=403)
                     if len(data['publisher']) > 100:
-                        return Response(json.dumps({"Message": "Publisher exceeds 500 character limit"}), status=403)
+                        return Response(json.dumps({"Message": "Publisher exceeds 100 character limit"}), status=403)
                     if not data['quantity']:
                         return Response(json.dumps({"Message": "Book quantity not provided"}), status=403)
                     book.title = data['title']

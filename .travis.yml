@@ -6,16 +6,23 @@ services:
 python:
   - 3.5.2
 
+postgres:
+  adapter: postgresql
+  database: hellobooks_test
+
 # install dependencies
 install:
   - pip install -r requirements.txt
   - pip install coveralls
-
-before_script:
-  - psql -c 'create database hellobooks_test;' -U postgres
 
 script:
   - nosetests --with-coverage --cover-package=api
 
 after_success:
   - coveralls
+
+env:
+  - DB=postgres
+
+before_script:
+  - psql -c 'CREATE DATABASE hellobooks_test;' -U postgres

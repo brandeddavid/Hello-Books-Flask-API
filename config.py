@@ -38,8 +38,8 @@ class TestingConfig(Config):
 
     TESTING = True
     DEBUG = True
-    # SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/hellobooks_test'
-    SQLALCHEMY_DATABASE_URI = 'postgresql://dmwangi:postgres@localhost/hellobooks_test'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/hellobooks_test'
+    # SQLALCHEMY_DATABASE_URI = 'postgresql://dmwangi:postgres@localhost/hellobooks_test'
 
 
 class StagingConfig(Config):

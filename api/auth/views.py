@@ -1,5 +1,6 @@
 from api import jwt
 from api.models import User, Token, Revoked
+import re
 from flask_restful import Resource
 from flask import json, request, Response
 from flask_jwt_extended import create_access_token, get_raw_jwt, get_jwt_identity, jwt_manager, jwt_required
@@ -28,29 +29,34 @@ class Register(Resource):
         data['last_name'] = data['last_name'].replace(" ", "")
         if not data['email']:
             return Response(json.dumps({"Message":"Email not provided"}), status=403)
+        valid_email =re.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", data['email'])
+        if not valid_email:
+            return Response(json.dumps({"Message": "Invalid email address"}), status=400)
         if len(data['email']) > 60:
             return Response(json.dumps({"Message":"Email exceeds 60 characters requirement"}), status=403)
         if not data['username']:
             return Response(json.dumps({"Message":"Username not provided"}), status=403)
-        if len(data['email']) > 60:
+        if len(data['username']) > 60:
             return Response(json.dumps({"Message":"Username exceeds 60 characters requirement"}), status=403)
         if not data['first_name']:
             return Response(json.dumps({"Message":"First name not provided"}), status=403)
-        if len(data['email']) > 60:
+        if len(data['first_name']) > 60:
             return Response(json.dumps({"Message":"First name exceeds 60 characters requirement"}), status=403)
         if not data['last_name']:
             return Response(json.dumps({"Message":"Last name not provided"}), status=403)
-        if len(data['email']) > 60:
+        if len(data['last_name']) > 60:
             return Response(json.dumps({"Message":"Last name exceeds 60 characters requirement"}), status=403)
         if not data['password']:
             return Response(json.dumps({"Message":"Password not provided"}), status=403)
+        if len(data['password']) < 8:
+            return Response(json.dumps({"Message": "Password less than 8 characters long"}), status=400)
         users = User.all_users()
         email = [user for user in users if user.email == data['email']]
         if email:
-            return Response(json.dumps({"Message":"Email provided already exists"}), status=403)
+            return Response(json.dumps({"Message":"Email provided already exists"}), status=409)
         username = [user for user in users if user.username == data['username']]
         if username:
-            return Response(json.dumps({"Message":"Username provided already exists"}), status=403)
+            return Response(json.dumps({"Message":"Username provided already exists"}), status=409)
         User(data['email'], data['username'], data['first_name'], data['last_name'], data['password']).save()
         return Response(json.dumps({"Message": "User Created Successfully"}), status=201)
 

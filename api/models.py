@@ -119,6 +119,12 @@ class User(db.Model):
         self.is_admin = True
         User.save(self)
 
+    @staticmethod
+    def promote_user(username):
+        user = User.get_user_by_username(username)
+        user.is_admin = True
+        user.save()
+
     def admin(self):
         if self.is_admin:
             return True

@@ -4,7 +4,7 @@ from config import app_config
 from api.models import User
 
 import unittest
-import json
+from flask import json
 
 
 class TestHelloBooks(unittest.TestCase):
@@ -139,7 +139,7 @@ class TestHelloBooks(unittest.TestCase):
             "quantity": 45
         }
         self.empty_book_data = {
-            
+
         }
 
     def tearDown(self):

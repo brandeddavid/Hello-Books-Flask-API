@@ -1,6 +1,6 @@
+import run
 from api import app, db
 from config import app_config
-import run
 
 import unittest
 import json
@@ -28,9 +28,94 @@ class TestHelloBooks(unittest.TestCase):
             "last_name":"Humphrey",
             "password":"password1234"
         }
+        self.user_data2 = {
+            "email":"hump@yahoo.com",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":"password1234"
+        }
         self.empty_user_data = {
 
         }
+        self.user_data_no_email = {
+            "email":"",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":"password1234"
+        }
+        self.user_data_wrong_email = {
+            "email":"hgtfd",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":"password1234"
+        }
+        self.user_data_long_email = {
+            "email":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn@gmail.com",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":"password1234"
+        }
+        self.user_data_no_username = {
+            "email":"geof@yahoo.com",
+            "username":"",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":"password1234"
+        }
+        self.user_data_long_username = {
+            "email":"geof@yahoo.com",
+            "username":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":"password1234"
+        }
+        self.user_data_no_first_name = {
+            "email":"geof@yahoo.com",
+            "username":"geof",
+            "first_name":"",
+            "last_name":"Humphrey",
+            "password":"password1234"
+        }
+        self.user_data_long_first_name = {
+            "email":"geof@yahoo.com",
+            "username":"geof",
+            "first_name":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+            "last_name":"Humphrey",
+            "password":"password1234"
+        }
+        self.user_data_no_last_name = {
+            "email":"geof@yahoo.com",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"",
+            "password":"password1234"
+        }
+        self.user_data_long_last_name = {
+            "email":"geof@yahoo.com",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+            "password":"password1234"
+        }
+        self.user_data_no_password = {
+            "email":"geof@yahoo.com",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":""
+        }
+        self.user_data_short_password = {
+            "email":"geof@yahoo.com",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":"pass"
+        }
+        
 
     def tearDown(self):
         db.session.close()

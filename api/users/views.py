@@ -16,8 +16,8 @@ class GetAllUsers(Resource):
     def get(self):
         allUsers = User.all_users()
         if len(allUsers) == 0:
-            return Response(json.dumps({"Message":"No users found"}))
-        return Response(json.dumps({"Users":[user.serialize for user in allUsers]}))
+            return Response(json.dumps({"Message":"No users found"}), status=404)
+        return Response(json.dumps({"Users":[user.serialize for user in allUsers]}), status=200)
 
 class BorrowOps(Resource):
     """[summary]
@@ -119,3 +119,16 @@ class BorrowHistory(Resource):
                 return Response(json.dumps({"Borrow History": borrow_history}), status=200)
             return Response(json.dumps({"Message": "You have not borrowed any book"}), status=404)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
+
+
+class PromoteUser(Resource):
+    """[summary]
+    
+    Arguments:
+        Resource {[type]} -- [description]
+    """
+
+    def post(self):
+        data = request.get_json(self)
+        User.promote_user(data['username'])
+        return Response(json.dumps({"Message": "User promoted successfully"}), status=200)

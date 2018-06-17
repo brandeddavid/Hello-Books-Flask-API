@@ -1,6 +1,6 @@
 from api import app, db
 from config import app_config
-from api.routes import api
+import run
 
 import unittest
 import json
@@ -28,11 +28,14 @@ class TestHelloBooks(unittest.TestCase):
             "last_name":"Humphrey",
             "password":"password1234"
         }
+        self.empty_user_data = {
+
+        }
 
     def tearDown(self):
         db.session.close()
         db.drop_all()
         self.app_context.pop()
 
-    def register_user(self):
-        return self.client.post('/api/v1/auth/register', data=json.dumps(self.user_data), content_type='application/json')
+    def register_user(self, data):
+        return self.client.post('/api/v1/auth/register', data=json.dumps(data), content_type='application/json')

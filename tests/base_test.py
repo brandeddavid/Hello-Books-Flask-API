@@ -131,6 +131,16 @@ class TestHelloBooks(unittest.TestCase):
             "username": "geof",
             "password": "password123"
         }
+        self.book_data = {
+            "title":"Windmills of Gods",
+            "author":"Sidney Sheldon",
+            "isbn":"36524728764",
+            "publisher": "Publisher",
+            "quantity": 45
+        }
+        self.empty_book_data = {
+            
+        }
 
     def tearDown(self):
         db.session.close()
@@ -157,3 +167,15 @@ class TestHelloBooks(unittest.TestCase):
 
     def get_book(self, id):
         return self.client.get('/api/v1/book/' + str(id))
+
+    def login_admin(self):
+        self.register_user(self.user_data)
+        self.client.post('/api/v1/user/promote', data=json.dumps(self.login_data), content_type='application/json')
+        return self.login_user(self.login_data)
+
+    def add_book(self, data):
+        admin = self.login_admin()
+        token = json.loads(admin.data)['Token']
+        return self.client.post('/api/v1/books', data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+
+    

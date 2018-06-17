@@ -1,17 +1,21 @@
 language: python
 
+services:
+  - postgresql
+
 python:
-    - 3.5.2
+  - 3.5.2
+
 # install dependencies
 install:
   - pip install -r requirements.txt
   - pip install coveralls
 
-script:
+before_script:
+  - psql -c 'create database hellobooks_test;' -U postgres
 
+script:
   - nosetests --with-coverage --cover-package=api
 
-
 after_success:
-
   - coveralls

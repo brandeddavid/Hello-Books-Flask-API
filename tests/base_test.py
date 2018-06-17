@@ -150,7 +150,10 @@ class TestHelloBooks(unittest.TestCase):
     #     return self.client.post('/api/v1/auth/logout', headers={"Authorization": "Bearer {}".format(token)})
 
     def get_all_users(self):
-        return self.client.get('api/v1/users')
+        return self.client.get('/api/v1/users')
 
     def get_all_books(self):
-        return self.client.get()
+        return self.client.get('/api/v1/books')
+
+    def get_book(self, id):
+        return self.client.get('/api/v1/book/' + str(id))

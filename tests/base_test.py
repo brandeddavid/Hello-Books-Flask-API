@@ -143,8 +143,8 @@ class TestHelloBooks(unittest.TestCase):
     def login_user(self, data):
         return self.client.post('/api/v1/auth/login', data=json.dumps(data), content_type='application/json')
 
-    def logout_user(self, user):
-        msg = json.loads(user.data)
-        print(msg)
-        token = msg['Token']
-        return self.client.post('/api/v1/auth/logout', headers={"Authorization": "Bearer {}".format(token)})
+    # def logout_user(self, user):
+    #     msg = json.loads(user.data)
+    #     print(msg)
+    #     token = msg['Token']
+    #     return self.client.post('/api/v1/auth/logout', headers={"Authorization": "Bearer {}".format(token)})

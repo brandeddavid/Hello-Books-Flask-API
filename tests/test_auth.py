@@ -40,6 +40,10 @@ class AuthTestCase(TestHelloBooks):
         self.assertEqual(email_exists.status_code, 409)
         username_exists = self.register_user(self.user_data2)
         self.assertEqual(username_exists.status_code, 409)
+        no_confirm = self.register_user(self.user_data_no_confirm)
+        self.assertEqual(no_confirm.status_code, 403)
+        pass_mismatch = self.register_user(self.user_data_password_mismatch)
+        self.assertEqual(pass_mismatch.status_code, 400)
     
     def test_login(self):
         self.register_user(self.user_data)

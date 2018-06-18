@@ -262,3 +262,8 @@ class TestHelloBooks(unittest.TestCase):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
         return self.client.put('/api/v1/book/'+str(id), data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+
+    def delete_book(self, id):
+        admin = self.login_admin()
+        token = json.loads(admin.data)['Token']
+        return self.client.delete('/api/v1/book/'+str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')

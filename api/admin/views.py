@@ -123,7 +123,7 @@ class BookOps(Resource):
         user = User.get_user_by_username(current_user)
         if user:
             if user.is_admin:
-                book = Book.book_by_id(book_id)
+                book = Book.get_book_by_id(book_id)
                 if book:
                     book.delete()
                     return Response(json.dumps({"Message": "Book deleted successfully"}), status=200)

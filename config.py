@@ -8,12 +8,11 @@ import os
 
 
 class Config(object):
-    """[summary]
-    
-    Arguments:
-        object {[type]} -- [description]
     """
-
+    [
+        Global configs
+    ]
+    """
     DEBUG = False
     CSRF_ENABLED = True
     TESTING = False
@@ -24,47 +23,42 @@ class Config(object):
 
 
 class DevelopmentConfig(Config):
-    """[summary]
-    
-    Arguments:
-        Config {[type]} -- [description]
     """
-
+    [
+        Development configs
+    ]
+    """
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://dmwangi:postgres@localhost/hellobooks_db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class TestingConfig(Config):
-    """[summary]
-    
-    Arguments:
-        Config {[type]} -- [description]
     """
-
+    [
+        Testing configs
+    ]
+    """
     TESTING = True
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/hellobooks_test'
-    # SQLALCHEMY_DATABASE_URI = 'postgresql://dmwangi:postgres@localhost/hellobooks_test'
 
 
 class StagingConfig(Config):
-    """[summary]
-    
-    Arguments:
-        Config {[type]} -- [description]
     """
-
+    [
+        Staging configs
+    ]
+    """
     DEBUG = True
 
 
 class ProductionConfig(Config):
-    """[summary]
-    
-    Arguments:
-        Config {[type]} -- [description]
     """
-
+    [
+        Proguction configs
+    ]
+    """
     DEBUG = False
     TESTING = False
 

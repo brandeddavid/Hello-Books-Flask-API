@@ -28,14 +28,16 @@ class TestHelloBooks(unittest.TestCase):
             "username":"geof",
             "first_name":"Geof",
             "last_name":"Humphrey",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data2 = {
             "email":"hump@yahoo.com",
             "username":"geof",
             "first_name":"Geof",
             "last_name":"Humphrey",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.empty_user_data = {
 
@@ -45,77 +47,104 @@ class TestHelloBooks(unittest.TestCase):
             "username":"geof",
             "first_name":"Geof",
             "last_name":"Humphrey",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data_wrong_email = {
             "email":"hgtfd",
             "username":"geof",
             "first_name":"Geof",
             "last_name":"Humphrey",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data_long_email = {
             "email":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn@gmail.com",
             "username":"geof",
             "first_name":"Geof",
             "last_name":"Humphrey",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data_no_username = {
             "email":"geof@yahoo.com",
             "username":"",
             "first_name":"Geof",
             "last_name":"Humphrey",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data_long_username = {
             "email":"geof@yahoo.com",
             "username":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
             "first_name":"Geof",
             "last_name":"Humphrey",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data_no_first_name = {
             "email":"geof@yahoo.com",
             "username":"geof",
             "first_name":"",
             "last_name":"Humphrey",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data_long_first_name = {
             "email":"geof@yahoo.com",
             "username":"geof",
             "first_name":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
             "last_name":"Humphrey",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data_no_last_name = {
             "email":"geof@yahoo.com",
             "username":"geof",
             "first_name":"Geof",
             "last_name":"",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data_long_last_name = {
             "email":"geof@yahoo.com",
             "username":"geof",
             "first_name":"Geof",
             "last_name":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
-            "password":"password1234"
+            "password":"password1234",
+            "confirm_password":"password1234"
         }
         self.user_data_no_password = {
             "email":"geof@yahoo.com",
             "username":"geof",
             "first_name":"Geof",
             "last_name":"Humphrey",
-            "password":""
+            "password":"",
+            "confirm_password":""
         }
         self.user_data_short_password = {
             "email":"geof@yahoo.com",
             "username":"geof",
             "first_name":"Geof",
             "last_name":"Humphrey",
-            "password":"pass"
+            "password":"pass",
+            "confirm_password":"pass"
+        }
+        self.user_data_no_confirm = {
+            "email":"geof@yahoo.com",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":"password1234",
+            "confirm_password":""
+        }
+        self.user_data_password_mismatch = {
+            "email":"geof@yahoo.com",
+            "username":"geof",
+            "first_name":"Geof",
+            "last_name":"Humphrey",
+            "password":"password1234",
+            "confirm_password":"pass"
         }
         
         #Login Test Data
@@ -262,3 +291,8 @@ class TestHelloBooks(unittest.TestCase):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
         return self.client.put('/api/v1/book/'+str(id), data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+
+    def delete_book(self, id):
+        admin = self.login_admin()
+        token = json.loads(admin.data)['Token']
+        return self.client.delete('/api/v1/book/'+str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')

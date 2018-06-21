@@ -54,3 +54,10 @@ class BookTestCase(TestHelloBooks):
         self.assertEqual(no_quantity.status_code, 403)
         update_book = self.update_book(self.update_book_data, 1)
         self.assertEqual(update_book.status_code, 200)
+
+    def test_delete_book(self):
+        self.add_book(self.book_data)
+        no_book = self.delete_book(1000)
+        self.assertEqual(no_book.status_code, 404)
+        delete_book = self.delete_book(1)
+        self.assertEqual(delete_book.status_code, 200)

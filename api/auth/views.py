@@ -50,6 +50,10 @@ class Register(Resource):
             return Response(json.dumps({"Message":"Password not provided"}), status=403)
         if len(data['password']) < 8:
             return Response(json.dumps({"Message": "Password less than 8 characters long"}), status=400)
+        if not data['confirm_password']:
+            return Response(json.dumps({"Message": "Please provide a password confirmaton"}), status=403)
+        if data['password'] != data['confirm_password']:
+            return Response(json.dumps({"Message": "Passwords do not match"}), status=400)
         users = User.all_users()
         email = [user for user in users if user.email == data['email']]
         if email:

@@ -1,13 +1,18 @@
+"""
+[
+  init file
+]
+"""
+from config import app_config
+import os
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
 
 app = Flask('__name__')
 
-app.config['JWT_SECRET_KEY'] = 'super-secret-key'
-app.config['JWT_BLACKLIST_ENABLED'] = False
-app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
+jwt = JWTManager(app)
+app.config.from_object(app_config['development'])
 app.url_map.strict_slashes = False
 
-blacklist = set()
-
-users = {}
-books = {}
+db = SQLAlchemy(app)

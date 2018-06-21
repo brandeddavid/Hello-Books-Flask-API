@@ -1,5 +1,9 @@
-from flask import render_template
+"""
+summary]
 
+Returns:
+    [type] -- [description]
+"""
 from api import app
 from api import routes
 
@@ -13,7 +17,7 @@ def index():
     Route to Index Page
     :return: Hello World on Index Page
     """
-    return render_template('documentation.html')
+    return 'Hello, World'
 
 
 if __name__ == '__main__':

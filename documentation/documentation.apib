@@ -4,6 +4,81 @@ FORMAT: 1A
 
 This a API Documentation for Hello Books Application. A simple application that helps manage a library and its processes like stocking, tracking and renting books.
 
+# Group Books
+
+## Books Collections [/api/v1/books]
+
+### Add a New Book [POST /api/v1/books]
+
++ Request (application/json)
+
+    {
+        "title":"The Lean Startup",
+        "author":"Eric Ries",
+        "isbn":"8298748374"
+    }
+    
++ Response 201 (application/json)
+    + Body
+        {
+            "Success": "Book Created Successfully"
+        }
+
+### Get All Books [GET /api/v1/books]
++ Response 200 (application/json)
+    + Attributes
+        - Books (array[Book])
+
+### Get Individual Book[GET /api/v1/books/{id}]
++ Parameter
+    + id: '1' - The id of the book
+
++ Response 200 (application/json)
+    + Attributes
+        - Include Book
+        
+### Update a Book [PUT /api/v1/books/Books/{id}]
++ Parameter
+    + id = '1'
+    
++ Request (application/json)
+    {
+        "title":"The Lean Startup",
+        "author":"Eric Ries",
+        "isbn":"6726376254"
+    }
+
++ Response 200 (application/json)
+    {
+        'Message': 'Book Update Successful'
+    }
+
+### Delete A Book [DELETE /api/v1/books/{id}]
++ Response 200 (application/json)
+    + Body
+        {
+            "Message":"Book Deleted Successfully"
+        }
+
+# Group Users 
+
+## User Collections [/api/v1/users]
+
+### Get all Users [GET /api/v1/users]
++ Response 200 (application/json)
+    + Attributes
+        - Users (array[User])
+
+### Borrow Book [POST /api/v1/users/books/{id}]
++ Parameter
+    + id = '1'
+
++ Response (application/json)
+    + Body
+        {
+            'Message': 'Successfully Borrowed Book'
+        }
+
 # Group Auth 
 
 ## Auth Collections [/api/v1/auth]
@@ -11,12 +86,9 @@ This a API Documentation for Hello Books Application. A simple application that 
 ### Add a User [POST /api/v1/auth/register]
 + Request (application/json)
     {
-        "email":"test@gmail.com",
-        "username":"test",
-        "first_name":"Test",
-        "last_name":"User",
-        "password":"password1234",
-        "confirm_password": "password1234"
+        "username":"dmwangi",
+        "password":"password12345",
+        "admin":"True"
     }
 
 + Response 200 (application/json)
@@ -28,15 +100,14 @@ This a API Documentation for Hello Books Application. A simple application that 
 ### Login [POST /api/v1/auth/login]
 + Request (application/json)
     {
-        "username":"test",
-        "password":"password1234"
+        "username":"dmwangi",
+        "password":"password12345"
     }
 
 + Response 200 (application/json)
     + Body 
         {
-            "Message": "Successfully logged in", 
-            "Token": "--access-token--"
+            "access_token":"--access-token--"
         }
 
 ### Reset User password [PUT /api/v1/auth/reset-password/{id}]
@@ -45,8 +116,8 @@ This a API Documentation for Hello Books Application. A simple application that 
 
 + Request (application/json)
     {
-        "username":"test",
-        "password":"password1234",
+        "username":"dmwangi",
+        "password":"password12345",
         "newpassword":"newpassword123"
     }
 
@@ -66,177 +137,18 @@ This a API Documentation for Hello Books Application. A simple application that 
 + Response 200 (application/json)
     + Body 
         {
-            "Message":"Logged out successfully"
+            "Message":"Logged Out Successfully"
         }
-
-# Group Admin
-
-## Admin Collections [/api/v1/books]
-
-### Add a New Book [POST /api/v1/books]
-+ Request 
-    + Headers
-        {
-            "x-access-token":"--access-token--"
-        }
-
-+ Request (application/json)
-
-    {
-        "title":"Windmills of Gods",
-        "author":"Sidney Sheldon",
-        "isbn":"36524728764",
-        "publisher": "Publisher",
-        "quantity": 45
-    }
-    
-+ Response 201 (application/json)
-    + Body
-        {
-            "Success": "Book added successfully"
-        }
-
-### Update a Book [PUT /api/v1/books/Books/{id}]
-+ Parameter
-    + id = '1'
-
-+ Request 
-    + Headers
-        {
-            "x-access-token":"--access-token--"
-        }
-    
-+ Request (application/json)
-    {
-        "title":"Windmills of Gods",
-        "author":"Sidney Sheldon",
-        "isbn":"36524728764",
-        "publisher": "Publisher",
-        "quantity": 100
-    }
-
-+ Response 200 (application/json)
-    {
-        'Message': 'Book Update Successful'
-    }
-
-### Delete A Book [DELETE /api/v1/books/{id}]
-+ Parameter
-    + id = '1'
-
-+ Request 
-    + Headers
-        {
-            "x-access-token":"--access-token--"
-        }
-
-+ Response 200 (application/json)
-    + Body
-        {
-            "Message":"Book Deleted Successfully"
-        }
-
-# Group Books
-
-## Books Collections [/api/v1/books]
-
-### Get All Books [GET /api/v1/books]
-+ Response 200 (application/json)
-    + Attributes
-        - Books (array[Book])
-
-### Get Individual Book[GET /api/v1/books/{id}]
-+ Parameter
-    + id: '1' - The id of the book
-
-+ Response 200 (application/json)
-    + Attributes
-        - Include Book
-
-
-# Group Users 
-
-## User Collections [/api/v1/users]
-
-### Get all Users [GET /api/v1/users]
-+ Response 200 (application/json)
-    + Attributes
-        - Users (array[User])
-
-### Borrow Book [POST /api/v1/users/books/{id}]
-+ Parameter
-    + id = '1'
-
-+ Request 
-    + Headers
-        {
-            "x-access-token":"--access-token--"
-        }
-
-+ Response (application/json)
-    + Body
-        {
-            'Message': 'Book borrowed successfully'
-        }
-
-### Return Book [POST /api/v1/users/books/{id}]
-+ Parameter
-    + id = '1'
-
-+ Request 
-    + Headers
-        {
-            "x-access-token":"--access-token--"
-        }
-
-+ Response (application/json)
-    + Body
-        {
-            'Message': 'Book returned successfully'
-        }
-
-### Borrowing History [POST /api/users/books]
-+ Request 
-    + Headers
-        {
-            "x-access-token":"--access-token--"
-        }
-
-+ Response 200 (application/json)
-    + Attributes
-        - Borrow History (array[History])
-
-### Borrowing History [POST /api/users/books?returned=false]
-+ Request 
-    + Headers
-        {
-            "x-access-token":"--access-token--"
-        }
-
-+ Response 200 (application/json)
-    + Attributes
-        - Unreturned Books (array[Unreturned])
 
 # Data Structures
 ## Book (object)
+- id: 1 (string) - The id of the book 
 - title: The Lean Startup(string) - The title of the book
 - author: Eric Ries (string) - The author of the book
 - isbn: 8298748374 (string) - The ISBN number of the book
-- availability: (boolean) - Book's availability
-- publisher: (string) - Book's publisher
 
 ## User (object)
-- username: test (string) - The user's username
-- email: test@gmail.com (string) - The user's email
-- full_name: Test User (string) - The user's full name 
-- is_admin: True (boolean) - The user's admin status 
-
-## History (object)
-- Title: Windmills Of Gods (string) - Book title
-- Date Borrowed: Thu, 21 Jun 2018 00:00:00 GMT (Date) - Date book borrowed
-- Date Returned: Thu, 21 Jun 2018 00:00:00 GMT(Date) -  Date book returned
-
-## Unreturned (object)
-- Title: Windmills Of Gods (string) - Book title
-- Date Borrowed: Thu, 21 Jun 2018 00:00:00 GMT (Date) - Date book borrowed
-- Due Date: Thu, 21 Jul 2018 00:00:00 GMT(Date) -  Date book returned
+- id: 1 (string) - The id of the user
+- username: dmwangi (string) - The user's username
+- password: password12345 (string) - The user's password
+- admin: True (string) - The user's admin status 

@@ -6,7 +6,7 @@
 
 from api import jwt
 from api.models import User, Token, Revoked
-import re
+from api.validate import validate_user, validate_reset_password
 from flask_restful import Resource
 from flask import json, request, Response
 from flask_jwt_extended import create_access_token, get_raw_jwt, get_jwt_identity, jwt_manager, jwt_required
@@ -28,39 +28,8 @@ class Register(Resource):
             [Response] -- [Appropriate response]
         """
         data = request.get_json(self)
-        if len(data) == 0:
-            return Response(json.dumps({"Message":"User data information not passed"}), status=403)
-        data['email'] = data['email'].replace(" ", "").lower()
-        data['username'] = data['username'].replace(" ", "").lower()
-        data['first_name'] = data['first_name'].replace(" ", "")
-        data['last_name'] = data['last_name'].replace(" ", "")
-        if not data['email']:
-            return Response(json.dumps({"Message":"Email not provided"}), status=403)
-        valid_email =re.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", data['email'])
-        if not valid_email:
-            return Response(json.dumps({"Message": "Invalid email address"}), status=400)
-        if len(data['email']) > 60:
-            return Response(json.dumps({"Message":"Email exceeds 60 characters requirement"}), status=403)
-        if not data['username']:
-            return Response(json.dumps({"Message":"Username not provided"}), status=403)
-        if len(data['username']) > 60:
-            return Response(json.dumps({"Message":"Username exceeds 60 characters requirement"}), status=403)
-        if not data['first_name']:
-            return Response(json.dumps({"Message":"First name not provided"}), status=403)
-        if len(data['first_name']) > 60:
-            return Response(json.dumps({"Message":"First name exceeds 60 characters requirement"}), status=403)
-        if not data['last_name']:
-            return Response(json.dumps({"Message":"Last name not provided"}), status=403)
-        if len(data['last_name']) > 60:
-            return Response(json.dumps({"Message":"Last name exceeds 60 characters requirement"}), status=403)
-        if not data['password']:
-            return Response(json.dumps({"Message":"Password not provided"}), status=403)
-        if len(data['password']) < 8:
-            return Response(json.dumps({"Message": "Password less than 8 characters long"}), status=400)
-        if not data['confirm_password']:
-            return Response(json.dumps({"Message": "Please provide a password confirmaton"}), status=403)
-        if data['password'] != data['confirm_password']:
-            return Response(json.dumps({"Message": "Passwords do not match"}), status=400)
+        if validate_user(data):
+            return validate_user(data)
         users = User.all_users()
         email = [user for user in users if user.email == data['email']]
         if email:
@@ -154,16 +123,8 @@ class ResetPassword(Resource):
             identity = get_jwt_identity()
             current_user = User.get_user_by_username(identity)
             data = request.get_json(self)
-            if not data:
-                return  Response(json.dumps({"Message": "No Data Passed"}), status=403)
-            if not data["password"]:
-                return Response(json.dumps({"Message": "Current password not provided"}), status=403)
-            if not data["newpassword"]:
-                return Response(json.dumps({"Message": "New password not provided"}), status=403)
-            if not data["confirmpassword"]:
-                return Response(json.dumps({"Message": "Password confirmation not provided"}), status=403)
-            if data["newpassword"] != data["confirmpassword"]:
-                return Response(json.dumps({"Message": "Password confirmation failed"}), status=403)
+            if validate_reset_password(data):
+                return validate_reset_password
             if User.verify_password(current_user.password_hash, data["password"]):
                 current_user.update_password(data["password"])
                 return Response(json.dumps({"Message": "Password updated successfully"}), status=200)

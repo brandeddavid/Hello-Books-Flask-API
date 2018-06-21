@@ -5,6 +5,7 @@
 """
 
 from api.models import User, Book, BorrowBook
+from api.validate import validate_arg
 from flask_restful import Resource, reqparse
 from flask import request, json, Response
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -56,10 +57,8 @@ class BorrowOps(Resource):
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
-            try:
-                book_id = int(book_id)
-            except:
-                return Response(json.dumps({"Message": "Invalid argument passed"}), status=403)
+            if validate_arg(book_id):
+                return validate_arg(book_id)
             book = Book.get_book_by_id(book_id)
             if book:
                 if book.quantity == 0:
@@ -90,10 +89,8 @@ class BorrowOps(Resource):
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
-            try:
-                book_id = int(book_id)
-            except:
-                return Response(json.dumps({"Message": "Invalid argument passed"}), status=403)
+            if validate_arg(book_id):
+                return validate_arg(book_id)
             book = Book.get_book_by_id(book_id)
             if book:
                 borrowed_books = BorrowBook.get_all_borrowed_books()

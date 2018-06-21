@@ -30,7 +30,7 @@ class BookTestCase(TestHelloBooks):
         no_book = self.get_book(1000)
         self.assertEqual(no_book.status_code, 404)
         bad_argument = self.get_book('kk')
-        self.assertEqual(bad_argument.status_code, 403)
+        self.assertEqual(bad_argument.status_code, 400)
 
     def test_add_book(self):
         """
@@ -70,7 +70,7 @@ class BookTestCase(TestHelloBooks):
         no_book = self.update_book(self.update_book_data_no_quantity, 100)
         self.assertEqual(no_book.status_code, 404)
         update_empty = self.update_book(self.update_book_data_empty, 1)
-        self.assertEqual(update_empty.status_code, 400)
+        self.assertEqual(update_empty.status_code, 403)
         invalid_args = self.update_book(self.update_book_data, "kk")
         self.assertEqual(invalid_args.status_code, 400)
         no_title = self.update_book(self.update_book_data_no_title, 1)

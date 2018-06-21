@@ -4,9 +4,10 @@
 ]
 """
 
+from api.models import Book
+from api.validate import validate_arg
 from flask_restful import Resource
 from flask import json, request, Response
-from api.models import Book
 
 
 class GetBooks(Resource):
@@ -48,10 +49,8 @@ class GetBook(Resource):
         Returns:
             [Response] -- [Appropriate response]
         """
-        try:
-            book_id = int(book_id)
-        except Exception as e:
-            return Response(json.dumps({"Message": "Invalid argument passed"}), status=403)
+        if validate_arg(book_id):
+            return validate_arg(book_id)
         book = Book.get_book_by_id(id=book_id)
         if not book:
             return Response(json.dumps({"Message": "Book does not exist"}), status=404)

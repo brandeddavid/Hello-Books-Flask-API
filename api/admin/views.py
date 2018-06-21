@@ -1,3 +1,9 @@
+"""
+[
+    File has admin endpoints resources
+]
+"""
+
 from api import jwt
 from api.models import Book, User
 from flask_restful import Resource
@@ -6,16 +12,21 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 
 
 class AddBook(Resource):
-    """[summary]
-    
-    Arguments:
-        Resource {[type]} -- [description]
-    
-    Returns:
-        [type] -- [description]
     """
+    [
+        Add Book API endpoint Resource
+    ]
+    """
+    
     @jwt_required
     def post(self):
+        """
+        [
+            Method serving add book api endpoint
+        ]      
+        Returns:
+            [Response] -- [Appropriate Response]
+        """
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
@@ -56,13 +67,25 @@ class AddBook(Resource):
 
 
 class BookOps(Resource):
-    """[summary]
-    
-    Arguments:
-        Resource {[type]} -- [description]
     """
+    [
+        BookOps (Edit and Delete) Resource 
+    ]
+    """
+
     @jwt_required
     def put(self, book_id):
+        """
+        [
+            Function serving edit book api endpoint
+        ]
+        
+        Arguments:
+            book_id {[str]} -- [Book id]
+        
+        Returns:
+            [Response] -- [Appropriate responce]
+        """
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
@@ -111,13 +134,14 @@ class BookOps(Resource):
     
     @jwt_required
     def delete(self, book_id):
-        """[summary]
-        
+        """
+        [
+            Function serving delete book api endpoint
+        ]
         Arguments:
-            book_id {[type]} -- [description]
-        
+            book_id {[str]} -- [Book id]
         Returns:
-            [type] -- [description]
+            [Responce] -- [Appropriate response]
         """
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)

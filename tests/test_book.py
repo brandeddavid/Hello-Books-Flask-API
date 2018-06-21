@@ -1,14 +1,30 @@
+"""
+[
+    File contains tests for all book api endpoints
+]
+"""
+
 from tests.base_test import TestHelloBooks
 import json
 
 class BookTestCase(TestHelloBooks):
-    """[summary]
+    """
+    [
+        Test class for all book api endpoints
+    ]
     
     Arguments:
-        TestHelloBooks {[type]} -- [description]
+        TestHelloBooks {[object]} -- [Base Test Class]
     """
 
     def test_get_books(self):
+        """
+        [
+            Tests get books API endpoint
+            /api/v1/books
+            Method: GET
+        ]
+        """
         no_books = self.get_all_books()
         self.assertEqual(no_books.status_code, 404)
         no_book = self.get_book(1000)
@@ -17,6 +33,14 @@ class BookTestCase(TestHelloBooks):
         self.assertEqual(bad_argument.status_code, 403)
 
     def test_add_book(self):
+        """
+        [
+            Tests add book api endpoint
+            /api/v1/books
+            Method: POST
+        ]
+        """
+
         empty_book =self.add_book(self.empty_book_data)
         self.assertEqual(empty_book.status_code, 403)
         no_title = self.add_book(self.book_data_no_title)
@@ -35,6 +59,13 @@ class BookTestCase(TestHelloBooks):
         self.assertEqual(add_book2.status_code, 409)
 
     def test_update_book(self):
+        """
+        [
+            Tests update book api endpoint
+            /api/v1/books/<book_id>
+            Method: PUT
+        ]
+        """
         self.add_book(self.book_data)
         no_book = self.update_book(self.update_book_data_no_quantity, 100)
         self.assertEqual(no_book.status_code, 404)
@@ -56,6 +87,13 @@ class BookTestCase(TestHelloBooks):
         self.assertEqual(update_book.status_code, 200)
 
     def test_delete_book(self):
+        """
+        [
+            Tests delete book api endpoint
+            /api/v1/books/<book_id>
+            Method: DELETE
+        ]
+        """
         self.add_book(self.book_data)
         no_book = self.delete_book(1000)
         self.assertEqual(no_book.status_code, 404)

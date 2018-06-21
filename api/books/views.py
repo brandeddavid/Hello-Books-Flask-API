@@ -1,18 +1,29 @@
+"""
+[
+    File has book api endpoints resources
+]
+"""
+
 from flask_restful import Resource
 from flask import json, request, Response
 from api.models import Book
 
 
 class GetBooks(Resource):
-    """[summary]
-    
-    Arguments:
-        Resource {[type]} -- [description]
-    
-    Returns:
-        [type] -- [description]
+    """
+    [
+        Get books resource
+    ]
     """    
+
     def get(self):
+        """
+        [
+            Function serving get all books api endpoint
+        ]
+        Returns:
+            [Response] -- [Appropriate response]
+        """
         books = Book.get_all_books()
         if len(books) == 0:
             return Response(json.dumps({"Message": "No books found"}), status=404)
@@ -20,12 +31,23 @@ class GetBooks(Resource):
 
 
 class GetBook(Resource):
-    """[summary]
-    
-    Arguments:
-        Resource {[type]} -- [description]
     """
+    [
+        Getting a book resource
+    ] 
+    """
+
     def get(self, book_id):
+        """
+        [
+            Function serving get a book api endpoint
+        ]   
+        Arguments:
+            book_id {[str]} -- [book id]
+        
+        Returns:
+            [Response] -- [Appropriate response]
+        """
         try:
             book_id = int(book_id)
         except Exception as e:

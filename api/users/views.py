@@ -1,3 +1,9 @@
+"""
+[
+    File containing user api endpoints resources
+]
+"""
+
 from api.models import User, Book, BorrowBook
 from flask_restful import Resource, reqparse
 from flask import request, json, Response
@@ -8,30 +14,44 @@ parser = reqparse.RequestParser()
 
 
 class GetAllUsers(Resource):
-    """[summary]
-    
-    Arguments:
-        Resource {[type]} -- [description]
     """
+    [
+        Get all users resource
+    ]
+    """
+
     def get(self):
+        """
+        [
+            Function serving get all user api endpoint
+        ]
+        
+        Returns:
+            [Response] -- [Appropriate response]
+        """
         allUsers = User.all_users()
         if len(allUsers) == 0:
             return Response(json.dumps({"Message":"No users found"}), status=404)
         return Response(json.dumps({"Users":[user.serialize for user in allUsers]}), status=200)
 
 class BorrowOps(Resource):
-    """[summary]
-    
-    Arguments:
-        Resource {[type]} -- [description]
+    """
+    [
+        Borrow book ops (Borrow and Return) resource
+    ]
     """
 
     @jwt_required
     def post(self, book_id):
-        """[summary]
-        
+        """
+        [
+            Function serving borrow book api endpoint
+        ]
         Arguments:
-            book_id {[type]} -- [description]
+            book_id {[str]} -- [book id]
+        
+        Returns:
+            [Response] -- [Appropriate response]
         """
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
@@ -57,13 +77,15 @@ class BorrowOps(Resource):
 
     @jwt_required
     def put(self, book_id):
-        """[summary]
-        
+        """
+        [
+            Function serving return book api endpoint
+        ] 
         Arguments:
-            book_id {[type]} -- [description]
+            book_id {[str]} -- [book id]
         
         Returns:
-            [type] -- [description]
+            [Response] -- [Appropriate response]
         """
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
@@ -89,20 +111,20 @@ class BorrowOps(Resource):
 
 
 class BorrowHistory(Resource):
-    """[summary]
-    
-    Arguments:
-        Resource {[type]} -- [description]
-    
-    Returns:
-        [type] -- [description]
     """
+    [
+        Borrowing History api endpoint resource
+    ]
+    """
+
     @jwt_required
     def get(self):
-        """[summary]
-        
+        """
+        [
+            Function serving get user borrowing history api endpoint
+        ]     
         Returns:
-            [type] -- [description]
+            [Response] -- [Appropriate response]
         """
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
@@ -122,13 +144,20 @@ class BorrowHistory(Resource):
 
 
 class PromoteUser(Resource):
-    """[summary]
-    
-    Arguments:
-        Resource {[type]} -- [description]
+    """
+    [
+        Promote user resource
+    ]
     """
 
     def post(self):
+        """
+        [
+            Function serving promote user api endpoint
+        ]
+        Returns:
+            [Response] -- [Appropriate response]
+        """
         data = request.get_json(self)
         User.promote_user(data['username'])
         return Response(json.dumps({"Message": "User promoted successfully"}), status=200)

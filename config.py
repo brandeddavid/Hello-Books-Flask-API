@@ -1,3 +1,9 @@
+"""
+[
+    Config file
+]
+"""
+
 import os
 
 

@@ -6,6 +6,7 @@
 
 from api import jwt
 from api.models import Book, User
+from api.validate import validate_book, validate_arg
 from flask_restful import Resource
 from flask import json, request, Response
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -32,30 +33,8 @@ class AddBook(Resource):
         if user:
             if user.is_admin:
                 data = request.get_json(self)
-                if len(data) == 0:
-                    return Response(json.dumps({"Message": "Book information not passed"}), status=403)
-                data['title'] = data['title'].strip().lower().title()
-                data['author'] = data['author'].strip().title()
-                data['isbn'] = data['isbn'].strip()
-                data['publisher'] = data['publisher'].strip().title()
-                if not data['title']:
-                    return Response(json.dumps({"Message": "Book title not provided"}), status=403)
-                if len(data['title']) > 500:
-                    return Response(json.dumps({"Message": "Title exceeds 500 character limit"}), status=403)
-                if not data['author']:
-                    return Response(json.dumps({"Message": "Book author not provided"}), status=403)
-                if len(data['author']) > 100:
-                    return Response(json.dumps({"Message": "Author exceeds 100 character limit"}), status=403)
-                if not data['isbn']:
-                    return Response(json.dumps({"Message": "Book isbn not provided"}), status=403)
-                if len(data['isbn']) > 100:
-                    return Response(json.dumps({"Message": "ISBN exceeds 100 character limit"}), status=403)
-                if not data['publisher']:
-                    return Response(json.dumps({"Message": "Book publisher not provided"}), status=403)
-                if len(data['publisher']) > 100:
-                    return Response(json.dumps({"Message": "Publisher exceeds 100 character limit"}), status=403)
-                if not data['quantity']:
-                    return Response(json.dumps({"Message": "Book quantity not provided"}), status=403)
+                if validate_book(data):
+                    return validate_book(data)
                 books = Book.get_all_books()
                 isbn = [book for book in books if book.isbn == data['isbn']]
                 if isbn:
@@ -88,40 +67,15 @@ class BookOps(Resource):
         """
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
+        if validate_arg(book_id):
+            return validate_arg(book_id)
         if user:
             if user.is_admin:
-                try:
-                    book_id = int(book_id)
-                except Exception as e:
-                    return Response(json.dumps({"Message": "Invalid argument passed"}), status=400)
                 book = Book.get_book_by_id(book_id)
                 if book:
                     data = request.get_json(self)
-                    if len(data) == 0:
-                        return Response(json.dumps({"Message": "Book information not passed"}), status=400)
-                    data['title'] = data['title'].strip().lower().title()
-                    data['author'] = data['author'].strip().title()
-                    data['isbn'] = data['isbn'].strip()
-                    data['publisher'] = data['publisher'].strip().title()
-                    if not data['title']:
-                        return Response(json.dumps({"Message": "Book title not provided"}), status=403)
-                    if len(data['title']) > 500:
-                        return Response(json.dumps({"Message": "Title exceeds 100 character limit"}), status=403)
-                    if not data['author']:
-                        return Response(json.dumps({"Message": "Book author not provided"}), status=403)
-                    if len(data['author']) > 100:
-                        return Response(json.dumps({"Message": "Author exceeds 100 character limit"}), status=403)
-                    if not data['isbn']:
-                        return Response(json.dumps({"Message": "Book isbn not provided"}), status=403)
-                    if len(data['isbn']) > 100:
-                        return Response(json.dumps({"Message": "ISBN exceeds 100 character limit"}), status=403)
-                    if not data['publisher']:
-                        return Response(json.dumps({"Message": "Book publisher not provided"}), status=403)
-                    if len(data['publisher']) > 100:
-                        return Response(json.dumps({"Message": "Publisher exceeds 100 character limit"}), status=403)
-                    if not data['quantity']:
-                        return Response(json.dumps({"Message": "Book quantity not provided"}), status=403)
-                    book.title = data['title']
+                    if validate_book(data):
+                        return validate_book(data)
                     book.author = data['author']
                     book.isbn = data['isbn']
                     book.publisher = data['publisher']
@@ -145,6 +99,8 @@ class BookOps(Resource):
         """
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
+        if validate_arg(book_id):
+            return validate_arg(book_id)
         if user:
             if user.is_admin:
                 book = Book.get_book_by_id(book_id)

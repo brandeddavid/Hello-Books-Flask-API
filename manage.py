@@ -25,7 +25,7 @@ def create_admin():
         admin.save()
     except Exception as e:
         print(e)
-    print('Successfully create admin')
+    print('Admin user created successfully')
 
 if __name__ == '__main__':
     manager.run()

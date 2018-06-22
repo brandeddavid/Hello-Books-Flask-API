@@ -16,10 +16,10 @@ class Config(object):
     DEBUG = False
     CSRF_ENABLED = True
     TESTING = False
-    JWT_SECRET_KEY = 'super-secret-key'
+    JWT_SECRET_KEY = os.getenv('SECRET')
     JWT_BLACKLIST_ENABLED = False
     JWT_BLACKLIST_TOKEN_CHECKS = ['access']
-    SQLALCHEMY_DATABASE_URI = 'postgresql://dmwangi:postgres@localhost/hellobooks_db'
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
 
 
 class DevelopmentConfig(Config):
@@ -29,7 +29,7 @@ class DevelopmentConfig(Config):
     ]
     """
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'postgresql://dmwangi:postgres@localhost/hellobooks_db'
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 

@@ -16,7 +16,7 @@ class Config(object):
     DEBUG = False
     CSRF_ENABLED = True
     TESTING = False
-    JWT_SECRET_KEY = os.getenv('SECRET')
+    JWT_SECRET_KEY = 'super-secret-key'
     JWT_BLACKLIST_ENABLED = False
     JWT_BLACKLIST_TOKEN_CHECKS = ['access']
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')

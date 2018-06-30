@@ -124,7 +124,7 @@ class ResetPassword(Resource):
             current_user = User.get_user_by_username(identity)
             data = request.get_json(self)
             if validate_reset_password(data):
-                return validate_reset_password
+                return validate_reset_password(data)
             if User.verify_password(current_user.password_hash, data["password"]):
                 current_user.update_password(data["password"])
                 return Response(json.dumps({"Message": "Password updated successfully"}), status=200)

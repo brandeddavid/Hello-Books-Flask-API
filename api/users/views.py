@@ -21,6 +21,7 @@ class GetAllUsers(Resource):
     ]
     """
 
+    @jwt_required
     def get(self):
         """
         [
@@ -30,10 +31,17 @@ class GetAllUsers(Resource):
         Returns:
             [Response] -- [Appropriate response]
         """
-        allUsers = User.all_users()
-        if len(allUsers) == 0:
-            return Response(json.dumps({"Message":"No users found"}), status=404)
-        return Response(json.dumps({"Users":[user.serialize for user in allUsers]}), status=200)
+        current_user = get_jwt_identity()
+        user = User.get_user_by_username(current_user)
+        if user:
+            if user.is_admin:
+                allUsers = User.all_users()
+                if len(allUsers) == 0:
+                    return Response(json.dumps({"Message":"No users found"}), status=404)
+                return Response(json.dumps({"Users":[user.serialize for user in allUsers]}), status=200)
+            return Response(json.dumps({"Message": "User not an admin"}), status=401)
+        return Response(json.dumps({"Message": "User does not exist"}), status=404)
+        
 
 class BorrowOps(Resource):
     """
@@ -94,7 +102,9 @@ class BorrowOps(Resource):
             book = Book.get_book_by_id(book_id)
             if book:
                 borrowed_books = BorrowBook.get_all_borrowed_books()
-                to_return = [borrowed_book for borrowed_book in borrowed_books if borrowed_book.book_id == book_id and borrowed_book.returned ==False]
+                print(borrowed_books)
+                to_return = [borrowed_book for borrowed_book in borrowed_books if str(borrowed_book.book_id) == str(book_id) and borrowed_book.returned == False]
+                print(to_return)
                 if to_return:
                     to_return[0].returned = True
                     to_return[0].date_returned = datetime.now()
@@ -138,23 +148,3 @@ class BorrowHistory(Resource):
                 return Response(json.dumps({"Borrow History": borrow_history}), status=200)
             return Response(json.dumps({"Message": "You have not borrowed any book"}), status=404)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
-
-
-class PromoteUser(Resource):
-    """
-    [
-        Promote user resource
-    ]
-    """
-
-    def post(self):
-        """
-        [
-            Function serving promote user api endpoint
-        ]
-        Returns:
-            [Response] -- [Appropriate response]
-        """
-        data = request.get_json(self)
-        User.promote_user(data['username'])
-        return Response(json.dumps({"Message": "User promoted successfully"}), status=200)

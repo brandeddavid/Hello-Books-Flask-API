@@ -76,6 +76,7 @@ class BookOps(Resource):
                     data = request.get_json(self)
                     if validate_book(data):
                         return validate_book(data)
+                    book.title = data['title']
                     book.author = data['author']
                     book.isbn = data['isbn']
                     book.publisher = data['publisher']
@@ -109,4 +110,34 @@ class BookOps(Resource):
                     return Response(json.dumps({"Message": "Book deleted successfully"}), status=200)
                 return Response(json.dumps({"Message": "Book doesn't exist"}), status=404)
             return Response(json.dumps({"Message": "User not an admin"}), status=401)
-        return Response(json.dumps({"Message": "User does not exist"}), status=404)    
+        return Response(json.dumps({"Message": "User does not exist"}), status=404)
+
+
+class PromoteUser(Resource):
+    """
+    [
+        Promote user resource
+    ]
+    """
+
+    @jwt_required
+    def post(self):
+        """
+        [
+            Function serving promote user api endpoint
+        ]
+        Returns:
+            [Response] -- [Appropriate response]
+        """
+        current_user = get_jwt_identity()
+        user = User.get_user_by_username(current_user)
+        if user:
+            if user.is_admin:
+                data = request.get_json(self)
+                User.promote_user(data['username'].lower())
+                return Response(json.dumps({"Message": "User promoted successfully"}), status=200)
+            return Response(json.dumps({"Message": "User not an admin"}), status=401)
+        return Response(json.dumps({"Message": "User does not exist"}), status=404)   
+        data = request.get_json(self)
+        User.promote_user(data['username'])
+        return Response(json.dumps({"Message": "User promoted successfully"}), status=200)

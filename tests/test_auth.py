@@ -1,31 +1,14 @@
-"""
-[
-    File contains tests for auth api endpoints
-]
-"""
+"""File contains tests for auth api endpoints"""
 
 from tests.base_test import TestHelloBooks
 import json
 
 
 class AuthTestCase(TestHelloBooks):
-    """
-    [
-        Test Class for all Auth endpoints
-    ]
-    
-    Arguments:
-        TestHelloBooks {[object]} -- [Base Test Class]
-    """
+    """Test Class for all Auth endpoints"""
 
     def test_registration(self):
-        """
-        [
-            Tests Register User API endpoint
-            /api/v1/auth/register
-            Method: POST
-        ]
-        """
+        """Tests Register User API endpoint"""
         empty_data = self.register_user(self.empty_user_data)
         self.assertEqual(empty_data.status_code, 403)
         no_email = self.register_user(self.user_data_no_email)
@@ -62,13 +45,7 @@ class AuthTestCase(TestHelloBooks):
         self.assertEqual(pass_mismatch.status_code, 400)
     
     def test_login(self):
-        """
-        [
-            Tests Login User API endpoint
-            /api/v1/auth/login
-            Method: POST
-        ]
-        """
+        """Tests Login User API endpoint"""
         self.register_user(self.user_data)
         user_not_exist = self.login_user(self.login_data_user_not_exist)
         self.assertEqual(user_not_exist.status_code, 404)

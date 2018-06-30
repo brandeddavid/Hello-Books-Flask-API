@@ -1,8 +1,4 @@
-"""
-[
-    File with auth endpoints resources
-]
-"""
+"""File with auth endpoints resources"""
 
 from api import jwt
 from api.models import User, Token, Revoked
@@ -13,20 +9,10 @@ from flask_jwt_extended import create_access_token, get_raw_jwt, get_jwt_identit
 
 
 class Register(Resource):
-    """
-    [
-        Register User Resource
-    ]
-    """
+    """Register User Resource"""
 
     def post(self):
-        """
-        [
-            Function serving register user api endpoint
-        ]  
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function serving register user api endpoint"""
         data = request.get_json(self)
         if validate_user(data):
             return validate_user(data)
@@ -42,21 +28,10 @@ class Register(Resource):
 
 
 class Login(Resource):
-    """    
-    [
-        Login User Resource
-    ]
-    """
+    """Login User Resource"""
 
     def post(self):
-        """
-        [
-            Function serving login user api endpoint
-        ]
-        
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function serving login user api endpoint"""
         data = request.get_json(self)
         data['username'] = data['username'].replace(" ", "").lower()
         users = User.all_users()
@@ -74,22 +49,11 @@ class Login(Resource):
     
 
 class Logout(Resource):
-    """
-    [
-        Logout User Resource
-    ]
-    """
+    """Logout User Resource"""
 
     @jwt_required
     def post(self):
-        """
-        [
-            Function handling logout user api endpoint
-        ]
-        
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function handling logout user api endpoint"""
         try:
             current_user = get_jwt_identity()
             jti = get_raw_jwt()['jti']
@@ -104,21 +68,11 @@ class Logout(Resource):
 
 
 class ResetPassword(Resource):
-    """
-    [
-        Reset Password Resource
-    ]
-    """
+    """Reset Password Resource"""
 
     @jwt_required
     def post(self):
-        """
-        [
-            Function handling reset password api endpoint
-        ]
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function handling reset password api endpoint"""
         try:
             identity = get_jwt_identity()
             current_user = User.get_user_by_username(identity)

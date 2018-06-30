@@ -1,11 +1,4 @@
-"""
-[
-    Hello Books Base Tests File
-]
-
-Returns:
-    [Response] -- [Appropriate Response]
-"""
+"""Hello Books Base Tests File"""
 
 import run
 from api import app, db
@@ -17,21 +10,10 @@ from flask import json
 
 
 class TestHelloBooks(unittest.TestCase):
-    """
-    [
-        Hello Books Test Base Class
-    ]
-    
-    Arguments:
-        unittest {[object]} -- [unittest testcase]
-    """
+    """Hello Books Test Base Class"""
 
     def setUp(self):
-        """
-        [
-            Set up function before any test runs
-        ]
-        """
+        """Set up function before any test runs"""
         self.app = app
         app.config.from_object(app_config['testing'])
         self.client = self.app.test_client()
@@ -269,11 +251,7 @@ class TestHelloBooks(unittest.TestCase):
         }
 
     def tearDown(self):
-        """
-        [
-            Tears down after every test runs
-        ]
-        """
+        """Tears down after every test runs"""
         db.session.close()
         db.drop_all()
         self.app_context.pop()

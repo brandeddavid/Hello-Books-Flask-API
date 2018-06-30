@@ -1,8 +1,4 @@
-"""
-[
-    File has admin endpoints resources
-]
-"""
+"""File has admin endpoints resources"""
 
 from api import jwt
 from api.models import Book, User
@@ -13,21 +9,11 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 
 
 class AddBook(Resource):
-    """
-    [
-        Add Book API endpoint Resource
-    ]
-    """
+   """Add Book API endpoint Resource"""
     
     @jwt_required
     def post(self):
-        """
-        [
-            Method serving add book api endpoint
-        ]      
-        Returns:
-            [Response] -- [Appropriate Response]
-        """
+        """Method serving add book api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
@@ -46,25 +32,11 @@ class AddBook(Resource):
 
 
 class BookOps(Resource):
-    """
-    [
-        BookOps (Edit and Delete) Resource 
-    ]
-    """
+    """BookOps (Edit and Delete) Resource"""
 
     @jwt_required
     def put(self, book_id):
-        """
-        [
-            Function serving edit book api endpoint
-        ]
-        
-        Arguments:
-            book_id {[str]} -- [Book id]
-        
-        Returns:
-            [Response] -- [Appropriate responce]
-        """
+        """Function serving edit book api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if validate_arg(book_id):
@@ -89,15 +61,7 @@ class BookOps(Resource):
     
     @jwt_required
     def delete(self, book_id):
-        """
-        [
-            Function serving delete book api endpoint
-        ]
-        Arguments:
-            book_id {[str]} -- [Book id]
-        Returns:
-            [Responce] -- [Appropriate response]
-        """
+        """Function serving delete book api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if validate_arg(book_id):
@@ -114,21 +78,11 @@ class BookOps(Resource):
 
 
 class PromoteUser(Resource):
-    """
-    [
-        Promote user resource
-    ]
-    """
+    """Promote user resource"""
 
     @jwt_required
     def post(self):
-        """
-        [
-            Function serving promote user api endpoint
-        ]
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+       """Function serving promote user api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:

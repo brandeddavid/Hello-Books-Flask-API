@@ -2,11 +2,6 @@ from tests.base_test import TestHelloBooks
 import json
 
 class UserTestCase(TestHelloBooks):
-    """[summary]
-    
-    Arguments:
-        TestHelloBooks {[type]} -- [description]
-    """
 
     def test_get_users(self):
         no_users = self.get_all_users()

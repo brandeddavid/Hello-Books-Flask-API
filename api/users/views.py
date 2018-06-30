@@ -1,8 +1,4 @@
-"""
-[
-    File containing user api endpoints resources
-]
-"""
+"""File containing user api endpoints resources"""
 
 from api.models import User, Book, BorrowBook
 from api.validate import validate_arg
@@ -15,22 +11,11 @@ parser = reqparse.RequestParser()
 
 
 class GetAllUsers(Resource):
-    """
-    [
-        Get all users resource
-    ]
-    """
+    """Get all users resource"""
 
     @jwt_required
     def get(self):
-        """
-        [
-            Function serving get all user api endpoint
-        ]
-        
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function serving get all user api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
@@ -44,24 +29,11 @@ class GetAllUsers(Resource):
         
 
 class BorrowOps(Resource):
-    """
-    [
-        Borrow book ops (Borrow and Return) resource
-    ]
-    """
+    """Borrow book ops (Borrow and Return) resource"""
 
     @jwt_required
     def post(self, book_id):
-        """
-        [
-            Function serving borrow book api endpoint
-        ]
-        Arguments:
-            book_id {[str]} -- [book id]
-        
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function serving borrow book api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
@@ -84,16 +56,7 @@ class BorrowOps(Resource):
 
     @jwt_required
     def put(self, book_id):
-        """
-        [
-            Function serving return book api endpoint
-        ] 
-        Arguments:
-            book_id {[str]} -- [book id]
-        
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function serving return book api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
@@ -118,21 +81,11 @@ class BorrowOps(Resource):
 
 
 class BorrowHistory(Resource):
-    """
-    [
-        Borrowing History api endpoint resource
-    ]
-    """
+    """Borrowing History api endpoint resource"""
 
     @jwt_required
     def get(self):
-        """
-        [
-            Function serving get user borrowing history api endpoint
-        ]     
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function serving get user borrowing history api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:

@@ -1,3 +1,5 @@
+"""Manage file"""
+
 from api import db, app
 from api import routes
 from api.models import User
@@ -14,6 +16,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def create_admin():
+    """Create admin function"""
     email = input('Enter email: ')
     username = input('Enter username: ')
     first_name = input('Enter first name: ')

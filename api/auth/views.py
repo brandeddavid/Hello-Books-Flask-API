@@ -2,7 +2,7 @@
 
 from api import jwt
 from api.models import User, Token, Revoked
-from api.validate import validate_user, validate_reset_password
+from api.auth.validate import validate_register, validate_login
 from flask_restful import Resource
 from flask import json, request, Response
 from flask_jwt_extended import create_access_token, get_raw_jwt, get_jwt_identity, jwt_manager, jwt_required
@@ -14,8 +14,10 @@ class Register(Resource):
     def post(self):
         """Function serving register user api endpoint"""
         data = request.get_json(self)
-        if validate_user(data):
-            return validate_user(data)
+        if validate_register(data):
+            return Response(json.dumps(validate_user(data)), status=403)
+        if data['password'] != data['confirm_password']:
+            return Response(json.dumps({"Message": "Password provided do not match"}), status=403)
         users = User.all_users()
         email = [user for user in users if user.email == data['email']]
         if email:
@@ -34,6 +36,8 @@ class Login(Resource):
         """Function serving login user api endpoint"""
         data = request.get_json(self)
         data['username'] = data['username'].replace(" ", "").lower()
+        if validate_login(data):
+            return Response(json.dumps(validate_login(data)), status=403)
         users = User.all_users()
         user = [user for user in users if user.username == data['username']]
         if user:

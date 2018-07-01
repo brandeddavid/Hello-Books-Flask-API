@@ -1,7 +1,7 @@
 """File containing user api endpoints resources"""
 
 from api.models import User, Book, BorrowBook
-from api.validate import validate_arg
+from api.admin.validate import validate_arg
 from flask_restful import Resource, reqparse
 from flask import request, json, Response
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -38,7 +38,7 @@ class BorrowOps(Resource):
         user = User.get_user_by_username(current_user)
         if user:
             if validate_arg(book_id):
-                return validate_arg(book_id)
+                return Response(json.dumps(validate_book(data)), status=403)
             book = Book.get_book_by_id(book_id)
             if book:
                 if book.quantity == 0:
@@ -61,7 +61,7 @@ class BorrowOps(Resource):
         user = User.get_user_by_username(current_user)
         if user:
             if validate_arg(book_id):
-                return validate_arg(book_id)
+                return Response(json.dumps(validate_book(data)), status=403)
             book = Book.get_book_by_id(book_id)
             if book:
                 borrowed_books = BorrowBook.get_all_borrowed_books()

@@ -1,7 +1,7 @@
 """File has book api endpoints resources"""
 
 from api.models import Book
-from api.validate import validate_arg
+from api.admin.validate import validate_arg
 from flask_restful import Resource
 from flask import json, request, Response
 
@@ -18,7 +18,7 @@ class GetBooks(Resource):
 
 
 class GetBook(Resource):
-   """Getting a book resource"""
+    """Getting a book resource"""
 
     def get(self, book_id):
         """Function serving get a book api endpoint"""

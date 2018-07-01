@@ -2,15 +2,15 @@
 
 from api import jwt
 from api.models import Book, User
-from api.validate import validate_book, validate_arg
+from api.admin.validate import validate_book, validate_arg
 from flask_restful import Resource
 from flask import json, request, Response
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 
 class AddBook(Resource):
-   """Add Book API endpoint Resource"""
-    
+    """Add Book API endpoint Resource"""
+
     @jwt_required
     def post(self):
         """Method serving add book api endpoint"""
@@ -20,7 +20,7 @@ class AddBook(Resource):
             if user.is_admin:
                 data = request.get_json(self)
                 if validate_book(data):
-                    return validate_book(data)
+                    return Response(json.dumps(validate_book(data)), status=403)
                 books = Book.get_all_books()
                 isbn = [book for book in books if book.isbn == data['isbn']]
                 if isbn:
@@ -47,7 +47,7 @@ class BookOps(Resource):
                 if book:
                     data = request.get_json(self)
                     if validate_book(data):
-                        return validate_book(data)
+                        return Response(json.dumps(validate_book(data)), status=403)
                     book.title = data['title']
                     book.author = data['author']
                     book.isbn = data['isbn']
@@ -82,7 +82,7 @@ class PromoteUser(Resource):
 
     @jwt_required
     def post(self):
-       """Function serving promote user api endpoint"""
+        """Function serving promote user api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:

@@ -14,6 +14,11 @@ class BookTestCase(TestHelloBooks):
         self.assertEqual(no_book.status_code, 404)
         bad_argument = self.get_book('kk')
         self.assertEqual(bad_argument.status_code, 400)
+        add_book = self.add_book(self.book_data)
+        all_books = self.get_all_books()
+        self.assertEqual(all_books.status_code, 200)
+        one_book = self.get_book(1)
+        self.assertEqual(one_book.status_code, 200)
 
     def test_add_book(self):
         """Tests add book api endpoint"""

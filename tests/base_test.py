@@ -249,6 +249,13 @@ class TestHelloBooks(unittest.TestCase):
             "publisher": "Publisher",
             "quantity": None
         }
+        admin = User('dmwangi@gmail.com', 'dmwangi', 'David', 'Mwangi', 'password1234')
+        admin.is_admin = True
+        admin.save()
+        self.admin_data = {
+            "username": "dmwangi",
+            "password": "password1234",
+        }
 
     def tearDown(self):
         """Tears down after every test runs"""
@@ -268,9 +275,6 @@ class TestHelloBooks(unittest.TestCase):
         token = msg['Token']
         return self.client.post('/api/v1/auth/logout', headers={"Authorization": "Bearer {}".format(token)})
 
-    def get_all_users(self):
-        return self.client.get('/api/v1/users')
-
     def get_all_books(self):
         return self.client.get('/api/v1/books')
 
@@ -278,9 +282,7 @@ class TestHelloBooks(unittest.TestCase):
         return self.client.get('/api/v1/book/' + str(id))
 
     def login_admin(self):
-        self.register_user(self.user_data)
-        self.client.post('/api/v1/user/promote', data=json.dumps(self.login_data), content_type='application/json')
-        return self.login_user(self.login_data)
+        return self.login_user(self.admin_data)
 
     def add_book(self, data):
         admin = self.login_admin()
@@ -296,3 +298,8 @@ class TestHelloBooks(unittest.TestCase):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
         return self.client.delete('/api/v1/book/'+str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+
+    def get_all_users(self):
+        admin = self.login_admin()
+        token = json.loads(admin.data)['Token']
+        return self.client.get('/api/v1/users', headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')

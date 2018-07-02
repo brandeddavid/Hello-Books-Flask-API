@@ -7,7 +7,7 @@ class BookTestCase(TestHelloBooks):
     """Test class for all book api endpoints"""
 
     def test_get_books(self):
-       """Tests get books API endpoint"""
+        """Tests get books API endpoint"""
         no_books = self.get_all_books()
         self.assertEqual(no_books.status_code, 404)
         no_book = self.get_book(1000)

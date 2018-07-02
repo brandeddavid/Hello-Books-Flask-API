@@ -14,7 +14,7 @@ class AuthTestCase(TestHelloBooks):
         no_email = self.register_user(self.user_data_no_email)
         self.assertEqual(no_email.status_code, 403)
         wrong_email = self.register_user(self.user_data_wrong_email)
-        self.assertEqual(wrong_email.status_code, 400)
+        self.assertEqual(wrong_email.status_code, 403)
         long_email = self.register_user(self.user_data_long_email)
         self.assertEqual(long_email.status_code, 403)
         no_username = self.register_user(self.user_data_no_username)
@@ -32,7 +32,7 @@ class AuthTestCase(TestHelloBooks):
         no_password = self.register_user(self.user_data_no_password)
         self.assertEqual(no_password.status_code, 403)
         short_password = self.register_user(self.user_data_short_password)
-        self.assertEqual(short_password.status_code, 400)
+        self.assertEqual(short_password.status_code, 403)
         register = self.register_user(self.user_data)
         self.assertEqual(register.status_code, 201)
         email_exists = self.register_user(self.user_data)
@@ -42,7 +42,7 @@ class AuthTestCase(TestHelloBooks):
         no_confirm = self.register_user(self.user_data_no_confirm)
         self.assertEqual(no_confirm.status_code, 403)
         pass_mismatch = self.register_user(self.user_data_password_mismatch)
-        self.assertEqual(pass_mismatch.status_code, 400)
+        self.assertEqual(pass_mismatch.status_code, 403)
     
     def test_login(self):
         """Tests Login User API endpoint"""

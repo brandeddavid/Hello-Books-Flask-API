@@ -15,7 +15,7 @@ class Register(Resource):
         """Function serving register user api endpoint"""
         data = request.get_json(self)
         if validate_register(data):
-            return Response(json.dumps(validate_user(data)), status=403)
+            return Response(json.dumps(validate_register(data)), status=403)
         if data['password'] != data['confirm_password']:
             return Response(json.dumps({"Message": "Password provided do not match"}), status=403)
         users = User.all_users()

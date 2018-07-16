@@ -65,7 +65,7 @@ class BorrowOps(Resource):
             book = Book.get_book_by_id(book_id)
             if book:
                 borrowed_books = BorrowBook.get_all_borrowed_books()
-                to_return = [borrowed_book for borrowed_book in borrowed_books if str(borrowed_book.book_id) == str(book_id) and borrowed_book.returned == False]
+                to_return = [borrowed_book for borrowed_book in borrowed_books if str(borrowed_book.book_id) == str(book_id) and str(borrowed_book.user_id) == str(user.id) and borrowed_book.returned == False]
                 if to_return:
                     to_return[0].returned = True
                     to_return[0].date_returned = datetime.now()

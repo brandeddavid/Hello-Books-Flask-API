@@ -1,11 +1,7 @@
-"""
-[
-    File containing user api endpoints resources
-]
-"""
+"""File containing user api endpoints resources"""
 
 from api.models import User, Book, BorrowBook
-from api.validate import validate_arg
+from api.admin.validate import validate_arg
 from flask_restful import Resource, reqparse
 from flask import request, json, Response
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -15,50 +11,34 @@ parser = reqparse.RequestParser()
 
 
 class GetAllUsers(Resource):
-    """
-    [
-        Get all users resource
-    ]
-    """
+    """Get all users resource"""
 
+    @jwt_required
     def get(self):
-        """
-        [
-            Function serving get all user api endpoint
-        ]
+        """Function serving get all user api endpoint"""
+        current_user = get_jwt_identity()
+        user = User.get_user_by_username(current_user)
+        if user:
+            if user.is_admin:
+                allUsers = User.all_users()
+                if len(allUsers) == 0:
+                    return Response(json.dumps({"Message":"No users found"}), status=404)
+                return Response(json.dumps({"Users":[user.serialize for user in allUsers]}), status=200)
+            return Response(json.dumps({"Message": "User not an admin"}), status=401)
+        return Response(json.dumps({"Message": "User does not exist"}), status=404)
         
-        Returns:
-            [Response] -- [Appropriate response]
-        """
-        allUsers = User.all_users()
-        if len(allUsers) == 0:
-            return Response(json.dumps({"Message":"No users found"}), status=404)
-        return Response(json.dumps({"Users":[user.serialize for user in allUsers]}), status=200)
 
 class BorrowOps(Resource):
-    """
-    [
-        Borrow book ops (Borrow and Return) resource
-    ]
-    """
+    """Borrow book ops (Borrow and Return) resource"""
 
     @jwt_required
     def post(self, book_id):
-        """
-        [
-            Function serving borrow book api endpoint
-        ]
-        Arguments:
-            book_id {[str]} -- [book id]
-        
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function serving borrow book api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
             if validate_arg(book_id):
-                return validate_arg(book_id)
+                return Response(json.dumps(validate_book(data)), status=403)
             book = Book.get_book_by_id(book_id)
             if book:
                 if book.quantity == 0:
@@ -76,25 +56,16 @@ class BorrowOps(Resource):
 
     @jwt_required
     def put(self, book_id):
-        """
-        [
-            Function serving return book api endpoint
-        ] 
-        Arguments:
-            book_id {[str]} -- [book id]
-        
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function serving return book api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
             if validate_arg(book_id):
-                return validate_arg(book_id)
+                return Response(json.dumps(validate_book(data)), status=403)
             book = Book.get_book_by_id(book_id)
             if book:
                 borrowed_books = BorrowBook.get_all_borrowed_books()
-                to_return = [borrowed_book for borrowed_book in borrowed_books if borrowed_book.book_id == book_id and borrowed_book.returned ==False]
+                to_return = [borrowed_book for borrowed_book in borrowed_books if str(borrowed_book.book_id) == str(book_id) and str(borrowed_book.user_id) == str(user.id) and borrowed_book.returned == False]
                 if to_return:
                     to_return[0].returned = True
                     to_return[0].date_returned = datetime.now()
@@ -108,21 +79,11 @@ class BorrowOps(Resource):
 
 
 class BorrowHistory(Resource):
-    """
-    [
-        Borrowing History api endpoint resource
-    ]
-    """
+    """Borrowing History api endpoint resource"""
 
     @jwt_required
     def get(self):
-        """
-        [
-            Function serving get user borrowing history api endpoint
-        ]     
-        Returns:
-            [Response] -- [Appropriate response]
-        """
+        """Function serving get user borrowing history api endpoint"""
         current_user = get_jwt_identity()
         user = User.get_user_by_username(current_user)
         if user:
@@ -138,23 +99,3 @@ class BorrowHistory(Resource):
                 return Response(json.dumps({"Borrow History": borrow_history}), status=200)
             return Response(json.dumps({"Message": "You have not borrowed any book"}), status=404)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
-
-
-class PromoteUser(Resource):
-    """
-    [
-        Promote user resource
-    ]
-    """
-
-    def post(self):
-        """
-        [
-            Function serving promote user api endpoint
-        ]
-        Returns:
-            [Response] -- [Appropriate response]
-        """
-        data = request.get_json(self)
-        User.promote_user(data['username'])
-        return Response(json.dumps({"Message": "User promoted successfully"}), status=200)

@@ -1,12 +1,9 @@
-"""
-[
-    File maps api endpoints to resourses serving them
-]
-"""
+"""File maps api endpoints to resourses serving them"""
+
 from flask import Blueprint
 from flask_restful import Api
-from api.users.views import GetAllUsers, BorrowOps, BorrowHistory, PromoteUser
-from api.admin.views import AddBook, BookOps
+from api.users.views import GetAllUsers, BorrowOps, BorrowHistory
+from api.admin.views import AddBook, BookOps, PromoteUser
 from api.books.views import GetBooks, GetBook
 from api.auth.views import Register, Login, Logout, ResetPassword
 

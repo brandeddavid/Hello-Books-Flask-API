@@ -79,13 +79,23 @@ class ResetPassword(Resource):
         """Function handling reset password api endpoint"""
         try:
             identity = get_jwt_identity()
+            jti = get_raw_jwt()['jti']
             current_user = User.get_user_by_username(identity)
             data = request.get_json(self)
-            if validate_reset_password(data):
-                return validate_reset_password(data)
+            # if validate_reset_password(data):
+            #     return validate_reset_password(data)
             if User.verify_password(current_user.password_hash, data["password"]):
-                current_user.update_password(data["password"])
-                return Response(json.dumps({"Message": "Password updated successfully"}), status=200)
+                try:
+                    current_user.password_hash = current_user.hash_password(data['new_password'])
+                    current_user.save()
+                    
+                except:
+                    pass
+                finally:
+                    # Revoke token after password change
+                    Revoked(jti).save()
+                    Token.delete(Token.token_by_owner(current_user))
+                    return Response(json.dumps({"Message": "Password updated successfully. Please login again."}), status=200)
             return Response(json.dumps({"Message": "Password do not match"}), status=403)
         except Exception as e:
             print(e)

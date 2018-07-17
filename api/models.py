@@ -2,6 +2,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from api import db
+from sqlalchemy import or_
 
 
 class User(db.Model):
@@ -114,15 +115,19 @@ class Book(db.Model):
         self.quantity = quantity
 
     @staticmethod
-    def get_all_books():
+    def get_all_books(page, limit):
         """Gets all book"""
-        return Book.query.all()
+        return Book.query.paginate(page=page, per_page=limit, error_out=False)
 
     @staticmethod
     def get_book_by_id(id):
         """Gets book by id"""
         return Book.query.filter_by(id=id).first()
     
+    @staticmethod
+    def search(q):
+        books = Book.query.filter(or_(Book.title.like('%'+q.title()+'%'))).all()
+        return {"Books": [book.serialize for book in books]}
     @property
     def serialize(self):
         """Serializes book information"""

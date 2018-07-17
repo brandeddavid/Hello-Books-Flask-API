@@ -21,8 +21,7 @@ class AddBook(Resource):
                 data = request.get_json(self)
                 if validate_book(data):
                     return Response(json.dumps(validate_book(data)), status=403)
-                books = Book.get_all_books(page=None, limit=None)
-                books = books.items
+                books = Book.get_all_books()
                 isbn = [book for book in books if book.isbn == data['isbn']]
                 if isbn:
                     return Response(json.dumps({"Message": "Book already exists"}), status=409)

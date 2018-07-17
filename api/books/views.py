@@ -16,7 +16,7 @@ class GetBooks(Resource):
             return Response(json.dumps(Book.search(q)), status=200)
         page = request.args.get("page")
         limit = request.args.get("limit")
-        books = Book.get_all_books(int(page), int(limit))
+        books = Book.query.paginate(page=page, per_page=limit, error_out=False)
         all_books = books.items
         if len(all_books) == 0:
             return Response(json.dumps({"Message": "No books found"}), status=404)

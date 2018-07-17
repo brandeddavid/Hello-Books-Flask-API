@@ -115,9 +115,9 @@ class Book(db.Model):
         self.quantity = quantity
 
     @staticmethod
-    def get_all_books(page, limit):
+    def get_all_books():
         """Gets all book"""
-        return Book.query.paginate(page=page, per_page=limit, error_out=False)
+        return Book.query.all()
 
     @staticmethod
     def get_book_by_id(id):
@@ -183,13 +183,18 @@ class BorrowBook(db.Model):
         borrowing_history = []
         book_details = {}
         for book in user_books:
-            book_details["Title"] = Book.get_book_by_id(book.book_id).title
-            book_details["Date Borrowed"] = book.date_borrowed
-            if book.returned:
-                book_details["Date Returned"] = book.date_returned
-            else:
-                book_details["Due Date"] = book.date_due
-            borrowing_history.append(book_details)
+            try:
+                book_details["Title"] = Book.get_book_by_id(book.book_id).title
+                book_details["Date Borrowed"] = book.date_borrowed
+                if book.returned:
+                    book_details["Date Returned"] = book.date_returned
+                else:
+                    book_details["Due Date"] = book.date_due
+            except:
+                pass
+            finally:
+                borrowing_history.append(book_details)
+                book_details = {}
         return borrowing_history
 
     @staticmethod
@@ -201,10 +206,15 @@ class BorrowBook(db.Model):
         unreturned_books = []
         book_details = {}
         for book in user_books:
-            book_details["Title"] = Book.get_book_by_id(book.book_id).title
-            book_details["Date Borrowed"] = book.date_borrowed
-            book_details["Due Date"] = book.date_due
-            unreturned_books.append(book_details)
+            try:
+                book_details["Title"] = Book.get_book_by_id(book.book_id).title
+                book_details["Date Borrowed"] = book.date_borrowed
+                book_details["Due Date"] = book.date_due
+            except:
+                pass
+            finally:
+                unreturned_books.append(book_details)
+                book_details = {}
         return unreturned_books
 
     def save(self):

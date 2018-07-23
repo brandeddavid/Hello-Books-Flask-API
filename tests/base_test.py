@@ -1,11 +1,4 @@
-"""
-[
-    Hello Books Base Tests File
-]
-
-Returns:
-    [Response] -- [Appropriate Response]
-"""
+"""Hello Books Base Tests File"""
 
 import run
 from api import app, db
@@ -17,22 +10,12 @@ from flask import json
 
 
 class TestHelloBooks(unittest.TestCase):
-    """
-    [
-        Hello Books Test Base Class
-    ]
-    
-    Arguments:
-        unittest {[object]} -- [unittest testcase]
-    """
+    """Hello Books Test Base Class"""
 
     def setUp(self):
-        """
-        [
-            Set up function before any test runs
-        ]
-        """
+        """Set up function before any test runs"""
         self.app = app
+        self.version = 'v1'
         app.config.from_object(app_config['testing'])
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
@@ -267,54 +250,63 @@ class TestHelloBooks(unittest.TestCase):
             "publisher": "Publisher",
             "quantity": None
         }
+        admin = User('dmwangi@gmail.com', 'dmwangi', 'David', 'Mwangi', 'password1234')
+        admin.is_admin = True
+        admin.save()
+        self.admin_data = {
+            "username": "dmwangi",
+            "password": "password1234",
+        }
 
     def tearDown(self):
-        """
-        [
-            Tears down after every test runs
-        ]
-        """
+        """Tears down after every test runs"""
         db.session.close()
         db.drop_all()
         self.app_context.pop()
 
     def register_user(self, data):
-        return self.client.post('/api/v1/auth/register', data=json.dumps(data), content_type='application/json')
+        return self.client.post('/api/'+self.version+'/auth/register', data=json.dumps(data), content_type='application/json')
 
     def login_user(self, data):
-        return self.client.post('/api/v1/auth/login', data=json.dumps(data), content_type='application/json')
+        return self.client.post('/api/'+self.version+'/auth/login', data=json.dumps(data), content_type='application/json')
 
     def logout_user(self, user):
         msg = json.loads(user.data)
         print(msg)
         token = msg['Token']
-        return self.client.post('/api/v1/auth/logout', headers={"Authorization": "Bearer {}".format(token)})
-
-    def get_all_users(self):
-        return self.client.get('/api/v1/users')
+        return self.client.post('/api/'+self.version+'/auth/logout', headers={"Authorization": "Bearer {}".format(token)})
 
     def get_all_books(self):
-        return self.client.get('/api/v1/books')
+        return self.client.get('/api/'+self.version+'/books')
 
     def get_book(self, id):
-        return self.client.get('/api/v1/book/' + str(id))
+        return self.client.get('/api/'+self.version+'/book/' + str(id))
 
     def login_admin(self):
-        self.register_user(self.user_data)
-        self.client.post('/api/v1/user/promote', data=json.dumps(self.login_data), content_type='application/json')
-        return self.login_user(self.login_data)
+        return self.login_user(self.admin_data)
 
     def add_book(self, data):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
-        return self.client.post('/api/v1/books', data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+        return self.client.post('/api/'+self.version+'/books', data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
 
     def update_book(self, data, id):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
-        return self.client.put('/api/v1/book/'+str(id), data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+        return self.client.put('/api/'+self.version+'/book/'+str(id), data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
 
     def delete_book(self, id):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
-        return self.client.delete('/api/v1/book/'+str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+        return self.client.delete('/api/'+self.version+'/book/'+str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+
+    def get_all_users(self):
+        admin = self.login_admin()
+        token = json.loads(admin.data)['Token']
+        return self.client.get('/api/'+self.version+'/users', headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+
+    def borrow_book(self, id):
+        self.register_user(self.user_data)
+        user = self.login_user(self.login_data)
+        token = json.loads(user.data)['Token']
+        return self.client.get('/api/'+self.version+'/users/books/'+ str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')

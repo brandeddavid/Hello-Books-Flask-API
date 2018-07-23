@@ -1,19 +1,12 @@
-"""
-[
-    File defines the user, book classes and the association object.
-]
-"""
+"""File defines the user, book classes and the association object."""
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from api import db
+from sqlalchemy import or_
 
 
 class User(db.Model):
-    """
-    [
-        User Model
-    ]
-    """
+    """User Model"""
     #Ensure table name is in plural
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -27,18 +20,7 @@ class User(db.Model):
     borrowed_books = db.relationship('Book', secondary='borrowed_books', lazy='dynamic')
 
     def __init__(self, email, username, first_name, last_name, password):
-        """
-        [
-            Init function
-        ]
-        
-        Arguments:
-            email {[str]} -- [User's email]
-            username {[str]} -- [User's username]
-            first_name {[str]} -- [User's first_name]
-            last_name {[str]} -- [User's last_name]
-            password {[str]} -- [User's password]
-        """
+        """Init function"""
         self.email = email
         self.username = username
         self.first_name = first_name
@@ -47,86 +29,37 @@ class User(db.Model):
 
     @staticmethod
     def hash_password(password):
-        """
-        [
-            Hashes user password
-        ]
-        Arguments:
-            password {[str]} -- [User's password]
-        """
+        """Hashes user password"""
         return generate_password_hash(password)
 
     @staticmethod
     def verify_password(saved_password, password):
-        """
-        [
-            Check is password hash matches actual password
-        ]
-        Arguments:
-            password {[str]} -- [Password input]
-        Returns:
-            [bool] -- [True is matches, False is not]
-        """
+        """Check is password hash matches actual password"""
         return check_password_hash(saved_password, password)
     
     def save(self):
-        """
-        [
-            Saves user objects to database
-        ]
-        """
+        """Saves user objects to database"""
         db.session.add(self)
         db.session.commit()
     
     @staticmethod
     def all_users():
-        """
-        [
-            Gets all users
-        ]
-        
-        Returns:
-            [list] -- [List of all user objects]
-        """
+        """Gets all users"""
         return User.query.all()
 
     @staticmethod
     def get_user_by_username(username):
-        """
-        [
-            Gets user by username
-        ]
-        
-        Arguments:
-            username {[str]} -- [User's username]
-        
-        Returns:
-            [object] -- [User object]
-        """
+        """Gets user by username"""
         return User.query.filter_by(username=username).first()
     
     def update_password(self, password):
-        """
-        [
-            Updates user's password
-        ]
-        
-        Arguments:
-            password {[str]} -- [User's new password]
-        """
+        """Updates user's password"""
         self.hash_password = User.hash_password(password)
         User.save(self)
     
     @property
     def serialize(self):
-        """
-        [
-            Serializes User object
-        ]
-        
-        Returns:
-            [dict] -- [Dict with user info]
-        """
+        """Serializes User object"""
         return {
             "email": self.email,
             "username": self.username,
@@ -136,11 +69,7 @@ class User(db.Model):
 
     @property  
     def promote(self):
-        """
-        [
-            Promotes normal user to admin
-        ]
-        """
+        """Promotes normal user to admin"""
         if self.is_admin == True:
             pass
         self.is_admin = True
@@ -148,24 +77,13 @@ class User(db.Model):
 
     @staticmethod
     def promote_user(username):
-        """
-        [
-            Promotes normal user to admin in tests
-        ]
-        """
+        """Promotes normal user to admin in tests"""
         user = User.get_user_by_username(username)
         user.is_admin = True
         user.save()
 
     def admin(self):
-        """
-        [
-            Checks if user is an admin
-        ]
-        
-        Returns:
-            [boolean] -- [True if user is admin and false if not]
-        """
+        """Checks if user is an admin"""
         if self.is_admin:
             return True
         return False
@@ -175,11 +93,7 @@ class User(db.Model):
 
 
 class Book(db.Model):
-    """
-    [
-        Book Model
-    ]
-    """
+    """Book Model"""
     #Ensure table name is in plural
     __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
@@ -193,18 +107,7 @@ class Book(db.Model):
     borrowers = db.relationship('User', secondary='borrowed_books', lazy='dynamic')
 
     def __init__(self, title, author, isbn, publisher, quantity):
-        """
-        [
-            Init function
-        ]
-        
-        Arguments:
-            title {[str]} -- [Book's title]
-            author {[str]} -- [Book's author]
-            isbn {str} -- [Book's isbn]
-            publisher {[str]} -- [Book's publisher]
-            quantity {[str]} -- [Copies of book]
-        """
+        """Init function"""
         self.title = title
         self.author = author
         self.isbn = isbn
@@ -213,41 +116,21 @@ class Book(db.Model):
 
     @staticmethod
     def get_all_books():
-        """
-        [
-            Gets all book
-        ]
-        
-        Returns:
-            [list] -- [list of book objects]
-        """
+        """Gets all book"""
         return Book.query.all()
 
     @staticmethod
     def get_book_by_id(id):
-        """
-        [
-            Gets book by id
-        ]
-        
-        Arguments:
-            id {[str]} -- [Book's id]
-        
-        Returns:
-            [object] -- [Book object]
-        """
+        """Gets book by id"""
         return Book.query.filter_by(id=id).first()
     
+    @staticmethod
+    def search(q):
+        books = Book.query.filter(or_(Book.title.like('%'+q.title()+'%'))).all()
+        return {"Books": [book.serialize for book in books]}
     @property
     def serialize(self):
-        """
-        [
-            Serializes book information
-        ]
-        
-        Returns:
-            [Dict] -- [Dict object with book information]
-        """
+        """Serializes book information"""
         if self.quantity == 0:
             self.availability = False
         else:
@@ -261,20 +144,12 @@ class Book(db.Model):
         }
     
     def save(self):
-        """
-        [
-            Saves book object to database
-        ]
-        """
+        """Saves book object to database"""
         db.session.add(self)
         db.session.commit()
 
     def delete(self):
-        """
-        [
-            Deletes book object
-        ]
-        """
+        """Deletes book object"""
         db.session.delete(self)
         db.session.commit()
 
@@ -283,11 +158,7 @@ class Book(db.Model):
 
 
 class BorrowBook(db.Model):
-    """
-    [
-        Association Table
-    ]
-    """
+    """Association Table"""
     __tablename__="borrowed_books"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -301,83 +172,58 @@ class BorrowBook(db.Model):
 
     @staticmethod
     def get_all_borrowed_books():
-        """
-        [
-            Gets all books in borrow table
-        ]
-        
-        Returns:
-            [list] -- [list of book objects in borrow table]
-        """
+        """Gets all books in borrow table"""
         return BorrowBook.query.all()
 
     @staticmethod
     def get_user_borrowing_history(user_id):
-        """
-        [
-            Gets user borrowing history
-        ]
-        
-        Arguments:
-            user_id {[str]} -- [user id]
-        
-        Returns:
-            [list] -- [List of books borrowed by user]
-        """
+        """ Gets user borrowing history"""
         borrowed_books = BorrowBook.get_all_borrowed_books()
         user_books = [book for book in borrowed_books if book.user_id == user_id]
         borrowing_history = []
         book_details = {}
         for book in user_books:
-            book_details["Title"] = Book.get_book_by_id(book.book_id).title
-            book_details["Date Borrowed"] = book.date_borrowed
-            if book.returned:
-                book_details["Date Returned"] = book.date_returned
-            else:
-                book_details["Due Date"] = book.date_due
-            borrowing_history.append(book_details)
+            try:
+                book_details["Title"] = Book.get_book_by_id(book.book_id).title
+                book_details["Date Borrowed"] = book.date_borrowed
+                if book.returned:
+                    book_details["Date Returned"] = book.date_returned
+                else:
+                    book_details["Due Date"] = book.date_due
+            except:
+                pass
+            finally:
+                borrowing_history.append(book_details)
+                book_details = {}
         return borrowing_history
 
     @staticmethod
     def get_books_not_returned(user_id):
-        """
-        [
-            Gets books not returned by user
-        ]
-        
-        Arguments:
-            user_id {[str]} -- [user is]
-        
-        Returns:
-            [list] -- [books not returned by user]
-        """
+        """Gets books not returned by user"""
         borrowed_books = BorrowBook.get_all_borrowed_books()
         # User non returned books
         user_books = [book for book in borrowed_books if book.user_id == user_id and book.returned == False]
         unreturned_books = []
         book_details = {}
         for book in user_books:
-            book_details["Title"] = Book.get_book_by_id(book.book_id).title
-            book_details["Date Borrowed"] = book.date_borrowed
-            book_details["Due Date"] = book.date_due
-            unreturned_books.append(book_details)
+            try:
+                book_details["Title"] = Book.get_book_by_id(book.book_id).title
+                book_details["Date Borrowed"] = book.date_borrowed
+                book_details["Due Date"] = book.date_due
+            except:
+                pass
+            finally:
+                unreturned_books.append(book_details)
+                book_details = {}
         return unreturned_books
 
     def save(self):
-        """
-        [
-            Saved book borrowed to database
-        ]
-        """
+        """Saved book borrowed to database"""
         db.session.add(self)
         db.session.commit()
 
 class Token(db.Model):
-    """
-    [
-        Token Model
-    ]
-    """
+    """Token Model"""
     __tablename__ = 'tokens'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -386,69 +232,32 @@ class Token(db.Model):
     created = db.Column(db.DateTime, default=datetime.today())
 
     def __init__(self, token, owner):
-        """
-        [
-            Init function
-        ]
-        
-        Arguments:
-            token {[str]} -- [User token]
-            owner {[str]} -- [Token owner]
-        """
+        """Init function"""
         self.token = token
         self.owner = owner
 
     @staticmethod
     def all_tokens():
-        """
-        [
-            Gets all tokens
-        ]
-        
-        Returns:
-            [list] -- [list of all tokens]
-        """
+        """Gets all tokens"""
         return Token.query.all()
 
     @staticmethod
     def token_by_owner(username):
-        """
-        [
-            Gets token by user's username
-        ]
-        
-        Arguments:
-            username {[str]} -- [user's username]
-        
-        Returns:
-            [object] -- [Token object]
-        """
+        """Gets token by user's username"""
         return Token.query.filter_by(owner=username).first()
 
     def save(self):
-        """
-        [
-            Saves generated token to database.
-        ]
-        """
+        """Saves generated token to database."""
         db.session.add(self)
         db.session.commit()
 
     def delete(self):
-        """
-        [
-            Delete token after being revoked
-        ]
-        """
+        """Delete token after being revoked"""
         db.session.delete(self)
         db.session.commit()
 
 class Revoked(db.Model):
-    """
-    [
-        Revoked Token Table
-    ]
-    """
+    """Revoked Token Table"""
 
     __tablename__ = 'revoked'
     id = db.Column(db.Integer, primary_key=True)
@@ -456,39 +265,18 @@ class Revoked(db.Model):
     date_revoked = db.Column(db.DateTime, default=datetime.now())
 
     def __init__(self, token):
-        """
-        [
-            Init function
-        ]
-        
-        Arguments:
-            token {[str]} -- [User token]
-        """
+        """Init function"""
         self.token = token
 
     @staticmethod
     def is_blacklisted(token):
-        """
-        [
-            Checks if token is revoked
-        ]
-        
-        Arguments:
-            token {[str]} -- [User token]
-        
-        Returns:
-            [boolean] -- [True if revoked, false if not]
-        """
+        """Checks if token is revoked"""
         if Revoked.query.filter_by(token=token).first():
             return True
         return False
 
     def save(self):
-        """
-        [
-            Saves revoked token to database
-        ]
-        """
+        """Saves revoked token to database"""
         db.session.add(self)
         db.session.commit()
 

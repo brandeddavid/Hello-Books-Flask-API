@@ -1,18 +1,10 @@
-"""
-[
-    Config file
-]
-"""
+"""Config file"""
 
 import os
 
 
 class Config(object):
-    """
-    [
-        Global configs
-    ]
-    """
+    """"Global configs"""
     DEBUG = False
     CSRF_ENABLED = True
     TESTING = False
@@ -23,42 +15,26 @@ class Config(object):
 
 
 class DevelopmentConfig(Config):
-    """
-    [
-        Development configs
-    ]
-    """
+    """Development configs"""
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class TestingConfig(Config):
-    """
-    [
-        Testing configs
-    ]
-    """
+    """Testing configs"""
     TESTING = True
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/hellobooks_test'
 
 
 class StagingConfig(Config):
-    """
-    [
-        Staging configs
-    ]
-    """
+    """Staging configs"""
     DEBUG = True
 
 
 class ProductionConfig(Config):
-    """
-    [
-        Proguction configs
-    ]
-    """
+    """Production configs"""
     DEBUG = False
     TESTING = False
 

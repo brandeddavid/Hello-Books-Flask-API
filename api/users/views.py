@@ -43,8 +43,7 @@ class BorrowOps(Resource):
             if book:
                 if book.quantity == 0:
                     return Response(json.dumps({"Message": "Book not available to borrow"}), status=404)
-                borrowed_books = BorrowBook.get_all_borrowed_books()
-                borrowed = [borrowed_book for borrowed_book in borrowed_books if borrowed_book.user_id == user.id and borrowed_book.book_id == book.id and borrowed_book.returned == False]
+                borrowed = BorrowBook.query.filter_by(user_id=user.id, book_id=book.id, returned=False).first()
                 if borrowed:
                     return Response(json.dumps({"Message": "Already borrowed book"}), status=403)
                 BorrowBook(user=user, book=book).save()
@@ -64,12 +63,11 @@ class BorrowOps(Resource):
                 return Response(json.dumps(validate_book(data)), status=403)
             book = Book.get_book_by_id(book_id)
             if book:
-                borrowed_books = BorrowBook.get_all_borrowed_books()
-                to_return = [borrowed_book for borrowed_book in borrowed_books if str(borrowed_book.book_id) == str(book_id) and str(borrowed_book.user_id) == str(user.id) and borrowed_book.returned == False]
+                to_return = BorrowBook.query.filter_by(user_id=user.id, book_id=book.id, returned=False).first()
                 if to_return:
-                    to_return[0].returned = True
-                    to_return[0].date_returned = datetime.now()
-                    to_return[0].save()
+                    to_return.returned = True
+                    to_return.date_returned = datetime.now()
+                    to_return.save()
                     book.quantity += 1
                     book.save()
                     return Response(json.dumps({"Message": "Book returned successfully"}), status=200)

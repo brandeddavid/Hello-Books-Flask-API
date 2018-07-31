@@ -16,13 +16,13 @@ class GetBooks(Resource):
             return Response(json.dumps(Book.search(q)), status=200)
         page = request.args.get("page")
         limit = request.args.get("limit")
-        books = Book.query.paginate(page=page, per_page=limit, error_out=False)
+        books = Book.query.paginate(page=int(page), per_page=int(limit), error_out=False)
         all_books = books.items
         if len(all_books) == 0:
             return Response(json.dumps({"Message": "No books found"}), status=404)
         total_pages = books.pages 
         current_page = books.page 
-        return Response(json.dumps({"Books": [book.serialize for book in all_books], "Total Pages": total_pages, "Current Page": current_page}), status=200)
+        return Response(json.dumps({"Books": [book.serialize() for book in all_books], "Total Pages": total_pages, "Current Page": current_page}), status=200)
 
 
 class GetBook(Resource):

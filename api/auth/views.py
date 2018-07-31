@@ -4,6 +4,7 @@ from api import jwt
 from api.models import User, Token, Revoked
 from api.auth.validate import validate_register, validate_login
 from flask_restful import Resource
+from datetime import timedelta
 from flask import json, request, Response
 from flask_jwt_extended import create_access_token, get_raw_jwt, get_jwt_identity, jwt_manager, jwt_required
 
@@ -37,16 +38,17 @@ class Login(Resource):
         data = request.get_json(self)
         data['username'] = data['username'].replace(" ", "").lower()
         if validate_login(data):
-            return Response(json.dumps(validate_login(data)), status=403)
+            return Response(json.dumps(validate_login(data)), status=400)
         users = User.all_users()
-        user = [user for user in users if user.username == data['username']]
+        user = [user for user in users if user.username == data['username']][0]
         if user:
-            if User.verify_password(user[0].password_hash, data['password']):
-                logged_in = Token.token_by_owner(user[0].username)
+            if User.verify_password(user.password_hash, data['password']):
+                logged_in = Token.token_by_owner(user.username)
                 if logged_in:
                     return Response(json.dumps({"Message": "Already logged in", "Token": logged_in.token}), status=403)
-                token = create_access_token(identity=user[0].username)
-                tk = Token(token, user[0].username).save()
+                expires = timedelta(days=30)
+                token = create_access_token(identity=user.username, expires_delta=expires)
+                tk = Token(token, user.username).save()
                 return Response(json.dumps({"Message": "Successfully logged in", "Token": token}), status=200)
             return Response(json.dumps({"Message": "Passwords do not match"}), status=409)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)

@@ -1,7 +1,7 @@
 """File has admin endpoints resources"""
 
 from api import jwt
-from api.models import Book, User
+from api.models import Book, User, BorrowBook
 from api.admin.validate import validate_book, validate_arg
 from flask_restful import Resource
 from flask import json, request, Response
@@ -21,12 +21,11 @@ class AddBook(Resource):
                 data = request.get_json(self)
                 if validate_book(data):
                     return Response(json.dumps(validate_book(data)), status=403)
-                # books = Book.get_all_books()
-                # isbn = [book for book in books if book.isbn == data['isbn']]
                 isbn = Book.query.filter_by(isbn=data['isbn']).first()
                 if isbn:
                     return Response(json.dumps({"Message": "Book already exists"}), status=409)
-                Book(data['title'], data['author'], data['isbn'], data['publisher'], data['quantity']).save()
+                Book(data['title'], data['author'], data['isbn'],
+                     data['publisher'], data['quantity']).save()
                 book = Book.query.filter_by(isbn=data['isbn']).first()
                 return Response(json.dumps({"Message": "Book added successfully", "Book": book.serialize}), status=201)
             return Response(json.dumps({"Message": "User not an admin"}), status=401)
@@ -73,7 +72,12 @@ class BookOps(Resource):
             if user.is_admin:
                 book = Book.get_book_by_id(book_id)
                 if book:
-                    book.delete()
+                    borrowed = BorrowBook.query.filter_by(
+                        book_id=book_id).first()
+                    if borrowed:
+                        return Response(json.dumps({"Message": "Book has been borrowed"}), status=403)
+                    else:
+                        book.delete()
                     return Response(json.dumps({"Message": "Book deleted successfully"}), status=200)
                 return Response(json.dumps({"Message": "Book doesn't exist"}), status=404)
             return Response(json.dumps({"Message": "User not an admin"}), status=401)

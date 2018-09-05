@@ -21,12 +21,14 @@ class AddBook(Resource):
                 data = request.get_json(self)
                 if validate_book(data):
                     return Response(json.dumps(validate_book(data)), status=403)
-                books = Book.get_all_books()
-                isbn = [book for book in books if book.isbn == data['isbn']]
+                # books = Book.get_all_books()
+                # isbn = [book for book in books if book.isbn == data['isbn']]
+                isbn = Book.query.filter_by(isbn=data['isbn']).first()
                 if isbn:
                     return Response(json.dumps({"Message": "Book already exists"}), status=409)
                 Book(data['title'], data['author'], data['isbn'], data['publisher'], data['quantity']).save()
-                return Response(json.dumps({"Message": "Book added successfully"}), status=201)
+                book = Book.query.filter_by(isbn=data['isbn']).first()
+                return Response(json.dumps({"Message": "Book added successfully", "Book": book.serialize}), status=201)
             return Response(json.dumps({"Message": "User not an admin"}), status=401)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
 
@@ -54,11 +56,12 @@ class BookOps(Resource):
                     book.publisher = data['publisher']
                     book.quantity = data['quantity']
                     book.save()
-                    return Response(json.dumps({"Message": "Book updated successfully"}), status=200)
+                    book = Book.get_book_by_id(book_id)
+                    return Response(json.dumps({"Message": "Book updated successfully", "Book": book.serialize}), status=200)
                 return Response(json.dumps({"Message": "Book does not exist"}), status=404)
             return Response(json.dumps({"Message": "User not an admin"}), status=401)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
-    
+
     @jwt_required
     def delete(self, book_id):
         """Function serving delete book api endpoint"""
@@ -91,7 +94,7 @@ class PromoteUser(Resource):
                 User.promote_user(data['username'].lower())
                 return Response(json.dumps({"Message": "User promoted successfully"}), status=200)
             return Response(json.dumps({"Message": "User not an admin"}), status=401)
-        return Response(json.dumps({"Message": "User does not exist"}), status=404)   
+        return Response(json.dumps({"Message": "User does not exist"}), status=404)
         data = request.get_json(self)
         User.promote_user(data['username'])
         return Response(json.dumps({"Message": "User promoted successfully"}), status=200)

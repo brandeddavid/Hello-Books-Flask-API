@@ -16,7 +16,7 @@ class Register(Resource):
         """Function serving register user api endpoint"""
         data = request.get_json(self)
         if validate_register(data):
-            return Response(json.dumps(validate_register(data)), status=403)
+            return Response(json.dumps(validate_register(data)), status=400)
         if data['password'] != data['confirm_password']:
             return Response(json.dumps({"Message": "Password provided do not match"}), status=403)
         users = User.all_users()
@@ -39,18 +39,17 @@ class Login(Resource):
         data['username'] = data['username'].replace(" ", "").lower()
         if validate_login(data):
             return Response(json.dumps(validate_login(data)), status=400)
-        users = User.all_users()
-        user = [user for user in users if user.username == data['username']][0]
+        user = User.query.filter_by(username=data['username']).first()
         if user:
             if User.verify_password(user.password_hash, data['password']):
                 logged_in = Token.token_by_owner(user.username)
-                if logged_in:
-                    return Response(json.dumps({"Message": "Already logged in", "Token": logged_in.token}), status=403)
+                # if logged_in:
+                #     return Response(json.dumps({"Message": "Already logged in", "Token": logged_in.token}), status=403)
                 expires = timedelta(days=30)
                 token = create_access_token(identity=user.username, expires_delta=expires)
                 tk = Token(token, user.username).save()
-                return Response(json.dumps({"Message": "Successfully logged in", "Token": token}), status=200)
-            return Response(json.dumps({"Message": "Passwords do not match"}), status=409)
+                return Response(json.dumps({"Message": "Successfully logged in", "Token": token, "User": user.serialize}), status=200)
+            return Response(json.dumps({"Message": "Wrong password"}), status=401)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
     
 

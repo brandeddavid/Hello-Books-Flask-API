@@ -39,7 +39,6 @@ def validate_register(data):
             'type': 'string',
             # 'regex': '',
             'required': True,
-            'minlength': 8,
             'empty': False,
             'maxlength': 20
         }
@@ -58,11 +57,13 @@ def validate_login(data):
     schema = {
         'username': {
             'type': 'string',
-            'required': True
+            'required': True,
+            'empty': False
         },
         'password': {
             'type': 'string',
-            'required': True
+            'required': True,
+            'empty': False
         }
     }
     validator = Validator(schema)

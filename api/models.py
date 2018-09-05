@@ -7,7 +7,7 @@ from sqlalchemy import or_
 
 class User(db.Model):
     """User Model"""
-    #Ensure table name is in plural
+    # Ensure table name is in plural
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(60), index=True, unique=True)
@@ -17,7 +17,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     is_admin = db.Column(db.Boolean, default=False)
     joined = db.Column(db.Date, default=datetime.today())
-    borrowed_books = db.relationship('Book', secondary='borrowed_books', lazy='dynamic')
+    borrowed_books = db.relationship(
+        'Book', secondary='borrowed_books', lazy='dynamic')
 
     def __init__(self, email, username, first_name, last_name, password):
         """Init function"""
@@ -36,12 +37,12 @@ class User(db.Model):
     def verify_password(saved_password, password):
         """Check is password hash matches actual password"""
         return check_password_hash(saved_password, password)
-    
+
     def save(self):
         """Saves user objects to database"""
         db.session.add(self)
         db.session.commit()
-    
+
     @staticmethod
     def all_users():
         """Gets all users"""
@@ -51,23 +52,24 @@ class User(db.Model):
     def get_user_by_username(username):
         """Gets user by username"""
         return User.query.filter_by(username=username).first()
-    
+
     def update_password(self, password):
         """Updates user's password"""
         self.hash_password = User.hash_password(password)
         User.save(self)
-    
+
     @property
     def serialize(self):
         """Serializes User object"""
         return {
             "email": self.email,
             "username": self.username,
-            "full_name": self.first_name + " " + self.last_name,
+            "firstName": self.first_name,
+            "lastName": self.last_name,
             "is_admin": self.is_admin,
         }
 
-    @property  
+    @property
     def promote(self):
         """Promotes normal user to admin"""
         if self.is_admin == True:
@@ -94,7 +96,7 @@ class User(db.Model):
 
 class Book(db.Model):
     """Book Model"""
-    #Ensure table name is in plural
+    # Ensure table name is in plural
     __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(500), index=True)
@@ -104,7 +106,8 @@ class Book(db.Model):
     quantity = db.Column(db.Integer)
     availability = False
     created = db.Column(db.Date, default=datetime.today())
-    borrowers = db.relationship('User', secondary='borrowed_books', lazy='dynamic')
+    borrowers = db.relationship(
+        'User', secondary='borrowed_books', lazy='dynamic')
 
     def __init__(self, title, author, isbn, publisher, quantity):
         """Init function"""
@@ -123,11 +126,13 @@ class Book(db.Model):
     def get_book_by_id(id):
         """Gets book by id"""
         return Book.query.filter_by(id=id).first()
-    
+
     @staticmethod
     def search(q):
-        books = Book.query.filter(or_(Book.title.like('%'+q.title()+'%'))).all()
+        books = Book.query.filter(
+            or_(Book.title.like('%'+q.title()+'%'))).all()
         return {"Books": [book.serialize for book in books]}
+
     @property
     def serialize(self):
         """Serializes book information"""
@@ -136,13 +141,15 @@ class Book(db.Model):
         else:
             self.availability = True
         return {
+            "id": self.id,
             "title": self.title,
             "author": self.author,
             "isbn": self.isbn,
             "publisher": self.publisher,
-            "availability": self.availability
+            "availability": self.availability,
+            "quantity": self.quantity
         }
-    
+
     def save(self):
         """Saves book object to database"""
         db.session.add(self)
@@ -159,7 +166,7 @@ class Book(db.Model):
 
 class BorrowBook(db.Model):
     """Association Table"""
-    __tablename__="borrowed_books"
+    __tablename__ = "borrowed_books"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
@@ -179,19 +186,24 @@ class BorrowBook(db.Model):
     def get_user_borrowing_history(user_id):
         """ Gets user borrowing history"""
         borrowed_books = BorrowBook.get_all_borrowed_books()
-        user_books = [book for book in borrowed_books if book.user_id == user_id]
+        user_books = [
+            book for book in borrowed_books if book.user_id == user_id]
         borrowing_history = []
         book_details = {}
         for book in user_books:
             try:
-                book_details["Title"] = Book.get_book_by_id(book.book_id).title
-                book_details["Date Borrowed"] = book.date_borrowed
+                singleBook = Book.get_book_by_id(book.book_id)
+                book_details["id"] = singleBook.id
+                book_details["title"] = singleBook.title
+                book_details["author"] = singleBook.author
+                book_details["isbn"] = singleBook.isbn
+                book_details["borrowDate"] = book.date_borrowed
                 if book.returned:
-                    book_details["Date Returned"] = book.date_returned
+                    book_details["returnDate"] = book.date_returned
                 else:
-                    book_details["Due Date"] = book.date_due
-            except:
-                pass
+                    book_details["dueDate"] = book.date_due
+            except Exception as e:
+                print(e)
             finally:
                 borrowing_history.append(book_details)
                 book_details = {}
@@ -202,14 +214,19 @@ class BorrowBook(db.Model):
         """Gets books not returned by user"""
         borrowed_books = BorrowBook.get_all_borrowed_books()
         # User non returned books
-        user_books = [book for book in borrowed_books if book.user_id == user_id and book.returned == False]
+        user_books = [book for book in borrowed_books if book.user_id ==
+                      user_id and book.returned == False]
         unreturned_books = []
         book_details = {}
         for book in user_books:
             try:
-                book_details["Title"] = Book.get_book_by_id(book.book_id).title
-                book_details["Date Borrowed"] = book.date_borrowed
-                book_details["Due Date"] = book.date_due
+                singleBook = Book.get_book_by_id(book.book_id)
+                book_details["id"] = singleBook.id
+                book_details["title"] = singleBook.title
+                book_details["author"] = singleBook.author
+                book_details["isbn"] = singleBook.isbn
+                book_details["borrowDate"] = book.date_borrowed
+                book_details["dueDate"] = book.date_due
             except:
                 pass
             finally:
@@ -221,6 +238,7 @@ class BorrowBook(db.Model):
         """Saved book borrowed to database"""
         db.session.add(self)
         db.session.commit()
+
 
 class Token(db.Model):
     """Token Model"""
@@ -256,6 +274,7 @@ class Token(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
 class Revoked(db.Model):
     """Revoked Token Table"""
 
@@ -279,4 +298,3 @@ class Revoked(db.Model):
         """Saves revoked token to database"""
         db.session.add(self)
         db.session.commit()
-

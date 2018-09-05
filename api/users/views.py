@@ -22,9 +22,22 @@ class GetAllUsers(Resource):
             if user.is_admin:
                 allUsers = User.all_users()
                 if len(allUsers) == 0:
-                    return Response(json.dumps({"Message":"No users found"}), status=404)
-                return Response(json.dumps({"Users":[user.serialize for user in allUsers]}), status=200)
+                    return Response(json.dumps({"Message": "No users found"}), status=404)
+                return Response(json.dumps({"Users": [user.serialize for user in allUsers]}), status=200)
             return Response(json.dumps({"Message": "User not an admin"}), status=401)
+        return Response(json.dumps({"Message": "User does not exist"}), status=404)
+
+
+class GetUser(Resource):
+    """Get one user resource"""
+
+    @jwt_required
+    def get(self):
+        """Function serving get all user api endpoint"""
+        current_user = get_jwt_identity()
+        user = User.get_user_by_username(current_user)
+        if user:
+            return Response(json.dumps({"User": user.serialize}), status=200)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
         
 
@@ -43,14 +56,13 @@ class BorrowOps(Resource):
             if book:
                 if book.quantity == 0:
                     return Response(json.dumps({"Message": "Book not available to borrow"}), status=404)
-                borrowed_books = BorrowBook.get_all_borrowed_books()
-                borrowed = [borrowed_book for borrowed_book in borrowed_books if borrowed_book.user_id == user.id and borrowed_book.book_id == book.id and borrowed_book.returned == False]
+                borrowed = BorrowBook.query.filter_by(user_id=user.id, book_id=book.id, returned=False).first()
                 if borrowed:
                     return Response(json.dumps({"Message": "Already borrowed book"}), status=403)
                 BorrowBook(user=user, book=book).save()
                 book.quantity -= 1
                 book.save()
-                return Response(json.dumps({"Message": "Book borrowed successfully"}), status=200)
+                return Response(json.dumps({"Message": "Book borrowed successfully", "Book": book.serialize}), status=200)
             return Response(json.dumps({"Message": "Book does not exist"}), status=404)
         return Response(json.dumps({"Message": "User does not not exist"}), status=404)
 
@@ -64,12 +76,11 @@ class BorrowOps(Resource):
                 return Response(json.dumps(validate_book(data)), status=403)
             book = Book.get_book_by_id(book_id)
             if book:
-                borrowed_books = BorrowBook.get_all_borrowed_books()
-                to_return = [borrowed_book for borrowed_book in borrowed_books if str(borrowed_book.book_id) == str(book_id) and str(borrowed_book.user_id) == str(user.id) and borrowed_book.returned == False]
+                to_return = BorrowBook.query.filter_by(user_id=user.id, book_id=book.id, returned=False).first()
                 if to_return:
-                    to_return[0].returned = True
-                    to_return[0].date_returned = datetime.now()
-                    to_return[0].save()
+                    to_return.returned = True
+                    to_return.date_returned = datetime.now()
+                    to_return.save()
                     book.quantity += 1
                     book.save()
                     return Response(json.dumps({"Message": "Book returned successfully"}), status=200)
@@ -92,10 +103,10 @@ class BorrowHistory(Resource):
             if returned == 'false':
                 unreturned_books = BorrowBook.get_books_not_returned(user.id)
                 if unreturned_books:
-                    return Response(json.dumps({"Unreturned Books": unreturned_books}), status=200)
+                    return Response(json.dumps({"unreturned": unreturned_books}), status=200)
                 return Response(json.dumps({"Message": "You do not have any unreturned book"}), status=403)
             borrow_history = BorrowBook.get_user_borrowing_history(user.id)
             if borrow_history:
-                return Response(json.dumps({"Borrow History": borrow_history}), status=200)
+                return Response(json.dumps({"borrowHistory": borrow_history}), status=200)
             return Response(json.dumps({"Message": "You have not borrowed any book"}), status=404)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)

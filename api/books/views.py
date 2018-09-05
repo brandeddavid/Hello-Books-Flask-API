@@ -15,7 +15,11 @@ class GetBooks(Resource):
         if q:
             return Response(json.dumps(Book.search(q)), status=200)
         page = request.args.get("page")
+        if page:
+            page = int(page)
         limit = request.args.get("limit")
+        if limit:
+            limit = int(limit)
         books = Book.query.paginate(page=page, per_page=limit, error_out=False)
         all_books = books.items
         if len(all_books) == 0:

@@ -27,7 +27,7 @@ def validate_book(data):
             'maxlength': 100
         },
         'quantity': {
-            'type': 'integer',
+            # 'type': 'integer',
             'empty': False,
             'required': True
         }

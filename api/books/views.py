@@ -7,7 +7,7 @@ from flask import json, request, Response
 
 
 class GetBooks(Resource):
-    """Get books resource"""   
+    """Get books resource"""
 
     def get(self):
         """Function serving get all books api endpoint"""
@@ -17,16 +17,20 @@ class GetBooks(Resource):
         page = request.args.get("page")
         if page:
             page = int(page)
+        else:
+            page = 1
         limit = request.args.get("limit")
         if limit:
             limit = int(limit)
+        else:
+            limit = 10
         books = Book.query.paginate(page=page, per_page=limit, error_out=False)
         all_books = books.items
         if len(all_books) == 0:
             return Response(json.dumps({"Message": "No books found"}), status=404)
-        total_pages = books.pages 
-        current_page = books.page 
-        return Response(json.dumps({"Books": [book.serialize for book in all_books], "Total Pages": total_pages, "Current Page": current_page}), status=200)
+        total_pages = books.pages
+        current_page = books.page
+        return Response(json.dumps({"Books": [book.serialize for book in all_books], "totalPages": total_pages, "currentPage": current_page}), status=200)
 
 
 class GetBook(Resource):

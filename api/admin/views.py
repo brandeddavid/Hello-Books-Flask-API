@@ -20,7 +20,7 @@ class AddBook(Resource):
             if user.is_admin:
                 data = request.get_json(self)
                 if validate_book(data):
-                    return Response(json.dumps(validate_book(data)), status=403)
+                    return Response(json.dumps(validate_book(data)), status=400)
                 if len(data['isbn']) not in (10, 13):
                     return Response(json.dumps({"Message": "Invalid ISBN"}), status=403)
                 isbn = Book.query.filter_by(isbn=data['isbn']).first()

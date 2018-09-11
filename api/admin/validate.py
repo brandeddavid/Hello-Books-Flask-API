@@ -45,6 +45,6 @@ def validate_book(data):
 def validate_arg(arg):
     try:
         arg= int(arg)
-    except Exception as e:
+    except:
         return Response(json.dumps({"Message": "Invalid argument passed"}), status=400)
 

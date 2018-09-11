@@ -104,6 +104,3 @@ class PromoteUser(Resource):
                 return Response(json.dumps({"Message": "User promoted successfully"}), status=200)
             return Response(json.dumps({"Message": "User not an admin"}), status=401)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
-        data = request.get_json(self)
-        User.promote_user(data['username'])
-        return Response(json.dumps({"Message": "User promoted successfully"}), status=200)

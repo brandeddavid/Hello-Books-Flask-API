@@ -43,13 +43,13 @@ class Login(Resource):
         user = User.query.filter_by(username=data['username']).first()
         if user:
             if User.verify_password(user.password_hash, data['password']):
-                logged_in = Token.token_by_owner(user.username)
+                # logged_in = Token.token_by_owner(user.username)
                 # if logged_in:
                 #     return Response(json.dumps({"Message": "Already logged in", "Token": logged_in.token}), status=403)
                 expires = timedelta(days=30)
                 token = create_access_token(
                     identity=user.username, expires_delta=expires)
-                tk = Token(token, user.username).save()
+                Token(token, user.username).save()
                 return Response(json.dumps({"Message": "Successfully logged in", "Token": token, "User": user.serialize}), status=200)
             return Response(json.dumps({"Message": "Wrong password"}), status=400)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
@@ -69,7 +69,7 @@ class Logout(Resource):
                 Token.delete(Token.token_by_owner(current_user))
                 return Response(json.dumps({"Message": "Logged out successfully"}), status=200)
             return Response(json.dumps({"Message": "User token has been revoked"}), status=403)
-        except Exception as e:
+        except:
             return Response(json.dumps({"Message": "Not logged in"}), status=401)
 
 

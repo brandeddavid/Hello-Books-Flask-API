@@ -15,11 +15,15 @@ class GetBooks(Resource):
         if q:
             return Response(json.dumps(Book.search(q)), status=200)
         page = request.args.get("page")
+        if validate_arg(page):
+            return validate_arg(page)
         if page:
             page = int(page)
         else:
             page = 1
         limit = request.args.get("limit")
+        if validate_arg(limit):
+            return validate_arg(limit)
         if limit:
             limit = int(limit)
         else:

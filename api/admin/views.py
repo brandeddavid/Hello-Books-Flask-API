@@ -51,6 +51,9 @@ class BookOps(Resource):
                     data = request.get_json(self)
                     if validate_book(data):
                         return Response(json.dumps(validate_book(data)), status=400)
+                    exists = Book.query.filter_by(isbn=data['isbn']).first()
+                    if exists:
+                        return Response(json.dumps({"Message": "Book with that isbn already exists"}), status=400)
                     book.title = data['title']
                     book.author = data['author']
                     book.isbn = data['isbn']

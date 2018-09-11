@@ -1,5 +1,6 @@
 from cerberus import Validator
 
+
 def validate_register(data):
     schema = {
         'email': {
@@ -14,7 +15,7 @@ def validate_register(data):
             'required': True,
             'empty': False,
             'maxlength': 60
-        }, 
+        },
         'first_name': {
             'type': 'string',
             'required': True,
@@ -52,7 +53,8 @@ def validate_register(data):
     data['username'] = data['username'].replace(" ", "").lower()
     data['first_name'] = data['first_name'].replace(" ", "")
     data['last_name'] = data['last_name'].replace(" ", "")
-    
+
+
 def validate_login(data):
     schema = {
         'username': {
@@ -69,10 +71,11 @@ def validate_login(data):
     validator = Validator(schema)
     validator.validate(data)
     errors = validator.errors
-    if errors: 
+    if errors:
         return errors
 
-def validate_reset(data):
+
+def validate_reset_password(data):
     schema = {
         'password': {
             'type': 'string',

@@ -50,7 +50,7 @@ class AuthTestCase(TestHelloBooks):
         user_not_exist = self.login_user(self.login_data_user_not_exist)
         self.assertEqual(user_not_exist.status_code, 404)
         password_mismatch = self.login_user(self.login_data_password_mismatch)
-        self.assertEqual(password_mismatch.status_code, 401)
+        self.assertEqual(password_mismatch.status_code, 400)
         login = self.login_user(self.login_data)
         self.assertEqual(login.status_code, 200)
         login2 = self.login_user(self.login_data)

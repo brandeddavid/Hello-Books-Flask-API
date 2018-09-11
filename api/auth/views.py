@@ -49,7 +49,7 @@ class Login(Resource):
                 token = create_access_token(identity=user.username, expires_delta=expires)
                 tk = Token(token, user.username).save()
                 return Response(json.dumps({"Message": "Successfully logged in", "Token": token, "User": user.serialize}), status=200)
-            return Response(json.dumps({"Message": "Wrong password"}), status=401)
+            return Response(json.dumps({"Message": "Wrong password"}), status=400)
         return Response(json.dumps({"Message": "User does not exist"}), status=404)
     
 
@@ -68,7 +68,6 @@ class Logout(Resource):
                 return Response(json.dumps({"Message": "Logged out successfully"}), status=200)
             return Response(json.dumps({"Message": "User token has been revoked"}), status=403)
         except Exception as e:
-            print (e)
             return Response(json.dumps({"Message": "Not logged in"}), status=401)
 
 
@@ -97,7 +96,6 @@ class ResetPassword(Resource):
                     Revoked(jti).save()
                     Token.delete(Token.token_by_owner(current_user))
                     return Response(json.dumps({"Message": "Password updated successfully. Please login again."}), status=200)
-            return Response(json.dumps({"Message": "Password do not match"}), status=403)
+            return Response(json.dumps({"Message": "Password do not match"}), status=400)
         except Exception as e:
-            print(e)
             return Response(json.dumps({"Message": "Not logged in"}), status=401)

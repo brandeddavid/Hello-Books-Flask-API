@@ -73,7 +73,7 @@ class BorrowOps(Resource):
         user = User.get_user_by_username(current_user)
         if user:
             if validate_arg(book_id):
-                return Response(json.dumps(validate_book(data)), status=403)
+                return Response(json.dumps(validate_book(data)), status=400)
             book = Book.get_book_by_id(book_id)
             if book:
                 to_return = BorrowBook.query.filter_by(user_id=user.id, book_id=book.id, returned=False).first()
@@ -104,7 +104,7 @@ class BorrowHistory(Resource):
                 unreturned_books = BorrowBook.get_books_not_returned(user.id)
                 if unreturned_books:
                     return Response(json.dumps({"unreturned": unreturned_books}), status=200)
-                return Response(json.dumps({"Message": "You do not have any unreturned book"}), status=403)
+                return Response(json.dumps({"Message": "You do not have any unreturned book"}), status=404)
             borrow_history = BorrowBook.get_user_borrowing_history(user.id)
             if borrow_history:
                 return Response(json.dumps({"borrowHistory": borrow_history}), status=200)

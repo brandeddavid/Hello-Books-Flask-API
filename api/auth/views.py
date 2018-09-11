@@ -18,7 +18,7 @@ class Register(Resource):
         if validate_register(data):
             return Response(json.dumps(validate_register(data)), status=400)
         if data['password'] != data['confirm_password']:
-            return Response(json.dumps({"Message": "Password provided do not match"}), status=403)
+            return Response(json.dumps({"Message": "Password provided do not match"}), status=400)
         users = User.all_users()
         email = [user for user in users if user.email == data['email']]
         if email:

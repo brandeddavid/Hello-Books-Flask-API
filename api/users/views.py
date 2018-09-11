@@ -51,7 +51,7 @@ class BorrowOps(Resource):
         user = User.get_user_by_username(current_user)
         if user:
             if validate_arg(book_id):
-                return Response(json.dumps(validate_book(data)), status=403)
+                return Response(json.dumps(validate_book(data)), status=400)
             book = Book.get_book_by_id(book_id)
             if book:
                 if book.quantity == 0:

@@ -15,7 +15,7 @@ class TestHelloBooks(unittest.TestCase):
     def setUp(self):
         """Set up function before any test runs"""
         self.app = app
-        self.version = 'v1'
+        self.version = '/api/v1'
         app.config.from_object(app_config['testing'])
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
@@ -163,7 +163,7 @@ class TestHelloBooks(unittest.TestCase):
         self.book_data = {
             "title":"Windmills of Gods",
             "author":"Sidney Sheldon",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "Publisher",
             "quantity": 45
         }
@@ -173,14 +173,14 @@ class TestHelloBooks(unittest.TestCase):
         self.book_data_no_title = {
             "title":"",
             "author":"Sidney Sheldon",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "Publisher",
             "quantity": 45
         }
         self.book_data_no_author = {
             "title":"Windmills of Gods",
             "author":"",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "Publisher",
             "quantity": 45
         }
@@ -194,21 +194,21 @@ class TestHelloBooks(unittest.TestCase):
         self.book_data_no_publisher = {
             "title":"Windmills of Gods",
             "author":"Sidney Sheldon",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "",
             "quantity": 45
         }
         self.book_data_no_quantity = {
             "title":"Windmills of Gods",
             "author":"Sidney Sheldon",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "Publisher",
             "quantity": None
         }
         self.update_book_data = {
             "title":"Windmills of Gods",
             "author":"Sidney Sheldon",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "Publisher",
             "quantity": 100
         }
@@ -218,14 +218,14 @@ class TestHelloBooks(unittest.TestCase):
         self.update_book_data_no_title = {
             "title":"",
             "author":"Sidney Sheldon",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "Publisher",
             "quantity": 100
         }
         self.update_book_data_no_author = {
             "title":"Windmills of Gods",
             "author":"",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "Publisher",
             "quantity": 100
         }
@@ -239,14 +239,14 @@ class TestHelloBooks(unittest.TestCase):
         self.update_book_data_no_publisher = {
             "title":"Windmills of Gods",
             "author":"Sidney Sheldon",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "",
             "quantity": 100
         }
         self.update_book_data_no_quantity = {
             "title":"Windmills of Gods",
             "author":"Sidney Sheldon",
-            "isbn":"36524728764",
+            "isbn":"3652472876",
             "publisher": "Publisher",
             "quantity": None
         }
@@ -265,22 +265,22 @@ class TestHelloBooks(unittest.TestCase):
         self.app_context.pop()
 
     def register_user(self, data):
-        return self.client.post('/api/'+self.version+'/auth/register', data=json.dumps(data), content_type='application/json')
+        return self.client.post(self.version+'/auth/register', data=json.dumps(data), content_type='application/json')
 
     def login_user(self, data):
-        return self.client.post('/api/'+self.version+'/auth/login', data=json.dumps(data), content_type='application/json')
+        return self.client.post(self.version+'/auth/login', data=json.dumps(data), content_type='application/json')
 
     def logout_user(self, user):
         msg = json.loads(user.data)
         print(msg)
         token = msg['Token']
-        return self.client.post('/api/'+self.version+'/auth/logout', headers={"Authorization": "Bearer {}".format(token)})
+        return self.client.post(self.version+'/auth/logout', headers={"Authorization": "Bearer {}".format(token)})
 
     def get_all_books(self):
-        return self.client.get('/api/'+self.version+'/books')
+        return self.client.get(self.version+'/books')
 
     def get_book(self, id):
-        return self.client.get('/api/'+self.version+'/book/' + str(id))
+        return self.client.get(self.version+'/book/' + str(id))
 
     def login_admin(self):
         return self.login_user(self.admin_data)
@@ -288,25 +288,25 @@ class TestHelloBooks(unittest.TestCase):
     def add_book(self, data):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
-        return self.client.post('/api/'+self.version+'/books', data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+        return self.client.post(self.version+'/books', data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
 
     def update_book(self, data, id):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
-        return self.client.put('/api/'+self.version+'/book/'+str(id), data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+        return self.client.put(self.version+'/book/'+str(id), data=json.dumps(data), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
 
     def delete_book(self, id):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
-        return self.client.delete('/api/'+self.version+'/book/'+str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+        return self.client.delete(self.version+'/book/'+str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
 
     def get_all_users(self):
         admin = self.login_admin()
         token = json.loads(admin.data)['Token']
-        return self.client.get('/api/'+self.version+'/users', headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+        return self.client.get(self.version+'/users', headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
 
     def borrow_book(self, id):
         self.register_user(self.user_data)
         user = self.login_user(self.login_data)
         token = json.loads(user.data)['Token']
-        return self.client.get('/api/'+self.version+'/users/books/'+ str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')
+        return self.client.post(self.version+'/users/books/'+ str(id), headers={"Authorization": "Bearer {}".format(token)}, content_type='application/json')

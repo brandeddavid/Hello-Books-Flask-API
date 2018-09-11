@@ -27,9 +27,9 @@ def validate_book(data):
             'maxlength': 100
         },
         'quantity': {
-            # 'type': 'integer',
             'empty': False,
-            'required': True
+            'required': True,
+            'min': 1
         }
     }
     validator = Validator(schema)
